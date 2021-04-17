@@ -8,7 +8,7 @@
         <b></b>
       </div>
     </div>
-      <strong>Copyright &copy; <?php echo date('Y');?> <a href="https://askrindo.co.id/">Askrindo</a> .</strong> All rights reserved.
+      <strong>Copyright &copy; <?php echo date('Y');?> <a href="https://google.com">Apotek App</a> .</strong> All rights reserved.
     <!-- /.container -->
   </footer>
 </div>

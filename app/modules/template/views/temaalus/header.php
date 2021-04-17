@@ -6,7 +6,7 @@
   <meta name="description" content="<?php echo $this->alus_auth->description_application();?>">
   <meta name="keywords" content="<?php echo $this->alus_auth->keyword_application();?>">
   <meta name="author" content="<?php echo $this->alus_auth->author_application();?>">
-
+  
   <link rel="icon" href="<?php echo base_url('assets/logo/askrindo-mini.png'); ?>" type="image/gif" sizes="20x20">
   <title><?php echo $title; ?> | <?php echo $this->alus_auth->name_application();?></title>
   <!-- Tell the browser to be responsive to screen width -->
@@ -37,6 +37,8 @@
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/temaalus/dist/css/bootstrap-datetimepicker.min.css');?>">
+  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/temaalus/plugins/bootstrap-select/dist/css/bootstrap-select.min.css">
+
   <script src="<?php echo base_url(); ?>assets/temaalus/plugins/jQuery/jquery.min.js"></script>
   <script src="<?php echo base_url(); ?>assets/temaalus/dist/js/jquery.cookie.js"></script>
   <script src="<?php echo base_url(); ?>assets/temaalus/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -46,14 +48,33 @@
   <script src="<?php echo base_url(); ?>assets/temaalus/plugins/datatables-scroller/js/scroller.bootstrap4.min.js"></script>
   <!-- alert -->
   <script src="<?php echo base_url(); ?>assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
+  <script src="<?php echo base_url(); ?>assets/temaalus/plugins/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
-
+<style>
+#loading {
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed/sticky position */
+  bottom: 20px; /* Place the button at the bottom of the page */
+  right: 30px; /* Place the button 30px from the right */
+  z-index: 99; /* Make sure it does not overlap */
+  border: 1px solid grey; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: white; /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 10px; /* Some padding */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 15px; /* Increase font size */
+  color:#494E54;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+</style>
 </head>
 
-<!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
-
+<div id="loading" title="Go to top"><span class="spinner-border text-primary spinner-border-sm"></span> Loading..</div> 
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
@@ -80,7 +101,7 @@
    <aside class="main-sidebar sidebar-dark-warning elevation-4">
     <a href="<?php echo base_url();?>" class="brand-link">
       <img src="<?php echo base_url('assets/logo/askrindo-mini.png'); ?>" alt="Askrindo Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">Finance App</span>
+      <span class="brand-text font-weight-light">Apotek App</span>
     </a>
     <section class="sidebar">
       <!-- Sidebar user panel -->
@@ -114,22 +135,37 @@
     var csrf_ck = '<?php echo $this->config->item("csrf_cookie_name");?>';
     var loadingx ;
     $.ajaxSetup({
+      headers: {
+        '<?php echo $this->config->item("csrf_token_name");?>': get_newer()
+        },
       beforeSend: function(xhr, settings) {
-         /*loadingx = Swal.fire({
-            position: 'center',
-            title: 'Loading',
-            html: '<img src="<?php echo base_url();?>assets/logo/loading.gif">',
-            showConfirmButton: false,
-            allowOutsideClick: false
-          });*/
-        switch (settings.type) {
+        //  loadingx = Swal.fire({
+        //     position: 'center',
+        //     title: 'Loading',
+        //     html: '<img src="<?php echo base_url();?>assets/logo/loading.gif">',
+        //     showConfirmButton: false,
+        //     allowOutsideClick: false
+        //   });
+          $("#loading").show();
+
+          switch (settings.type) {
             case "POST": settings.data += "&"+csrf_nm+"="+get_newer(); break;
-        }
+          }
+          
+          return true;
       },
-      /*complete: function(data)
+      complete: function(data)
       {
-        loadingx.close();
-      }*/
+        // loadingx.close();
+        $("#loading").hide();
+      },
+      error: function()
+      {
+        console.log('error');
+        $("#loading").hide();
+
+        // loadingx.close();
+      }
     });
 
     function get_newer()
@@ -205,5 +241,10 @@
             }
           })
         }
-
+  
+    $(function() {
+        $('.sel').selectpicker({
+          'liveSearch': true
+        });
+    });
   </script>
