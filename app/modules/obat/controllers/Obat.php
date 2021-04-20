@@ -12,6 +12,9 @@ class Obat extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('Obat_model', 'model');
+        $this->load->model('Unit_model','unit');
+        $this->load->model('Kategori_obat_model','kategori');
+        $this->load->model('Stok_model', 'stok');
 
 		if (!$this->alus_auth->logged_in()) {
 			redirect('admin/Login', 'refresh');
@@ -94,7 +97,7 @@ class Obat extends CI_Controller
 		foreach ($list as $person) {
 			$no++;
 			$row = array();
-			$row[] = $person->mo_nama;
+			$row[] = '<a href="'.base_url('obat/detail').'/'.$person->mo_id.'">'.$person->mo_nama.'</a>';
 			$row[] = $person->mo_deskripsi;
 			$row[] = $person->mk_nama;
 			$row[] = $person->mo_barcode;
@@ -189,6 +192,52 @@ class Obat extends CI_Controller
 		}
 	}
 
+    public function ajax_stok_obat_by_id($id)
+    {
+       $list2 = $this->stok->get_datatables($id);
+        $data2 = array();
+        $status= FALSE;
+        if($list2 != NULL | $list2 != ""){
+            $status = TRUE;
+        }
+        $datenow = new DateTime();
+        //$kadaluarsa = FALSE;
+        foreach ($list2 as $record2) {
+            $row2 = array();
+            $row2[] = $record2->mo_nama;//0
+            $row2[] = $record2->tb_tgl_kadaluarsa;//1
+            $row2[] = $record2->stok;//2
+            $row2[] = $record2->tb_id;//3
+            $cekkd = new DateTime($record2->tb_tgl_kadaluarsa);
+            $beda = $datenow->diff($cekkd);
+            $hari = $beda->format('%a');
+            if($hari <= 0){
+                $kadaluarsa = TRUE;
+                $sisahari = $hari;
+                $status_kd = "Kadaluarsa";
+            }else if($hari > 0 AND $hari <= 10){
+                $kadaluarsa = FALSE;
+                $sisahari = $hari;
+                $status_kd = "Hampir kadaluarsa";
+            }else{
+                $kadaluarsa = FALSE;
+                $sisahari = $hari;
+                $status_kd = "Ok";
+            }
+            $row2[] = $kadaluarsa;//4
+            $row2[] = $sisahari;//5
+            $row2[] = $status_kd;//6
+            $dataunit = $this->unit->get_by_id($record2->mo_mu_id);
+            $row2[] = $dataunit->mu_nama;//7
+
+            //add html for action
+            $data2[] = $row2;
+        }
+         $output2 = array("status" => $status, "data" => $data2);
+
+        echo json_encode($output2);
+    }
+
 	public function input($idobat = null)
 	{
 		if ($this->alus_auth->logged_in()) {
@@ -202,6 +251,38 @@ class Obat extends CI_Controller
 			redirect('admin/Login', 'refresh');
 		}
 	}
+
+    public function detail($mo_id)
+    {
+    
+        if($this->alus_auth->logged_in())
+         {
+            $head['title'] = "Master Obat";
+            //$data['tree'] = $this->model->all_tree();
+            $data = array();
+            $record = $this->model->get_by_id($mo_id);
+            $data['can_add'] = $this->privilege['can_add'];
+            $data['mo_id'] = $mo_id;
+            $data['mo_nama'] = $record->mo_nama;
+            $data['mo_barcode'] = $record->mo_barcode;
+            $data['mo_penyimpanan'] = $record->mo_penyimpanan;
+
+            $dataunit = $this->unit->get_by_id($record->mo_mu_id);
+            $data['mu_nama'] = $dataunit->mu_nama;
+            $datakategori = $this->kategori->get_by_id($record->mo_mk_id);
+            $data['mk_nama'] = $datakategori->mk_nama;
+            $data['mo_deskripsi'] = $record->mo_deskripsi;
+            $data['mo_picture'] = $record->mo_picture;
+            $data['mo_resep'] = $record->mo_resep;
+            
+            $this->load->view('template/temaalus/header',$head);
+            $this->load->view('Obat/detail.php',$data);
+            $this->load->view('template/temaalus/footer');
+        }else
+        {
+            redirect('admin/Login','refresh');
+        }
+    }
 
 	public function save_obat_new()
 	{
