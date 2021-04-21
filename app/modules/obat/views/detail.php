@@ -46,7 +46,6 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                Berikut adalah Stok Obat ini berdasarkan Tanggal Kadaluarsa.
                 <!-- we are adding the accordion ID so Bootstrap's collapse plugin detects it -->
                 <div id="accordion">
                   <!-- blok data stok -->
@@ -93,7 +92,7 @@ $(document).ready(function() {
                 b = val[5]+' hari sebelum kadaluarsa.';
               }
             }
-            $('#accordion').append('<div class="card card-'+ a +'"><div class="card-header"><h4 class="card-title w-100"><a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapse'+i+'" aria-expanded="false">'+ val[1] +'</a></h4></div><div id="collapse'+i+'" class="collapse" data-parent="#accordion" style=""><div class="card-body"><div class="row" style="text-align:center;"><div class="col-sm-12"><h4>'+ val[2] +'</h4><h6>'+ val[7] +'</h6></div></div><div class="col-sm-12">'+b+'</div><div class="col-sm-12">Harga Jual <b> Rp. 0000</b></div><div class="col-sm-12">Disuplai oleh <b>Placeholder</b></div><hr noshade/><button type="button" class="btn btn-block bg-gradient-success btn-sm"'+update+'>Ubah Stok</button><button type="button" class="btn btn-block bg-gradient-danger btn-sm">Hapus Stok</button></div></div></div>')
+            $('#accordion').append('Berikut adalah Stok Obat ini berdasarkan Tanggal Kadaluarsa.<div class="card card-'+ a +'"><div class="card-header"><h4 class="card-title w-100"><a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapse'+i+'" aria-expanded="false">'+ val[1] +'</a></h4></div><div id="collapse'+i+'" class="collapse" data-parent="#accordion" style=""><div class="card-body"><div class="row" style="text-align:center;"><div class="col-sm-12"><h4>'+ val[2] +'</h4><h6>'+ val[7] +'</h6></div></div><div class="col-sm-12">'+b+'</div><div class="col-sm-12">Harga Jual <b> Rp. 0000</b></div><div class="col-sm-12">Disuplai oleh <b>Placeholder</b></div><hr noshade/><button type="button" class="btn btn-block bg-gradient-success btn-sm"'+update+'>Ubah Stok</button><button type="button" class="btn btn-block bg-gradient-danger btn-sm">Hapus Stok</button></div></div></div>')
           });
         },
         error: function (jqXHR, textStatus, errorThrown)

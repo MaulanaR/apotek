@@ -55,25 +55,31 @@ class Kategori_obat extends CI_Controller {
             $no++;
             $row = array();
             $row[] = $record->mk_nama;
- 			if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 1)
+            if($record->mk_nama == "Alkes")
             {
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
-                  <a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-            }
-
-            if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 0)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>';
-            }
-
-            if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 1)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-            }
-
-            if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 0)
-            {
-                $row[] = ' ';
+                $row[] = '';
+            }else{
+                
+                if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 1)
+               {
+                   $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
+                     <a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+               }
+    
+               if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 0)
+               {
+                   $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>';
+               }
+    
+               if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 1)
+               {
+                   $row[] = '<a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->mk_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
+               }
+    
+               if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 0)
+               {
+                   $row[] = ' ';
+               }
             }
             //add html for action
             $data[] = $row;

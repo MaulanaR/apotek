@@ -67,6 +67,7 @@ class Alus_auth
 		$this->load->library('session');
 
 		$this->load->model('alus_auth_model');
+		$this->load->model('stok_depan_model');
 
 		$this->_cache_user_in_group =& $this->alus_auth_model->_cache_user_in_group;
 
@@ -586,5 +587,51 @@ class Alus_auth
     	}
 		return $hasil_rupiah;
 	}
+
+	public function ajax_stok_obat_by_id($id)
+    {
+       	$list2 = $this->stok_depan_model->get_datatables($id);
+        $data2 = array();
+        $status= FALSE;
+        if($list2 != NULL | $list2 != ""){
+            $status = TRUE;
+        }
+        $datenow = new DateTime();
+        //$kadaluarsa = FALSE;
+        foreach ($list2 as $record2) {
+            $row2 = array();
+            $row2[] = $record2->mo_nama;//0
+            $row2[] = $record2->tb_tgl_kadaluarsa;//1
+            $row2[] = $record2->stok;//2
+            $row2[] = $record2->tb_id;//3
+            $cekkd = new DateTime($record2->tb_tgl_kadaluarsa);
+            $beda = $datenow->diff($cekkd);
+            $hari = $beda->format('%a');
+            if($hari <= 0){
+                $kadaluarsa = TRUE;
+                $sisahari = $hari;
+                $status_kd = "Kadaluarsa";
+            }else if($hari > 0 AND $hari <= 10){
+                $kadaluarsa = FALSE;
+                $sisahari = $hari;
+                $status_kd = "Hampir kadaluarsa";
+            }else{
+                $kadaluarsa = FALSE;
+                $sisahari = $hari;
+                $status_kd = "Ok";
+            }
+            $row2[] = $kadaluarsa;//4
+            $row2[] = $sisahari;//5
+            $row2[] = $status_kd;//6
+            $dataunit = $this->unit->get_by_id($record2->mo_mu_id);
+            $row2[] = $dataunit->mu_nama;//7
+
+            //add html for action
+            $data2[] = $row2;
+        }
+         $output2 = array("status" => $status, "data" => $data2);
+
+        return $output2;
+    }
 }
 

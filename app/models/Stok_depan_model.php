@@ -2,7 +2,7 @@
 /**
  * @author 		Maulana Rahman <maulana.code@gmail.com>
 */
-class Stok_model extends CI_Model {
+class Stok_depan_model extends CI_Model {
 
     var $column_order = array('mo_id', 'mo_nama', 'tb_id', 'tb_tgl_kadaluarsa', 'stok', null);
     var $column_search = array('mo_nama', 'mo_id');
@@ -11,7 +11,6 @@ class Stok_model extends CI_Model {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->alus_co = $this->alus_auth->alus_co();
 	}
 
 
