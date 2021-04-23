@@ -14,7 +14,7 @@ function masukbr()
       var pass = $("input[name='password']").val();
       var captcha_data = $("input[name='captcha_data']").val();
       var gambarcap = $("input[name='gambarcap']").val();
-      var csrf = $.cookie("askrindo_cookieapp");
+      var csrf = $.cookie("apotek_cookieapp");
 /*      var capt = $("input[name='identity']").val();
       var respons = $("#g-recaptcha-response").val();*/
 
