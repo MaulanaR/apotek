@@ -21,7 +21,7 @@ function masukbr()
       $.ajax({
             type:"POST",
             url:form.attr("action"),
-            data:{'identity' : identity,'password' : pass,'captcha_data':captcha_data,'gambarcap':gambarcap, 'csrf_askrindo_financeapp':csrf},
+            data:{'identity' : identity,'password' : pass,'captcha_data':captcha_data,'gambarcap':gambarcap, 'csrf_apotekapp':csrf},
             dataType: "json",
             beforeSend: function() 
             { $("#load_ajax").fadeIn(20); },
