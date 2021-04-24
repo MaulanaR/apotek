@@ -35,7 +35,7 @@
                   <dd class="col-sm-8">
                     <div id="hargabeli"></div>
                   </dd>
-                  <dt class="col-sm-8">Harga Jual <a href="#" onclick="adj_harga()"><i class='fas fa-edit'></i></a></dt>
+                  <dt class="col-sm-8">Harga Jual <a href="#" data-toogle='modal' data-target='#modal_harga' onclick="adj_harga()"><i class='fas fa-edit'></i></a></dt>
                   <dd class="col-sm-8">
                     <div id="hargajual"></div>
                   </dd>
@@ -48,7 +48,7 @@
                 </div>
               </div>
               <div class='col-md-4'>
-                <div class="card card-primary">
+                <div class="card card-primary m-2">
                   <div class="card-header">
                     <h3 class="card-title"><li class='fa fa-th-list'></li> Stok Tersedia</h3>
                   </div>
@@ -60,6 +60,12 @@
                           <button type="button" class="btn btn-danger" onclick="min_stok()">Kurangi</button>
                           <button type="button" class="btn btn-warning" onclick="add_stok()">Tambah</button>
                     </div>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Disuplai oleh <b id="supplier"></b></li>
+                  </ul>
+                  <div class="card-body">
+                    <span></span>
                   </div>
                 </div>
               </div>
@@ -91,42 +97,8 @@
             <input type="hidden" id="tb_id" name="tb_id" required/>
             <div class="form-body">
               <div class="form-group">
-                <label class="control-label ">Jumlah</label>
-                <input type="number" name="jumlah" class="form-control" min="1" required>
-                <span class="help-block"></span>
+                
               </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" id="btnSave" class="btn btn-primary">Submit</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
-        </form>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div>
-
-   <div class="modal fade" id="modal_harga" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-         <form action="#" id="formharga" class="form-horizontal" name="formharga">
-        <div class="modal-header">
-          <h3 class="modal-title"></h3>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body form">
-                    <div class='form-group'>
-                      <label class="control-label ">Masukan Harga Baru</label>
-                      <div class="input-group">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text">Rp.</span>
-                        </div>
-                        <input type="number" min='0' class="form-control col-sm-6">
-                        <div class="input-group-append">
-                          <span class="input-group-text">,00</span>
-                        </div>
-                        <span class="help-block"></span>
-                      </div>
-                    </div>
         </div>
         <div class="modal-footer">
           <button type="submit" id="btnSave" class="btn btn-primary">Submit</button>
@@ -141,13 +113,29 @@
     
 $(document).ready(function() {
 
-  var aksi_stok;
+  var aksi;
+  var hargajual;
+
+  load_data();
 
   $("#formaddstok").submit(function(e){
         e.preventDefault();
         save();
       });
+  
+});
 
+function reset_field(){
+  //reset semua dynamic field
+  $('#tb_id').attr('value', '0');
+  $("#stok").empty();
+  $("#hargabeli").empty();
+  $("#hargajual").empty();
+  $("#supplier").empty();
+}
+
+function load_data(){
+  reset_field();//reset sebelum diisi data
   $.ajax({
         url : "<?php echo site_url('alkes/ajax_stok_obat_by_id/'). $mo_id .""; ?>",
         type: "GET",
@@ -156,11 +144,13 @@ $(document).ready(function() {
         {
           $.each(data.data, function(index, val){
             var a = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(val[8]);
+            hargajual = val[9];
             var b = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(val[9]);
             $('#tb_id').attr('value', val[3]);
             $("#stok").append("<h1><b>"+val[2]+"</b></h1><h6>"+val[7]+"</h6>");
             $("#hargabeli").append("<b>"+a+"</b>");
             $("#hargajual").append("<b>"+b+"</b>");
+            $("#supplier").append(val[10]);
           });
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -168,21 +158,24 @@ $(document).ready(function() {
             alert('Error get data from ajax');
         }
     });
-});
+}
 
 function add_stok(id) {
-      aksi_stok= 'insert';
+      aksi= 'insert';
       $('#formaddstok')[0].reset(); // reset form on modals
+      $('.form-group').empty();//reset input container
+      $('.form-group').append('<label class="control-label ">Jumlah</label><input type="number" name="jumlah" class="form-control" min="1" required><span class="help-block"></span>');
       $('.form-group').removeClass('has-error'); // clear error class
       $('.help-block').empty(); // clear error string
       $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
       $('.modal-title').text('Tambah Stok'); // Set title to Bootstrap modal title
-
-    }
+}
 
 function min_stok(id) {
-      aksi_stok= 'take';
+      aksi= 'take';
       $('#formaddstok')[0].reset(); // reset form on modals
+      $('.form-group').empty();//reset input container
+      $('.form-group').append('<label class="control-label ">Jumlah</label><input type="number" name="jumlah" class="form-control" min="1" required><span class="help-block"></span>');
       $('.form-group').removeClass('has-error'); // clear error class
       $('.help-block').empty(); // clear error string
   
@@ -191,11 +184,14 @@ function min_stok(id) {
 }
 
 function adj_harga() {
-      $('#formharga')[0].reset(); // reset form on modals
+      aksi = 'ubah_harga';
+      $('#formaddstok')[0].reset(); // reset form on modals
+      $('.form-group').empty();//reset input container
+      $('.form-group').append('<label class="control-label ">Masukan Harga Baru</label><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">Rp.</span></div><input type="number" name="harga" min="1" class="form-control col-sm-6" value="'+ hargajual +'" required><div class="input-group-append"><span class="input-group-text">,00</span></div><span class="help-block"></span></div>');
       $('.form-group').removeClass('has-error'); // clear error class
       $('.help-block').empty(); // clear error string
   
-      $('#modal_harga').modal('show'); // show bootstrap modal when complete loaded
+      $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
       $('.modal-title').text('Ubah Harga Jual'); // Set title to Bootstrap modal title
 }
 
@@ -204,10 +200,12 @@ function save() {
       $('#btnSave').attr('disabled', true); //set button disable 
       var url;
 
-      if (aksi_stok == 'insert') {
+      if (aksi == 'insert') {
         url = "<?php echo base_url('alkes/ajax_add_stok') ?>";
-      } else {
+      } else if (aksi == 'take'){
         url = "<?php echo base_url('alkes/ajax_min_stok') ?>";
+      } else {
+        url = "<?php echo base_url('alkes/ajax_adj_harga') ?>";
       }
 
       // ajax adding data to database
@@ -222,10 +220,11 @@ function save() {
           {
             popup('Informasi', 'Data berhasil di update');
             $('#modal_form').modal('hide');
-            reload_table();
+            load_data();
           } else {
             popup('Perhatian', data.msg, 'info');
-            reload_table();
+            load_data();
+            
           }
 
           $('#btnSave').text('save'); //change button text

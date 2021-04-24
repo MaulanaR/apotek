@@ -627,6 +627,8 @@ class Alus_auth
             $row2[] = $dataunit->mu_nama;//7
             $row2[] = $record2->tb_harga_beli;//8
             $row2[] = $record2->tb_harga_jual;//9
+            $datasupplier = $this->supplier->get_by_id($record2->tb_ms_id);
+            $row2[] = $datasupplier->ms_nama;//10
             //add html for action
             $data2[] = $row2;
         }

@@ -23,6 +23,7 @@ class Obat_model extends CI_Model {
         $this->db->from($this->table);
         $this->db->join('m_unit', 'm_unit.mu_id = m_obat.mo_mu_id', 'left');
         $this->db->join('m_kategori', 'm_kategori.mk_id = m_obat.mo_mk_id', 'left');
+        $this->db->where('mo_mk_id !=', '3');//exclude alkes
         
         $i = 0;
      

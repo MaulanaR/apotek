@@ -2,44 +2,32 @@
 /**
  * @author 		Maulana Rahman <maulana.code@gmail.com>
 */
-class Stok_depan_model extends CI_Model {
+class Suppliers_model extends CI_Model {
 
-    var $column_order = array('mo_id', 'mo_nama', 'tb_id', 'tb_tgl_kadaluarsa', 'stok', null);
-    var $column_search = array('mo_nama', 'mo_id');
-    var $order = array('mo_id' => 'desc'); 
+	var $table = 'm_supplier';
+    var $column_order = array('ms_nama','ms_alamat','ms_telp','ms_kodepos',null);
+    var $column_search = array('ms_nama','ms_telp');
+    var $order = array('ms_id' => 'desc'); 
 
 	public function __construct()
 	{
 		parent::__construct();
+		$this->alus_co = $this->alus_auth->alus_co();
 	}
 
 
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
-    private function _get_datatables_query($id)
+    private function _get_datatables_query()
     {
-        $this->db->select("`m_obat`.mo_id,
-                            `m_obat`.mo_mu_id,
-                                    `m_obat`.mo_nama,
-                                    `t_batch`.tb_id,
-                                    `t_batch`.tb_tgl_kadaluarsa,
-                                    `t_batch`.tb_harga_beli,
-                                    `t_batch`.tb_harga_jual,
-                                    `t_batch`.tb_ms_id,
-                                    SUM(tj_masuk - tj_keluar) AS 'stok'", FALSE);
-        $this->db->from('t_jurnal');
-        $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','inner');
-        $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','inner');
-        if(isset($id)){
-        $this->db->where('mo_id', $id);
-        }
-        $this->db->group_by('tj_tb_id');
+         
+        $this->db->from($this->table);
  
         $i = 0;
      
         foreach ($this->column_search as $item) // loop column 
         {
-            if(isset($_POST['search']['value'])) // if datatable send POST for search
+            if($_POST['search']['value']) // if datatable send POST for search
             {
                  
                 if($i===0) // first loop
@@ -69,10 +57,10 @@ class Stok_depan_model extends CI_Model {
         }
     }
  
-    function get_datatables($id)
+    function get_datatables()
     {
-        $this->_get_datatables_query($id);
-        if(isset($_POST['length']) && $_POST['length'] != -1)
+        $this->_get_datatables_query();
+        if($_POST['length'] != -1)
         $this->db->limit($_POST['length'], $_POST['start']);
         $query = $this->db->get();
         return $query->result();
@@ -94,12 +82,13 @@ class Stok_depan_model extends CI_Model {
     public function get_by_id($id)
     {
         $this->db->from($this->table);
-        $this->db->where('mo_id',$id);
+        $this->db->where('ms_id',$id);
         $query = $this->db->get();
  
         return $query->row();
     }
-     public function save($data)
+ 
+    public function save($data)
     {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
@@ -113,10 +102,9 @@ class Stok_depan_model extends CI_Model {
  
     public function delete_by_id($id)
     {
-        $this->db->where('tj_id', $id);
+        $this->db->where('ms_id', $id);
         $this->db->delete($this->table);
     }
-    
 
 }
 

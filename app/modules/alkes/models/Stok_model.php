@@ -115,7 +115,13 @@ class Stok_model extends CI_Model {
         $this->db->update($this->table, $data, $where);
         return $this->db->affected_rows();
     }
- 
+
+    public function update_batch($where, $data)
+    {
+        $this->db->update($this->table2, $data, $where);
+        return $this->db->affected_rows();
+    }
+
     public function delete_by_id($id)
     {
         $this->db->where('tj_id', $id);

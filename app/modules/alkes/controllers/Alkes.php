@@ -15,6 +15,7 @@ class Alkes extends CI_Controller
         $this->load->model('Kategori_obat_model','kategori');
         $this->load->model('Stok_model', 'stok');
         $this->load->model('Unit_model', 'unit');
+        $this->load->model('Suppliers_model', 'supplier');
 
 		if (!$this->alus_auth->logged_in()) {
 			redirect('admin/Login', 'refresh');
@@ -165,6 +166,29 @@ class Alkes extends CI_Controller
 				);
 
 				$this->stok->save($data);
+				echo json_encode(array("status" => TRUE));
+			} else {
+				echo json_encode(array("status" => FALSE, "msg" => validation_errors()));
+			}
+		}
+	}
+
+	public function ajax_adj_harga()
+	{
+		if ($this->privilege['can_edit'] == 0) {
+			echo json_encode(array("status" => FALSE, "msg" => "You Dont Have Permission"));
+		} else {
+
+			$this->form_validation->set_rules('id', 'id', 'required');
+			$this->form_validation->set_rules('tb_id', 'tb_id', 'required');
+			$this->form_validation->set_rules('harga', 'harga', 'required');
+
+			if ($this->form_validation->run() == true) {
+				$data = array(
+					'tb_harga_jual' => $this->input->post('harga', true),
+				);
+
+				$this->stok->update_batch(array('tb_id' => $this->input->post('tb_id'), 'tb_mo_id' => $this->input->post('id')), $data);
 				echo json_encode(array("status" => TRUE));
 			} else {
 				echo json_encode(array("status" => FALSE, "msg" => validation_errors()));

@@ -15,6 +15,7 @@ class Obat extends CI_Controller
         $this->load->model('Unit_model','unit');
         $this->load->model('Kategori_obat_model','kategori');
         $this->load->model('Stok_model', 'stok');
+        $this->load->model('Suppliers_model', 'supplier');
 
 		if (!$this->alus_auth->logged_in()) {
 			redirect('admin/Login', 'refresh');
