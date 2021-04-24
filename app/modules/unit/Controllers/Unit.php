@@ -32,7 +32,6 @@ class Unit extends CI_Controller {
 		if($this->alus_auth->logged_in())
          {
             $head['title'] = "Manajemen Unit";
-         	//$data['tree'] = $this->model->all_tree();
          	$data['can_add'] = $this->privilege['can_add'];
     		
 		 	$this->load->view('template/temaalus/header',$head);
@@ -52,31 +51,22 @@ class Unit extends CI_Controller {
         $data = array();
         $no = $_POST['start'];
         foreach ($list as $record) {
-            $no++;
-            $row = array();
-            $row[] = $record->mu_nama;
- 			if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 1)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->mu_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
-                  <a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->mu_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-            }
+            if($record->mu_nama != 'Item'){  
+                $no++;
+                $row = array();
+                $row[] = $record->mu_nama;
 
-            if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 0)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->mu_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>';
-            }
+                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" data-toggle="tooltip" title="Edit" onclick="edit_person('."'".$record->mu_id."'".')"><i class="fa fa-pencil-alt"></i></a>';
 
-            if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 1)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->mu_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-            }
+                $row[] = '<a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" data-toggle="tooltip" title="Hapus" onclick="delete_person('."'".$record->mu_id."'".')"><i class="fa fa-trash"></i></a>';
 
-            if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 0)
-            {
-                $row[] = ' ';
+                if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 0)
+                {
+                    $row[] = ' ';
+                }
+                //add html for action
+                $data[] = $row;
             }
-            //add html for action
-            $data[] = $row;
         }
  
         $output = array(

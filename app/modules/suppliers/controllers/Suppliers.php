@@ -58,26 +58,9 @@ class Suppliers extends CI_Controller {
             $row[] = $record->ms_alamat;
             $row[] = $record->ms_telp;
             $row[] = $record->ms_kodepos;
- 			if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 1)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->ms_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>
-                  <a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->ms_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-            }
-
-            if($this->privilege['can_edit'] == 1 && $this->privilege['can_delete'] == 0)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$record->ms_id."'".')"><i class="glyphicon glyphicon-pencil"></i> Edit</a>';
-            }
-
-            if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 1)
-            {
-                $row[] = '<a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$record->ms_id."'".')"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
-            }
-
-            if($this->privilege['can_edit'] == 0 && $this->privilege['can_delete'] == 0)
-            {
-                $row[] = ' ';
-            }
+            $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" data-toggle="tooltip" title="Edit" onclick="edit_person('."'".$record->ms_id."'".')"><i class="fa fa-pencil-alt"></i></a>';
+            $row[] = '<a class="btn btn-sm btn-outline-danger" href="javascript:void(0)" data-toggle="tooltip" title="Hapus" onclick="delete_person('."'".$record->ms_id."'".')"><i class="fa fa-trash"></i></a>';
+            
             //add html for action
             $data[] = $row;
         }

@@ -31,7 +31,8 @@
                       <thead>
                       <tr>
                         <th>Nama Kategori Obat</th>
-                        <th>Tools</th>
+                        <th width='5%'></th>
+                        <th width='5%'></th>
                       </tr>
                       </thead>
                       <tbody>
@@ -105,7 +106,7 @@ $(document).ready(function() {
         //Set column definition initialisation properties.
         "columnDefs": [
         { 
-            "targets": [ -1 ], //last column
+            "targets": [ 1,2 ], //last column
             "orderable": false, //set not orderable
             "className":"text-center",
         },
