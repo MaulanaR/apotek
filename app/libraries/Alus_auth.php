@@ -625,7 +625,8 @@ class Alus_auth
             $row2[] = $status_kd;//6
             $dataunit = $this->unit->get_by_id($record2->mo_mu_id);
             $row2[] = $dataunit->mu_nama;//7
-
+            $row2[] = $record2->tb_harga_beli;//8
+            $row2[] = $record2->tb_harga_jual;//9
             //add html for action
             $data2[] = $row2;
         }

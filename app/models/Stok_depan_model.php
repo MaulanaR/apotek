@@ -23,6 +23,8 @@ class Stok_depan_model extends CI_Model {
                                     `m_obat`.mo_nama,
                                     `t_batch`.tb_id,
                                     `t_batch`.tb_tgl_kadaluarsa,
+                                    `t_batch`.tb_harga_beli,
+                                    `t_batch`.tb_harga_jual,
                                     SUM(tj_masuk - tj_keluar) AS 'stok'", FALSE);
         $this->db->from('t_jurnal');
         $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','inner');
