@@ -9,14 +9,14 @@
       </section>
 
       <!-- Main content -->
-      <section class="content">      
-<div class='row'>
-<div class="col-md-6">
+      <section class="content">
+        <div class='row'>
+          <div class="col-md-6">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">
                   <i class="fas fa-text-width"></i>
-                  <?php echo $mo_nama." ".$mo_id; ?>
+                  <?php echo $mo_nama . " " . $mo_id; ?>
                 </h3>
               </div>
               <!-- /.card-header -->
@@ -39,7 +39,7 @@
             <!-- /.card -->
           </div>
 
-        <div class="col-md-6">
+          <div class="col-md-6">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Stok Obat</h3>
@@ -65,41 +65,38 @@
   <!-- /.content-wrapper -->
 
   <script type="text/javascript">
-    
-$(document).ready(function() {
+    $(document).ready(function() {
 
-  $.ajax({
-        url : "<?php echo site_url('Obat/ajax_stok_obat_by_id/'). $mo_id .""; ?>",
+      $.ajax({
+        url: "<?php echo site_url('Obat/ajax_stok_obat_by_id/') . $mo_id . ""; ?>",
         type: "GET",
         dataType: "JSON",
-        success: function(data)
-        {
+        success: function(data) {
           i = 0;
-          $.each(data.data, function(index, val){
-            
+          $.each(data.data, function(index, val) {
+
             i++;
             update = '';
-            if(val[4] == 'true'){
+            if (val[4] == 'true') {
               a = 'danger';
               b = 'Obat Kadaluarsa!';
               update = 'disabled';
-            }else{
-              if(val[6] == 'Ok'){
+            } else {
+              if (val[6] == 'Ok') {
                 a = 'primary';
-                b = val[5]+' hari sebelum kadaluarsa.';
-              }else{
+                b = val[5] + ' hari sebelum kadaluarsa.';
+              } else {
                 a = 'warning';
-                b = val[5]+' hari sebelum kadaluarsa.';
+                b = val[5] + ' hari sebelum kadaluarsa.';
               }
             }
-            $('#accordion').append('Berikut adalah Stok Obat ini berdasarkan Tanggal Kadaluarsa.<div class="card card-'+ a +'"><div class="card-header"><h4 class="card-title w-100"><a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapse'+i+'" aria-expanded="false">'+ val[1] +'</a></h4></div><div id="collapse'+i+'" class="collapse" data-parent="#accordion" style=""><div class="card-body"><div class="row" style="text-align:center;"><div class="col-sm-12"><h4>'+ val[2] +'</h4><h6>'+ val[7] +'</h6></div></div><div class="col-sm-12">'+b+'</div><div class="col-sm-12">Harga Jual <b> Rp. 0000</b></div><div class="col-sm-12">Disuplai oleh <b>Placeholder</b></div><hr noshade/><button type="button" class="btn btn-block bg-gradient-success btn-sm"'+update+'>Ubah Stok</button><button type="button" class="btn btn-block bg-gradient-danger btn-sm">Hapus Stok</button></div></div></div>')
+            $('#accordion').append('Berikut adalah Stok Obat ini berdasarkan Tanggal Kadaluarsa.<div class="card card-' + a + '"><div class="card-header"><h4 class="card-title w-100"><a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapse' + i + '" aria-expanded="false">' + val[1] + '</a></h4></div><div id="collapse' + i + '" class="collapse" data-parent="#accordion" style=""><div class="card-body"><div class="row" style="text-align:center;"><div class="col-sm-12"><h4>' + val[2] + '</h4><h6>' + val[7] + '</h6></div></div><div class="col-sm-12">' + b + '</div><div class="col-sm-12">Harga Jual <b> Rp. '+val[9].toLocaleString()+'</b></div><div class="col-sm-12">Disuplai oleh <b>'+val[10]+'</b></div><hr noshade/><a href="<?php echo base_url();?>obat/input_stock/<?php echo $mo_id;?>?tbid='+val[3]+'" class="btn btn-block bg-gradient-success btn-sm"' + update + '>Ubah Stok</a><a href="<?php echo base_url();?>obat/input_stock/<?php echo $mo_id;?>?tipe=pengurangan&tbid='+val[3]+'" class="btn btn-block bg-gradient-danger btn-sm">Hapus Stok</a></div></div></div>')
           });
         },
-        error: function (jqXHR, textStatus, errorThrown)
-        {
-            alert('Error get data from ajax');
+        error: function(jqXHR, textStatus, errorThrown) {
+          alert('Error get data from ajax');
         }
-    });
+      });
 
-});
+    });
   </script>

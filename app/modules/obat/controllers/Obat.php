@@ -12,10 +12,10 @@ class Obat extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('Obat_model', 'model');
-        $this->load->model('Unit_model','unit');
-        $this->load->model('Kategori_obat_model','kategori');
-        $this->load->model('Stok_model', 'stok');
-        $this->load->model('Suppliers_model', 'supplier');
+		$this->load->model('Unit_model', 'unit');
+		$this->load->model('Kategori_obat_model', 'kategori');
+		$this->load->model('Stok_model', 'stok');
+		$this->load->model('Suppliers_model', 'supplier');
 
 		if (!$this->alus_auth->logged_in()) {
 			redirect('admin/Login', 'refresh');
@@ -98,7 +98,7 @@ class Obat extends CI_Controller
 		foreach ($list as $person) {
 			$no++;
 			$row = array();
-			$row[] = '<a href="'.base_url('obat/detail').'/'.$person->mo_id.'">'.$person->mo_nama.'</a>';
+			$row[] = '<a href="' . base_url('obat/detail') . '/' . $person->mo_id . '">' . $person->mo_nama . '</a>';
 			$row[] = $person->mo_deskripsi;
 			$row[] = $person->mk_nama;
 			$row[] = $person->mo_barcode;
@@ -156,10 +156,9 @@ class Obat extends CI_Controller
 			$this->form_validation->set_rules('nama_obat', 'nama obat', 'required');
 			$this->form_validation->set_rules('kategori_obat', 'kategori obat', 'required');
 			$this->form_validation->set_rules('unit', 'unit', 'required');
-			if($this->input->post('old_barcode') != $this->input->post('barcode'))
-			{
+			if ($this->input->post('old_barcode') != $this->input->post('barcode')) {
 				$this->form_validation->set_rules('barcode', 'barcode', 'required|callback__barcodeunique[barcode]');
-			}else{
+			} else {
 				$this->form_validation->set_rules('barcode', 'barcode', 'required');
 			}
 
@@ -193,11 +192,11 @@ class Obat extends CI_Controller
 		}
 	}
 
-    public function ajax_stok_obat_by_id($id)
-    {
-       	$output2 = $this->alus_auth->ajax_stok_obat_by_id($id);
-        echo json_encode($output2);
-    }
+	public function ajax_stok_obat_by_id($id)
+	{
+		$output2 = $this->alus_auth->ajax_stok_obat_by_id($id);
+		echo json_encode($output2);
+	}
 
 	public function input($idobat = null)
 	{
@@ -213,37 +212,35 @@ class Obat extends CI_Controller
 		}
 	}
 
-    public function detail($mo_id)
-    {
-    
-        if($this->alus_auth->logged_in())
-         {
-            $head['title'] = "Master Obat";
-            //$data['tree'] = $this->model->all_tree();
-            $data = array();
-            $record = $this->model->get_by_id($mo_id);
-            $data['can_add'] = $this->privilege['can_add'];
-            $data['mo_id'] = $mo_id;
-            $data['mo_nama'] = $record->mo_nama;
-            $data['mo_barcode'] = $record->mo_barcode;
-            $data['mo_penyimpanan'] = $record->mo_penyimpanan;
+	public function detail($mo_id)
+	{
 
-            $dataunit = $this->unit->get_by_id($record->mo_mu_id);
-            $data['mu_nama'] = $dataunit->mu_nama;
-            $datakategori = $this->kategori->get_by_id($record->mo_mk_id);
-            $data['mk_nama'] = $datakategori->mk_nama;
-            $data['mo_deskripsi'] = $record->mo_deskripsi;
-            $data['mo_picture'] = $record->mo_picture;
-            $data['mo_resep'] = $record->mo_resep;
-            
-            $this->load->view('template/temaalus/header',$head);
-            $this->load->view('Obat/detail.php',$data);
-            $this->load->view('template/temaalus/footer');
-        }else
-        {
-            redirect('admin/Login','refresh');
-        }
-    }
+		if ($this->alus_auth->logged_in()) {
+			$head['title'] = "Master Obat";
+			//$data['tree'] = $this->model->all_tree();
+			$data = array();
+			$record = $this->model->get_by_id($mo_id);
+			$data['can_add'] = $this->privilege['can_add'];
+			$data['mo_id'] = $mo_id;
+			$data['mo_nama'] = $record->mo_nama;
+			$data['mo_barcode'] = $record->mo_barcode;
+			$data['mo_penyimpanan'] = $record->mo_penyimpanan;
+
+			$dataunit = $this->unit->get_by_id($record->mo_mu_id);
+			$data['mu_nama'] = $dataunit->mu_nama;
+			$datakategori = $this->kategori->get_by_id($record->mo_mk_id);
+			$data['mk_nama'] = $datakategori->mk_nama;
+			$data['mo_deskripsi'] = $record->mo_deskripsi;
+			$data['mo_picture'] = $record->mo_picture;
+			$data['mo_resep'] = $record->mo_resep;
+
+			$this->load->view('template/temaalus/header', $head);
+			$this->load->view('Obat/detail.php', $data);
+			$this->load->view('template/temaalus/footer');
+		} else {
+			redirect('admin/Login', 'refresh');
+		}
+	}
 
 	public function save_obat_new()
 	{
@@ -282,18 +279,125 @@ class Obat extends CI_Controller
 		echo json_encode($this->alus_auth->get_code('SN-BARCODE'));
 	}
 
-	function _barcodeunique($barcode){
-        $arr = array();
-        $this->db->where('mo_barcode', $barcode);
+	function _barcodeunique($barcode)
+	{
+		$arr = array();
+		$this->db->where('mo_barcode', $barcode);
 		$cek = $this->db->get('m_obat');
-		if($cek->num_rows() > 0)
-		{
+		if ($cek->num_rows() > 0) {
 			$this->form_validation->set_message('_barcodeunique', 'Nomor Barcode sudah digunakan, gunakan nomor lain !');
-            return false;
-		}else{
+			return false;
+		} else {
 			return true;
 		}
-    }
+	}
+
+	public function input_stock($id = null)
+	{
+		if ($this->alus_auth->logged_in()) {
+			$head['title'] = "Input Stock Obat";
+			$data['can_add'] = $this->privilege['can_add'];
+			$data['id'] = $id;
+
+			//list obat
+			$this->db->where('mo_mk_id !=', 3);
+			$this->db->join('m_kategori', 'm_kategori.mk_id = m_obat.mo_mk_id', 'left');
+			$this->db->join('m_unit', 'm_unit.mu_id = m_obat.mo_mu_id', 'left');
+
+			$data['list_obat'] = $this->db->get('m_obat');
+			//end list
+
+			//list suplliers
+			$data['list_suppliers'] = $this->db->get('m_supplier');
+			//end list
+
+			$this->load->view('template/temaalus/header', $head);
+			$this->load->view('index_input_stock.php', $data);
+			$this->load->view('template/temaalus/footer');
+		} else {
+			redirect('admin/Login', 'refresh');
+		}
+	}
+
+	public function get_batch($id = null)
+	{
+		$this->db->where('tb_mo_id', $id);
+		$batch = $this->db->get('t_batch')->result();
+
+		echo json_encode(array('data' => $batch));
+	}
+
+	public function save_stock()
+	{
+		$baru = $this->input->post('baru');
+
+		$this->form_validation->set_rules('stock', 'stock obat', 'required');
+		$this->form_validation->set_rules('id_obat', 'id obat', 'required');
+		$this->form_validation->set_rules('keterangan', 'Keterangan', 'trim');
+		if($baru == 1)
+		{
+			$this->form_validation->set_rules('tanggal', 'tanggal' , 'required');
+			$this->form_validation->set_rules('supplier', 'supplier' , 'required');
+			$this->form_validation->set_rules('harga_beli', 'harga_beli' , 'required');
+			$this->form_validation->set_rules('harga_jual', 'harga_jual' , 'required');
+		}else{
+			$this->form_validation->set_rules('tgl_tersedia', 'Tanggal batch' , 'required');
+		}
+
+		if ($this->form_validation->run() == true) {
+
+			if($baru == 0)
+			{
+				//maka lama
+				$id_batch = $this->input->post('tgl_tersedia');
+				//input stock ke jurnal
+				$stock = array(
+					'tj_mo_id' 		=> $this->input->post('id_obat'),
+					'tj_tb_id' 		=> $this->input->post('tgl_tersedia'),
+					'tj_user_id' 	=> $this->session->userdata('user_id'),
+				);
+				if($this->input->post('jenis') == 'penambahan'){
+					$stock['tj_masuk'] = $this->input->post('stock');
+					$stock['tj_keluar'] = 0;
+					$stock['tj_keterangan'] = $this->input->post('keterangan');
+					;
+				}else{
+					$stock['tj_masuk'] = 0;
+					$stock['tj_keluar'] = $this->input->post('stock');
+					$stock['tj_keterangan'] = $this->input->post('keterangan');
+					;
+				}
+					$this->db->insert('t_jurnal', $stock);
+			}else{
+				//input batch baru
+				$data_batch = array(
+					'tb_tgl_masuk' 		=> date('Y-m-d'),
+					'tb_tgl_kadaluarsa' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
+					'tb_mo_id' 			=> $this->input->post('id_obat'),
+					'tb_ms_id' 			=> $this->input->post('supplier'),
+					'tb_harga_beli' 	=> str_replace(',','',$this->input->post('harga_beli')),
+					'tb_harga_jual' 	=> str_replace(',','',$this->input->post('harga_jual')),
+				);
+
+				$this->db->insert('t_batch', $data_batch);
+				$id_batch = $this->db->insert_id();
+				
+				$stock = array(
+					'tj_mo_id' 		=> $this->input->post('id_obat'),
+					'tj_tb_id' 		=> $id_batch,
+					'tj_user_id' 	=> $this->session->userdata('user_id'),
+				);
+					$stock['tj_masuk'] = $this->input->post('stock');
+					$stock['tj_keluar'] = 0;
+					$stock['tj_keterangan'] = $this->input->post('keterangan');
+				
+					$this->db->insert('t_jurnal', $stock);
+			}
+			echo json_encode(array("status" => TRUE));
+		} else {
+			echo json_encode(array("status" => FALSE, "msg" => validation_errors()));
+		}
+	}
 }
 
 /* End of file  Home.php */
