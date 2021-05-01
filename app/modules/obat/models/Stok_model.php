@@ -6,7 +6,9 @@ class Stok_model extends CI_Model {
 
     var $column_order = array('mo_id', 'mo_nama', 'tb_id', 'tb_tgl_kadaluarsa', 'stok', null);
     var $column_search = array('mo_nama', 'mo_id');
-    var $order = array('mo_id' => 'desc'); 
+    var $order = array('mo_id' => 'desc');
+    var $table = 't_jurnal'; 
+    var $table2 = 't_batch';
 
 	public function __construct()
 	{
@@ -102,13 +104,24 @@ class Stok_model extends CI_Model {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();
     }
+    public function save_batch($data)
+    {
+        $this->db->insert($this->table2, $data);
+        return $this->db->insert_id();
+    }
  
     public function update($where, $data)
     {
         $this->db->update($this->table, $data, $where);
         return $this->db->affected_rows();
     }
- 
+
+    public function update_batch($where, $data)
+    {
+        $this->db->update($this->table2, $data, $where);
+        return $this->db->affected_rows();
+    }
+
     public function delete_by_id($id)
     {
         $this->db->where('tj_id', $id);

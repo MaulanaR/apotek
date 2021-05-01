@@ -77,7 +77,7 @@
 
             i++;
             update = '';
-            if (val[4] == 'true') {
+            if (val[4]) {
               a = 'danger';
               b = 'Obat Kadaluarsa!';
               update = 'disabled';
