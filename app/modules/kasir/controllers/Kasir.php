@@ -94,6 +94,31 @@ class Kasir extends CI_Controller {
 			redirect('admin/Login','refresh');
 		}
 	}
+
+
+	function cari_data($content){
+		$cari = $this->alus_auth->stok_like($content);
+		$temp = array();
+		$status = FALSE;
+		if($cari[0] >= 1){
+			$status = TRUE;
+			foreach ($cari[1] as $key => $value) {
+			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
+				if($cek != 'kd'){
+					$temp[] = array(
+						"nama" => $value->mo_nama,
+						"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
+						"stok" => $value->stok,
+						"harga" => $value->tb_harga_jual,
+						"tb_id" => $value->tb_id,
+						"mo_id" => $value->mo_id
+					);
+				}
+			}
+		}
+		$arr = array('status' => $status, 'data' => $temp);
+		echo json_encode($arr);
+	}
 		
 }
 

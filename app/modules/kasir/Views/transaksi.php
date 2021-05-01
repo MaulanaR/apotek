@@ -10,7 +10,7 @@
       <!-- Main content -->
       <section class="content">
         <div class="card lg-md-2 px-2">
-          <form action="#">
+          <form>
             <div class="row">
               <div class="input-group">
                   <input type="text" class="form-control" name="inputbar" placeholder="Scan barcode atau input nama produk di sini." />
@@ -34,7 +34,7 @@
                   <table id="tabelpencarian" class="table table-bordered table-hover dataTable dtr-inline">
                     <thead>
                       <tr>
-                        <th class="text">Nama Obat</th>
+                        <th class="text">Nama</th>
                         <th class="text">Tanggal Kadaluarsa</th>
                         <th class="text">Stok</th>
                         <th class="text">Harga</th>
@@ -69,25 +69,7 @@
                         <th class="text-center"></th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>fake data</td>
-                        <td>20 Unit</td>
-                        <td>1.000.000</td>
-                        <td class="text-center"><button class="btn  btn-xs btn-danger">Cancel</button></td>
-                      </tr>
-                      <tr>
-                        <td>fake data</td>
-                        <td>20 Unit</td>
-                        <td>1.000.000</td>
-                        <td class="text-center"><button class="btn  btn-xs btn-danger">Cancel</button></td>
-                      </tr>
-                      <tr>
-                        <td>fake data</td>
-                        <td>20 Unit</td>
-                        <td>1.000.000</td>
-                        <td class="text-center"><button class="btn  btn-xs btn-danger">Cancel</button></td>
-                      </tr>
+                    <tbody id="bodykeranjang">
                     </tbody>
                   </table>
                 </div>
@@ -96,7 +78,7 @@
                   <div>
                     <div class="form-group">
                       <label>Total</label>
-                      <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00">
+                      <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00" name="total" readonly>
                     </div>
                     <div class="form-group">
                       <div class="custom-control custom-checkbox">
@@ -107,23 +89,12 @@
                     <dv class="form-group text-center">
                 
                       <h7><b>GRAND TOTAL</b></h7>
-                      <h5>Rp. 000.000,00</h5>
+                      <h5 id='grandtotal'>Rp. 000.000,00</h5>
                     </dv>
-                    <div class="form-group">
-                      <label>Jumlah Bayar</label>
-                      <input type="number" min="1" class="form-control rounded-0" placeholder="0000000" required>
-                    </div>
-                    <div class="form-group">
-                      <label>Kembalian</label>
-                      <input type="number" min="1" class="form-control rounded-0" placeholder="0000000" required>
-                    </div>
                   </div>
-                  <div class="col-12">
+                  <div class="col-12 text-center">
                   <a class="btn btn-app btn-warning">
-                  <i class="fas fa-edit"></i> Batalkan tansaksi
-                  </a>
-                  <a class="btn btn-app btn-success">
-                  <i class="fas fa-edit"></i> Bayar
+                  <i class="fas fa-edit"></i> Checkout
                   </a>
                   </div>
                   </form>
@@ -139,19 +110,12 @@
   <!-- /.content-wrapper -->
 
   <script type="text/javascript">
-    var datacari = [{
-        nama: 'Fake obat',
-        tgl_kadaluarsa: '10-10-2021',
-        stok: '200',
-        harga: '50000'
-      },{
-        nama: 'Fake obat 2',
-        tgl_kadaluarsa: '10-10-2030',
-        stok: '50',
-        harga: '25000'
-      }];
-    var tabelpencarian = document.getElementById('tabelpencarian');
+    var datacari = [];
+    var arraybeli = [];
     var bodypencarian = document.getElementById('bodypencarian');
+    var bodykeranjang = document.getElementById('bodykeranjang');
+    var total;
+    var grandtotal;
 
     $(document).ready(function(){
       //do something
@@ -160,6 +124,9 @@
 
     function clearTabelPencarian(){
       $("#bodypencarian tr").remove();
+    }
+    function clearTabelKeranjang(){
+      $("#bodykeranjang tr").remove();
     }
 
     function enableTambahkan(x){
@@ -171,66 +138,143 @@
 
     function cari(){
       clearTabelPencarian();
+      var bodypencarian = document.getElementById('bodypencarian');
+      var par = document.querySelector('[name="inputbar"]').value;
+      if(/^\s*$/.test(par)){
+        console.log('param null');
+      }else{
+        $.ajax({
+          url: "<?php echo site_url('kasir/cari_data/'); ?>"+par,
+          type: "GET",
+          dataType: "JSON",
+          success: function(data) {
+            if(data.status){
+              datacari = data.data;
+              // cycle through the array for each of the presidents
+              for (var i = 0; i < data.data.length; ++i) {
+                var dat = data.data[i];
+                var row = document.createElement('tr');
+                var properties = ['nama', 'tgl_kadaluarsa', 'stok', 'harga'];
 
-      // cycle through the array for each of the presidents
-      for (var i = 0; i < datacari.length; ++i) {
-        // keep a reference to an individual president object
-      var data = datacari[i];
+                for (var j = 0; j < properties.length; ++j) {
+                  var cell = document.createElement('td');
+                  cell.innerHTML = dat[properties[j]];
+                  if(j == properties.length - 1){
+                  }
+                var inv = document.createElement('input');
+                  inv.name = 'tb_id'+i;
+                  inv.type = 'hidden';
+                  inv.value = dat.tb_id;
+                  // add to end of the row
+                  cell.appendChild(inv);
+                  row.appendChild(cell);
+                }
+                  
+                    var cell2 = document.createElement('td');
+                    cell2.classList.add("text-center");
+                    var jumlah = document.createElement('input');
+                        jumlah.type = "number";
+                        jumlah.min = "1";
+                        jumlah.name = "jumlahobat"+i;
+                        jumlah.classList.add('col-4');
+                        jumlah.setAttribute('onchange', 'enableTambahkan(\"'+i+'\")');
+                        cell2.appendChild(jumlah);
+                        row.appendChild(cell2);
+                    var cell3 = document.createElement('td');
+                    cell3.classList.add("text-center");
+                    var button = document.createElement('button');
+                        button.name = 'tambahkan'+i;
+                        button.classList.add('addbtn');
+                        button.classList.add('btn');
+                        button.classList.add('btn-xs');
+                        button.classList.add('btn-primary');
+                        button.setAttribute('onclick', 'tambahkan('+i+')');
+                        button.setAttribute('disabled', true);
+                        var tulisan = "Tambahkan ";
+                        button.innerHTML = tulisan;
+                        cell3.appendChild(button);
+                        row.appendChild(cell3);
 
-      // create a row element to append cells to
-      var row = document.createElement('tr');
-
-      // properties of the array elements
-      var properties = ['nama', 'tgl_kadaluarsa', 'stok', 'harga'];
-
-      // append each one of them to the row in question, in order
-      for (var j = 0; j < properties.length; ++j) {
-        // create new data cell for names
-        var cell = document.createElement('td');
-        // set name of property using bracket notation (properties[j] is a string,
-        // which can be used to access properties of president)
-        cell.innerHTML = data[properties[j]];
-        if(j == properties.length - 1){
-        }
-        // add to end of the row
-        row.appendChild(cell);
+                    // add new row to table
+                    bodypencarian.appendChild(row);
+              }
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            alert('Error get data from ajax');
+          }
+        });
       }
-      var cell2 = document.createElement('td');
-      cell2.classList.add("text-center");
-      var jumlah = document.createElement('input');
-          jumlah.type = "number";
-          jumlah.min = "1";
-          jumlah.name = "jumlahobat"+i;
-          jumlah.classList.add('col-4');
-          jumlah.setAttribute('onchange', 'enableTambahkan(\"'+i+'\")');
-          cell2.appendChild(jumlah);
-          row.appendChild(cell2);
-      var cell3 = document.createElement('td');
-      cell3.classList.add("text-center");
-      var button = document.createElement('button');
-          button.name = 'tambahkan'+i;
-          button.classList.add('addbtn');
-          button.classList.add('btn');
-          button.classList.add('btn-xs');
-          button.classList.add('btn-primary');
-          button.setAttribute('onclick', 'tambahkan('+i+')');
-          button.setAttribute('disabled', true);
-          var tulisan = "Tambahkan ";
-          button.innerHTML = tulisan;
-          cell3.appendChild(button);
-          row.appendChild(cell3);
-
-    // add new row to table
-    bodypencarian.appendChild(row);
-
     }
-  }
 
   function tambahkan(x){
     var jumlah = document.querySelector('[name="jumlahobat'+x+'"]').value;
     var xarray = datacari[x];
+    var cek;
+    var index;
     xarray.jumlah = jumlah;//tambah jumlah ke array obat yang dipilih
-    console.log(xarray);
+    var tb_id = document.querySelector('[name="tb_id'+x+'"]').value;
+    for(var i = 0; i < arraybeli.length; i++){
+      if(arraybeli[i]['tb_id'] === tb_id){
+      //cek apakah sudah ada item yang sama dalam array
+        cek = 'ada';
+        index = i;
+      }
+    }
+    if(cek == 'ada'){
+      //jika ada
+      arraybeli[index]['jumlah'] = parseInt(arraybeli[index]['jumlah']) + parseInt(jumlah);//tambah jumlah
+    }else{//jika item baru
+      arraybeli.push(xarray);//tambah item ke array
+    }
     clearTabelPencarian();
+    console.log(arraybeli);
+    refreshKeranjang();
+    hitungTotal();  
   }
+
+  function refreshKeranjang(){
+    clearTabelKeranjang();
+    var total;
+    for (var i = 0; i < arraybeli.length; ++i) {
+                var dat = arraybeli[i];
+                var row = document.createElement('tr');
+                var cell1 = document.createElement('td');
+                  cell1.innerHTML = dat['nama'];                
+                  row.appendChild(cell1);
+                var cell2 = document.createElement('td');
+                  cell2.innerHTML = dat['jumlah'];
+                  row.appendChild(cell2);
+                var cell3 = document.createElement('td');
+                  total = dat['jumlah'] * dat['harga'];
+                  cell3.innerHTML = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total);
+                row.appendChild(cell3);
+                var cell4 = document.createElement('td');
+                  cell4.classList.add("text-center");
+                var button = document.createElement('button');
+                    button.name = 'tambahkan'+i;
+                    button.classList.add('addbtn');
+                    button.classList.add('btn');
+                    button.classList.add('btn-xs');
+                    button.classList.add('btn-danger');
+                    button.setAttribute('onclick', 'buang('+i+')');
+                var tulisan = "Cancel";
+                    button.innerHTML = tulisan;
+                    cell4.appendChild(button);
+                    row.appendChild(cell4);
+                    // add new row to table
+                    bodykeranjang.appendChild(row);
+              }
+  }
+
+  function hitungTotal(){
+    var temp = 0;
+    for(var i = 0; i < arraybeli.length; i++){
+        total = (parseInt(arraybeli[i]['jumlah']) * parseInt(arraybeli[i]['harga'])) + temp;
+        temp = total;
+    }
+    $('[name="total"]').attr('value', new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total));
+    document.getElementById('grandtotal').innerHTML = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total);
+  }
+  
   </script>
