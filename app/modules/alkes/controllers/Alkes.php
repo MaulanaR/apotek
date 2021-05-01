@@ -65,9 +65,6 @@ class Alkes extends CI_Controller
 				$row[] = '';
 			}
 
-			//input stock
-			$row[] = '<a class="btn btn-sm btn-outline-warning" href="' . base_url() . 'alkes/input_stock/' . $person->mo_id . '" data-toggle="tooltip" title="Masukan Stok Baru"><i class="fa fa-server"></i></a>';
-
 			if ($this->privilege['can_delete'] == 1) {
 				$row[] = '<button type="button" class="btn btn-sm btn-outline-danger" data-toggle="tooltip" title="Hapus Obat" onclick="delete_person(' . "'" . $person->mo_id . "'" . ')"><i class="fa fa-trash"></i></a>';
 			} else {

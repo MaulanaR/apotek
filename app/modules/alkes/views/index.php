@@ -33,7 +33,6 @@
                         <th class="text">Unit</th>
                         <th class="text-center" width="5%"></th>
                         <th class="text-center" width="5%"></th>
-                        <th class="text-center" width="5%"></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -147,7 +146,7 @@
 
         //Set column definition initialisation properties.
         "columnDefs": [{
-          "targets": [2, 3, 4, 5, 6], //last column
+          "targets": [2, 3, 4, 5], //last column
           "orderable": true, //set not orderable
           "className": "text-center",
         }, ],
