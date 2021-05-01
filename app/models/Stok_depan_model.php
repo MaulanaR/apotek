@@ -99,7 +99,30 @@ class Stok_depan_model extends CI_Model {
  
         return $query->row();
     }
-     public function save($data)
+
+    public function get_stok_like($content){
+        $this->db->select("`m_obat`.mo_id,
+                            `m_obat`.mo_mu_id,
+                                    `m_obat`.mo_nama,
+                                    `m_obat`.mo_barcode,
+                                    `t_batch`.tb_id,
+                                    `t_batch`.tb_tgl_kadaluarsa,
+                                    `t_batch`.tb_harga_beli,
+                                    `t_batch`.tb_harga_jual,
+                                    `t_batch`.tb_ms_id,
+                                    SUM(tj_masuk - tj_keluar) AS 'stok'", FALSE);
+        $this->db->from('t_jurnal');
+        $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','left');
+        $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','left');
+        $this->db->where("m_obat.mo_nama LIKE '%".$content."%' OR m_obat.mo_barcode LIKE '%".$content."%'");
+        $this->db->group_by('tj_tb_id');
+        $query = $this->db->get();
+        $data[] = $query->num_rows();//0
+        $data[] = $query->result();//1
+        return $data;
+    }
+
+    public function save($data)
     {
         $this->db->insert($this->table, $data);
         return $this->db->insert_id();

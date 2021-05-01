@@ -593,6 +593,7 @@ class Alus_auth
        	$list2 = $this->stok_depan_model->get_datatables($id);
         $data2 = array();
         $status= FALSE;
+        $kadaluarsa = FALSE;
         if($list2 != NULL | $list2 != ""){
             $status = TRUE;
         }
@@ -607,19 +608,21 @@ class Alus_auth
             $cekkd = new DateTime($record2->tb_tgl_kadaluarsa);
             $beda = $datenow->diff($cekkd);
             $hari = $beda->format('%a');
-            if($hari <= 0){
+            if($datenow > $cekkd){
                 $kadaluarsa = TRUE;
                 $sisahari = $hari;
                 $status_kd = "Kadaluarsa";
-            }else if($hari > 0 AND $hari <= 10){
-                $kadaluarsa = FALSE;
-                $sisahari = $hari;
-                $status_kd = "Hampir kadaluarsa";
             }else{
-                $kadaluarsa = FALSE;
-                $sisahari = $hari;
-                $status_kd = "Ok";
-            }
+	            if($hari <= 10){
+	                $kadaluarsa = FALSE;
+	                $sisahari = $hari;
+	                $status_kd = "Hampir kadaluarsa";
+	            }else{
+	                $kadaluarsa = FALSE;
+	                $sisahari = $hari;
+	                $status_kd = "Ok";
+	            }
+        	}
             $row2[] = $kadaluarsa;//4
             $row2[] = $sisahari;//5
             $row2[] = $status_kd;//6
@@ -635,6 +638,27 @@ class Alus_auth
          $output2 = array("status" => $status, "data" => $data2);
 
         return $output2;
+    }
+
+    public function stok_like($content){
+    	return $this->stok_depan_model->get_stok_like($content);
+    }
+
+    public function cek_kadaluarsa($tanggal){
+    	$now = new DateTime();
+    	$cek = new DateTime($tanggal);
+    	$diff = $now->diff($cek);
+    	$days = $diff->format('%a');
+    	if($now > $cek){
+            $status_kd = "kd";//kadaluarsa
+        }else{
+	        if($days <= 10){
+	            $status_kd = "hr";//hampir
+	        }else{
+	            $status_kd = "ok";//ok
+	        }
+        }
+        return $status_kd;
     }
 }
 
