@@ -100,7 +100,8 @@ class Stok_depan_model extends CI_Model {
         return $query->row();
     }
 
-    public function get_stok_like($content){
+    public function get_stok_like($content, $resep){
+        $a = 0;
         $this->db->select("`m_obat`.mo_id,
                             `m_obat`.mo_mu_id,
                                     `m_obat`.mo_nama,
@@ -113,6 +114,8 @@ class Stok_depan_model extends CI_Model {
                                     SUM(tj_masuk - tj_keluar) AS 'stok'", FALSE);
         $this->db->from('t_jurnal');
         $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','left');
+        if($resep){$a = 1;}
+        $this->db->where("'mo_resep' = '".$a."'");
         $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','left');
         $this->db->where("m_obat.mo_nama LIKE '%".$content."%' OR m_obat.mo_barcode LIKE '%".$content."%'");
         $this->db->group_by('tj_tb_id');
@@ -120,6 +123,23 @@ class Stok_depan_model extends CI_Model {
         $data[] = $query->num_rows();//0
         $data[] = $query->result();//1
         return $data;
+    }
+
+    public function is_in_stock($moid, $tbid, $jumlahRequested){
+        $status = false;
+        $this->db->select("SUM(tj_masuk - tj_keluar) AS stok");
+        $this->db->from('t_jurnal');
+        $this->db->where("tj_mo_id = '".$moid."' AND tj_tb_id = '".$tbid."'");
+        $query = $this->db->get();
+        if($query->num_rows() > 0){
+            $r = $query->row();
+            if( $r->stok >= $jumlahRequested){
+                $status = true;
+            } 
+        }
+        $data2 = array("status" => $status, "stok" => $r->stok);
+
+        return $data2;
     }
 
     public function save($data)

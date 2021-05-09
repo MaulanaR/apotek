@@ -34,6 +34,7 @@
                   <table id="tabelpencarian" class="table table-bordered table-hover dataTable dtr-inline">
                     <thead>
                       <tr>
+                        <th class="text">Item ID</th>
                         <th class="text">Nama</th>
                         <th class="text">Tanggal Kadaluarsa</th>
                         <th class="text">Stok</th>
@@ -59,11 +60,12 @@
           <div class="card-body">
             <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4">
               <div class="row">
-                <div class="col-8">
+                <div class="card col-md-8" style="border: none;">
                   <table id="table" class="table table-bordered table-hover dataTable dtr-inline">
                     <thead>
                       <tr>
-                        <th class="text">Nama Obat</th>
+                        <th class="text">Item ID</th>
+                        <th class="text">Nama</th>
                         <th class="text">Jumlah</th>
                         <th class="text">Sub Total</th>
                         <th class="text-center"></th>
@@ -73,7 +75,7 @@
                     </tbody>
                   </table>
                 </div>
-                <div class="col-4">
+                <div class="card col-md-4" style="border: none;">
                   <form action="#">
                   <div>
                     <div class="form-group">
@@ -81,10 +83,8 @@
                       <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00" name="total" readonly>
                     </div>
                     <div class="form-group">
-                      <div class="custom-control custom-checkbox">
-                          <input class="custom-control-input" type="checkbox" id="customCheckbox3">
-                          <label for="customCheckbox3" class="custom-control-label">PPN 10%</label>
-                        </div>
+                      <label>PPN 10%</label>
+                      <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00" name="ppn" readonly> 
                     </div>
                     <dv class="form-group text-center">
                 
@@ -93,8 +93,8 @@
                     </dv>
                   </div>
                   <div class="col-12 text-center">
-                  <a class="btn btn-app btn-warning">
-                  <i class="fas fa-edit"></i> Checkout
+                  <a class="btn btn-app btn-warning" onclick="checkout()">
+                  <i class="fas fa-check"></i> Checkout
                   </a>
                   </div>
                   </form>
@@ -116,6 +116,7 @@
     var bodykeranjang = document.getElementById('bodykeranjang');
     var total;
     var grandtotal;
+    var statusCheckout = false;
 
     $(document).ready(function(){
       //do something
@@ -154,19 +155,23 @@
               for (var i = 0; i < data.data.length; ++i) {
                 var dat = data.data[i];
                 var row = document.createElement('tr');
-                var properties = ['nama', 'tgl_kadaluarsa', 'stok', 'harga'];
 
-                for (var j = 0; j < properties.length; ++j) {
-                  var cell = document.createElement('td');
-                  cell.innerHTML = dat[properties[j]];
-                  if(j == properties.length - 1){
-                  }
+                var cel = document.createElement('td');
+                  cel.innerHTML = dat['tb_id'];                
+                  row.appendChild(cel);
                 var inv = document.createElement('input');
                   inv.name = 'tb_id'+i;
                   inv.type = 'hidden';
                   inv.value = dat.tb_id;
                   // add to end of the row
-                  cell.appendChild(inv);
+                  cel.appendChild(inv);
+
+                var properties = ['nama', 'tgl_kadaluarsa', 'stok', 'harga'];
+                for (var j = 0; j < properties.length; ++j) {
+                  var cell = document.createElement('td');
+                  cell.innerHTML = dat[properties[j]];
+                  if(j == properties.length - 1){
+                  }
                   row.appendChild(cell);
                 }
                   
@@ -180,6 +185,7 @@
                         jumlah.setAttribute('onchange', 'enableTambahkan(\"'+i+'\")');
                         cell2.appendChild(jumlah);
                         row.appendChild(cell2);
+
                     var cell3 = document.createElement('td');
                     cell3.classList.add("text-center");
                     var button = document.createElement('button');
@@ -233,12 +239,21 @@
     hitungTotal();  
   }
 
+  function buang(x){
+    arraybeli.splice(x, 1);
+    hitungTotal();
+    refreshKeranjang();
+  }
+
   function refreshKeranjang(){
     clearTabelKeranjang();
     var total;
     for (var i = 0; i < arraybeli.length; ++i) {
                 var dat = arraybeli[i];
                 var row = document.createElement('tr');
+                var cell = document.createElement('td');
+                  cell.innerHTML = dat['tb_id'];                
+                  row.appendChild(cell);
                 var cell1 = document.createElement('td');
                   cell1.innerHTML = dat['nama'];                
                   row.appendChild(cell1);
@@ -269,12 +284,57 @@
 
   function hitungTotal(){
     var temp = 0;
+    var ppn = 0.1;
+    var n_ppn;
+    total = 0;
     for(var i = 0; i < arraybeli.length; i++){
         total = (parseInt(arraybeli[i]['jumlah']) * parseInt(arraybeli[i]['harga'])) + temp;
         temp = total;
     }
     $('[name="total"]').attr('value', new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total));
-    document.getElementById('grandtotal').innerHTML = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total);
+
+    n_ppn = total * ppn;
+    $('[name="ppn"]').attr('value', new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(n_ppn));
+
+    grandtotal = total + n_ppn;
+    document.getElementById('grandtotal').innerHTML = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(grandtotal);
+  }
+
+  function checkout(){
+    $.ajax({
+        url: "<?php echo base_url('kasir/ajax_checkout') ?>",
+        type: "POST",
+        data: {data : arraybeli},
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success close modal and reload ajax table
+          {
+            var isi = data.data;
+            console.log(isi);
+            isi.forEach(cekArrayBeli);
+            prosesCheckout();
+          } else {
+            alert('Ajax error!');
+          }
+        }
+      });
   }
   
+  function cekArrayBeli(item, index, arr){
+    if(item.statusitem == false){
+      alert("Stok tidak mencukupi untuk item : "+item.nama);
+      statusCheckout = false;
+    }else{
+      statusCheckout = true;
+    }
+  }
+
+  function prosesCheckout(){
+    if(statusCheckout){
+      alert('SENT!');
+    }else{
+      alert("Cannot Proceed");
+    }
+  }
   </script>

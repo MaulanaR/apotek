@@ -640,8 +640,12 @@ class Alus_auth
         return $output2;
     }
 
-    public function stok_like($content){
-    	return $this->stok_depan_model->get_stok_like($content);
+    public function stok_like($content, $resep){
+    	return $this->stok_depan_model->get_stok_like($content, $resep);
+    }
+
+    public function cek_stok($moid, $tbid, $jumlahRequested){
+    	return $this->stok_depan_model->is_in_stock($moid, $tbid, $jumlahRequested);
     }
 
     public function cek_kadaluarsa($tanggal){

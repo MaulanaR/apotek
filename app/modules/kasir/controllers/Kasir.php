@@ -97,7 +97,7 @@ class Kasir extends CI_Controller {
 
 
 	function cari_data($content){
-		$cari = $this->alus_auth->stok_like($content);
+		$cari = $this->alus_auth->stok_like($content, FALSE);
 		$temp = array();
 		$status = FALSE;
 		if($cari[0] >= 1){
@@ -119,7 +119,21 @@ class Kasir extends CI_Controller {
 		$arr = array('status' => $status, 'data' => $temp);
 		echo json_encode($arr);
 	}
-		
+
+	function ajax_checkout(){
+		$success = FALSE;
+		$arr = array();
+		if(isset($_POST['data'])){
+			$success = TRUE;
+			$i = 0;
+			foreach ($_POST['data'] as $key => $value) {
+					$cek = $this->alus_auth->cek_stok($value['mo_id'], $value['tb_id'], $value['jumlah']);
+					$arr[] = array("nama"=>$value['nama'], "statusitem"=>$cek['status'], "stok" => $cek['stok']);
+				}	
+		}
+		$response = array("status" => $success, "data" => $arr);
+		echo json_encode($response);
+	}		
 }
 
 /* End of file  Home.php */
