@@ -664,5 +664,15 @@ class Alus_auth
         }
         return $status_kd;
     }
+
+    public function generateUniqueId($limit){
+    	$char = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    	$rand = "";
+    	for($i = 0; $i < $limit; $i++){
+    		$rand .= $char[rand(0, strlen($char))];
+    	}
+
+    	return $rand;
+    }
 }
 

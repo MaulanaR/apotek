@@ -54,7 +54,7 @@
         </div>
         <div class="card lg-md-2 p-2">
           <div class="card-header">
-            <h7>Transaksi No: <b>FCA54Y7E</b></h7>
+            <h7>Kode Transaksi : <b><?php echo $uniqid; ?></b></h7>
           </div>
           <!-- /.card-header -->
           <div class="card-body">

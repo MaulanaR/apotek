@@ -38,9 +38,10 @@ class Kasir extends CI_Controller {
 		if($this->alus_auth->logged_in())
          {
          	$head['title'] = "Transaksi Baru";
+         	$data['uniqid'] = $this->alus_auth->generateUniqueId(8);
 
 		 	$this->load->view('template/temaalus/header',$head);
-		 	$this->load->view('kasir/transaksi.php');
+		 	$this->load->view('kasir/transaksi.php', $data);
 		 	$this->load->view('template/temaalus/footer');
 		}else
 		{
