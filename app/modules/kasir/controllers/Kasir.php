@@ -15,6 +15,16 @@ class Kasir extends CI_Controller {
 		//$this->load->model('Dashboard_model','model');
 	}
 
+	public function start_sesi()
+	{
+		if($this->session->userdata('sesi_saldo')){
+			// do something when exist
+			return true;
+	   }else{
+		   // do something when doesn't exist
+		   $this->session->set_userdata('sesi_saldo', '1000000');
+	   }
+	}
 
 	public function index()
 	{
