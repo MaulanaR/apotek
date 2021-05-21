@@ -15,7 +15,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" name="inputbar" placeholder="Scan barcode atau input nama produk di sini." />
                   <span class="input-group-append">
-                    <button type="button" class="btn btn-success btn-flat" onclick="cari()">Cari</button>
+                    <button type="button" id="btn-cari" class="btn btn-success btn-flat" onclick="cari()">Cari</button>
                   </span>
                 </div>
             </div>
@@ -117,6 +117,7 @@
   </div>
   <!-- /.content-wrapper -->
   <script type="text/javascript">
+    var kode_inv = '<?php echo $uniqid; ?>';
     var datacari = [];
     var arraybeli = [];
     var bodypencarian = document.getElementById('bodypencarian');
@@ -336,6 +337,7 @@
             console.log(isi);
             isi.forEach(cekArrayBeli);
             prosesCheckout();
+
           } else {
             alert('Ajax error!');
           }
@@ -362,21 +364,42 @@
     }else{
       //alert('SENT!');
       $("[name='nominal_bayar']").attr('disabled', false);
+      clearTabelPencarian();
+      $("#btn-cari").attr('disabled', true);
       tombolProses(true);
     }
   }
 
   function kirim(){
-    var data = new Array();
-    data.kode_inv = '<?php echo $uniqid; ?>';
-    data.data = arraybeli;
-    data.subtotal = total;
-    data.ppn_nilai = n_ppn;
-    data.grandtotal = grandtotal;
-    data.nominal_bayar = bayar;
-    data.nominal_kembalian = kembalian;
+    var dataPembelian = {'kode_inv' : kode_inv,
+     'subtotal' : total,
+     'ppn_nilai' : n_ppn,
+     'grandtotal' : grandtotal,
+     'nominal_bayar' : bayar,
+     'nominal_kembalian' : kembalian
+   };
 
-    console.log(data);
+    console.log(arraybeli);
+    var x = JSON.stringify(dataPembelian);
+    var y = JSON.stringify(arraybeli);
+
+    $.ajax({
+        url: "<?php echo base_url('kasir/save_transaksi') ?>",
+        type: "POST",
+        data: {data : x, item : y},
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success close modal and reload ajax table
+          {
+            exit();
+          } else {
+           alert(data.msg);
+          }
+
+           console.log(data.msg);
+        }
+      });
   }
 
   function proses(){
@@ -387,6 +410,9 @@
     }
   }
 
+  function exit(){
+    window.location = '<?php echo base_url('kasir/invoice_detail/'); ?>'+kode_inv;
+  }
 
   function batal(){
     location.reload();

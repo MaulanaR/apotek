@@ -5,7 +5,7 @@
 class Kasir_model extends CI_Model {
 
 	var $table = 't_invoice';
-    var $tabledetail = 't_invoice_detail';
+    var $table2 = 't_invoice_detail';
     var $column_order = array('ti_nomor_inv','ti_user_id','ti_tgl','ti_total_barang','ti_subtotal','ti_ppn_nilai','ti_grandtotal', 'ti_nominal_bayar', 'ti_nominal_kembalian');
     var $column_search = array('ti_nomor_inv','ti_user_id','ti_tgl');
     var $order = array('ti_id' => 'desc');
@@ -79,6 +79,15 @@ class Kasir_model extends CI_Model {
         return $this->db->count_all_results();
     }
  
+    public function get_by_kode($kode)
+    {
+        $this->db->from($this->table);
+        $this->db->where('ti_nomor_inv',$kode);
+        $query = $this->db->get();
+ 
+        return $query->row();
+    }
+
     public function get_by_id($id)
     {
         $this->db->from($this->table);
@@ -91,6 +100,12 @@ class Kasir_model extends CI_Model {
     public function save($data)
     {
         $this->db->insert($this->table, $data);
+        return $this->db->insert_id();
+    }
+
+    public function saveDetail($data)
+    {
+        $this->db->insert($this->table2, $data);
         return $this->db->insert_id();
     }
  
