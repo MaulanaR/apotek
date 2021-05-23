@@ -1,3 +1,5 @@
+<script src="<?php echo base_url('assets/temaalus/dist/currencyjs/autoNumeric.js'); ?>"></script>
+  
   <!-- Full Width Column -->
   <div class="content-wrapper" style="min-height: 901px;">
     <!-- Content Header (Page header) -->
@@ -32,8 +34,8 @@
             <div class="text-center">
               <?php
               if ($this->session->userdata('sesi_saldo')) { ?>
-              <h5><b>Rp. <?php echo $this->session->userdata('sesi_saldo'); ?></b></h5>
-                
+                <h5><b>Rp. <span id="saldox"><?php echo $this->session->userdata('sesi_saldo'); ?></span></b></h5>
+
               <?php } else {
                 // do something when doesn't exist
                 echo "Belum Mulai Sesi";
@@ -42,10 +44,7 @@
             </div>
             <hr />
             <div class="text-center">
-              <button class="btn btn-xs  btn-primary" onclick="str_sesi()">Start Shift</button>
-            </div>
-            <div class="text-center">
-              <button class="btn btn-xs  btn-danger" onclick="">Akhiri Shift</button>
+              <button class="btn btn-sm btn-danger" onclick="end_sesi()"><i class="fas fa-sign-out-alt"></i> Akhiri Shift</button>
             </div>
           </div>
         </div>
@@ -106,14 +105,20 @@
   </div>
 
   <script>
-    function str_sesi() {
-      $.ajax({
-        type: "GET",
-        url: "<?php echo base_url(); ?>kasir/start_sesi",
-        success: function(response) {
-          location.reload();
-        }
-      });
+  $("#saldox").autoNumeric('init');
+    function end_sesi() {
+      var r = confirm("Apakah anda yakin ingin menyelesaikan sesi saat ini?");
+      if (r == true) {
+        $.ajax({
+          type: "GET",
+          url: "<?php echo base_url(); ?>kasir/end_sesi",
+          success: function(response) {
+            location.reload();
+          }
+        });
+      } else {
+        popup('Info','Dibatalkan','info');
+      }
     }
   </script>
   <!-- /.content-wrapper -->

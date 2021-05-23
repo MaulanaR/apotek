@@ -15,15 +15,17 @@ class Kasir extends CI_Controller {
 		//$this->load->model('Dashboard_model','model');
 	}
 
-	public function start_sesi()
+	public function end_sesi()
 	{
-		if($this->session->userdata('sesi_saldo')){
-			// do something when exist
+		if(!empty($this->session->userdata('id_sesi')))
+		{
+			$this->session->unset_userdata('id_sesi');
+			$this->session->unset_userdata('sesi_saldo');
 			return true;
-	   }else{
-		   // do something when doesn't exist
-		   $this->session->set_userdata('sesi_saldo', '1000000');
-	   }
+		}else{
+			
+			return true;
+		}
 	}
 
 	public function index()
@@ -31,6 +33,11 @@ class Kasir extends CI_Controller {
 
 		if($this->alus_auth->logged_in())
          {
+			if( empty($this->session->userdata('id_sesi')))
+			{
+				redirect(base_url('kasir/login_kasir'));
+			}
+
          	$head['title'] = "Beranda";
 
 		 	$this->load->view('template/temaalus/header',$head);
@@ -44,6 +51,10 @@ class Kasir extends CI_Controller {
 
 	public function transaksi()
 	{
+		if( empty($this->session->userdata('id_sesi')))
+		{
+			redirect(base_url('kasir/login_kasir'));
+		}
 
 		if($this->alus_auth->logged_in())
          {
@@ -77,10 +88,14 @@ class Kasir extends CI_Controller {
 
 	public function login_kasir()
 	{
-
 		if($this->alus_auth->logged_in())
          {
-         	$head['title'] = "Cari Produk";
+			if( !empty($this->session->userdata('id_sesi')))
+			{
+				redirect(base_url('kasir'));
+			}
+
+         	$head['title'] = "Login Kasir POS";
 
 		 	$this->load->view('template/temaalus/header',$head);
 		 	$this->load->view('kasir/login_kasir.php');
@@ -88,6 +103,52 @@ class Kasir extends CI_Controller {
 		}else
 		{
 			redirect('admin/Login','refresh');
+		}
+	}
+
+	public function cek_login()
+	{
+		if($this->input->post('pass') == '')
+		{
+			echo json_encode(['status' => false, 'msg' => "Password harus diisi"]);
+			die();
+		}
+		if($this->input->post('saldo') == '')
+		{
+			echo json_encode(['status' => false, 'msg' => "Saldo tidak boleh kurang dari Rp.1,000"]);
+			die();
+		}
+
+		//cek password
+		if($this->alus_auth->hash_password_db($this->session->userdata('user_id'), $this->input->post('pass')) === TRUE)
+		{
+			if(str_replace(',','',$this->input->post('saldo')) < 1000)
+			{
+				echo json_encode(['status' => false, 'msg' => "Saldo tidak boleh kurang dari Rp.1,000"]);
+				die();
+			}
+
+			//save sesi
+			$data = array(
+				'tsu_user_id' 		=> $this->session->userdata('user_id'),
+				'tsu_saldo_awal' 	=> str_replace(',','',$this->input->post('saldo')),
+				'tsu_jam_masuk' 	=> date('Y-m-d H:i:S'),
+			);
+			$this->db->insert('t_sesi_user', $data);
+			$id_sesi = $this->db->insert_id();
+			
+			$data_session = array(
+				'id_sesi' 			=> $id_sesi,
+				'sesi_saldo'	 	=> str_replace(',','',$this->input->post('saldo'))
+			);
+
+			$this->session->set_userdata($data_session);
+			
+			echo json_encode(['status' => true, 'msg' => "Selamat Bekerja"]);
+			die();
+		}else{
+			echo json_encode(['status' => false, 'msg' => "Password salah"]);
+			die();
 		}
 	}
 
