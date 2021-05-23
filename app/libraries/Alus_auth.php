@@ -451,6 +451,15 @@ class Alus_auth
 		return null;
 	}
 
+	public function get_sesi_saldo()
+	{
+		$sesi_saldo = $this->session->userdata('sesi_saldo');
+		if (!empty($sesi_saldo))
+		{
+			return $sesi_saldo;
+		}
+		return null;
+	}
 
 	/**
 	 * is_admin

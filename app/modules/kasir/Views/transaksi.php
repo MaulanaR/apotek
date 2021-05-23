@@ -15,7 +15,7 @@
               <div class="input-group">
                   <input type="text" class="form-control" name="inputbar" placeholder="Scan barcode atau input nama produk di sini." />
                   <span class="input-group-append">
-                    <button type="button" class="btn btn-success btn-flat" onclick="cari()">Cari</button>
+                    <button type="button" id="btn-cari" class="btn btn-success btn-flat" onclick="cari()">Cari</button>
                   </span>
                 </div>
             </div>
@@ -91,9 +91,17 @@
                       <h7><b>GRAND TOTAL</b></h7>
                       <h5 id='grandtotal'>Rp. 000.000,00</h5>
                     </dv>
+                    <div class="form-group">
+                      <label>Nominal Pembayaran</label>
+                      <input type="number" class="form-control form-control-border" min="0" placeholder="RP. 000.000,00" name="nominal_bayar" onkeyup="hitungBayar()"> 
+                    </div>
+                    <div class="form-group">
+                      <label>Kembalian</label>
+                      <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00" name="nominal_kembalian"> 
+                    </div>
                   </div>
-                  <div class="col-12 text-center">
-                  <a class="btn btn-app btn-warning" onclick="checkout()">
+                  <div id="checkoutWrapper" class="col-12 text-center">
+                  <a id="checkoutButton" class="btn btn-app btn-warning" onclick="checkout()">
                   <i class="fas fa-check"></i> Checkout
                   </a>
                   </div>
@@ -108,18 +116,23 @@
       <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
-
   <script type="text/javascript">
+    var kode_inv = '<?php echo $uniqid; ?>';
     var datacari = [];
     var arraybeli = [];
     var bodypencarian = document.getElementById('bodypencarian');
     var bodykeranjang = document.getElementById('bodykeranjang');
     var total;
     var grandtotal;
-    var statusCheckout = false;
+    var n_ppn;
+    var bayar;
+    var kembalian;
+    var cantCheckout = false;
 
     $(document).ready(function(){
       //do something
+      $("[name='nominal_bayar']").attr('disabled', true);
+      $("[name='nominal_kembalian']").attr('disabled', true);
     });
 
 
@@ -135,6 +148,17 @@
       if(j > 0){
         $("[name='tambahkan"+x+"'").attr('disabled', false);
       }
+    }
+
+    function rupiah(x){
+      var z = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(x);
+      return z;
+    }
+
+    function hitungBayar(){
+      bayar = $("[name='nominal_bayar']").val();
+      kembalian = bayar - grandtotal;
+      $('[name="nominal_kembalian"]').val(rupiah(kembalian));
     }
 
     function cari(){
@@ -262,7 +286,7 @@
                   row.appendChild(cell2);
                 var cell3 = document.createElement('td');
                   total = dat['jumlah'] * dat['harga'];
-                  cell3.innerHTML = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total);
+                  cell3.innerHTML = rupiah(total);
                 row.appendChild(cell3);
                 var cell4 = document.createElement('td');
                   cell4.classList.add("text-center");
@@ -285,19 +309,18 @@
   function hitungTotal(){
     var temp = 0;
     var ppn = 0.1;
-    var n_ppn;
     total = 0;
     for(var i = 0; i < arraybeli.length; i++){
         total = (parseInt(arraybeli[i]['jumlah']) * parseInt(arraybeli[i]['harga'])) + temp;
         temp = total;
     }
-    $('[name="total"]').attr('value', new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(total));
+    $('[name="total"]').attr('value', rupiah(total));
 
     n_ppn = total * ppn;
-    $('[name="ppn"]').attr('value', new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(n_ppn));
+    $('[name="ppn"]').attr('value', rupiah(n_ppn));
 
     grandtotal = total + n_ppn;
-    document.getElementById('grandtotal').innerHTML = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR'}).format(grandtotal);
+    document.getElementById('grandtotal').innerHTML = rupiah(grandtotal);
   }
 
   function checkout(){
@@ -314,27 +337,84 @@
             console.log(isi);
             isi.forEach(cekArrayBeli);
             prosesCheckout();
+
           } else {
             alert('Ajax error!');
           }
         }
       });
   }
+
+  function tombolProses(){
+      $('#checkoutButton').remove();
+      $('#checkoutWrapper').append('<a id="checkoutButton" class="btn btn-app btn-warning" onclick="batal()"><i class="fa fa-undo"></i> Batalkan</a><a id="prosesButton" class="btn btn-app btn-warning" onclick="proses()"><i class="fas fa-check"></i> Bayar</a>');
+  }
   
   function cekArrayBeli(item, index, arr){
     if(item.statusitem == false){
       alert("Stok tidak mencukupi untuk item : "+item.nama);
-      statusCheckout = false;
-    }else{
-      statusCheckout = true;
+      cantCheckout = true;
     }
   }
 
   function prosesCheckout(){
-    if(statusCheckout){
-      alert('SENT!');
-    }else{
+    if(cantCheckout == true){
       alert("Cannot Proceed");
+      cantCheckout = false; 
+    }else{
+      //alert('SENT!');
+      $("[name='nominal_bayar']").attr('disabled', false);
+      clearTabelPencarian();
+      $("#btn-cari").attr('disabled', true);
+      tombolProses(true);
     }
+  }
+
+  function kirim(){
+    var dataPembelian = {'kode_inv' : kode_inv,
+     'subtotal' : total,
+     'ppn_nilai' : n_ppn,
+     'grandtotal' : grandtotal,
+     'nominal_bayar' : bayar,
+     'nominal_kembalian' : kembalian
+   };
+
+    console.log(arraybeli);
+    var x = JSON.stringify(dataPembelian);
+    var y = JSON.stringify(arraybeli);
+
+    $.ajax({
+        url: "<?php echo base_url('kasir/save_transaksi') ?>",
+        type: "POST",
+        data: {data : x, item : y},
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success close modal and reload ajax table
+          {
+            exit();
+          } else {
+           alert(data.msg);
+          }
+
+           console.log(data.msg);
+        }
+      });
+  }
+
+  function proses(){
+    if(bayar < grandtotal){
+      alert('Pembayaran Kurang!');
+    }else{
+      kirim();
+    }
+  }
+
+  function exit(){
+    window.location = '<?php echo base_url('kasir/invoice_detail/'); ?>'+kode_inv;
+  }
+
+  function batal(){
+    location.reload();
   }
   </script>
