@@ -453,9 +453,9 @@ class Alus_auth
 
 	public function get_sesi_saldo()
 	{
-		$sesi_saldo = $this->session->userdata('sesi_saldo');
-		if (!empty($sesi_saldo))
+		if (!empty($this->session->userdata('id_sesi')))
 		{
+			$sesi_saldo = $this->alus_auth_model->get_update_saldo($this->session->userdata('id_sesi'));
 			return $sesi_saldo;
 		}
 		return null;
@@ -678,7 +678,7 @@ class Alus_auth
     	$char = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     	$rand = "";
     	for($i = 0; $i < $limit; $i++){
-    		$rand .= $char[rand(0, strlen($char))];
+    		$rand .= $char[rand(0, strlen($char)-1)];
     	}
 
     	return $rand;

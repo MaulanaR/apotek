@@ -2621,4 +2621,26 @@ class alus_auth_model extends CI_Model
     	return $this->alus_co['author_app'];
     }
 
+	function get_update_saldo($id)
+	{
+		$this->db->select('tsu_saldo_awal');
+		$this->db->where('tsu_id', $id);
+		$saldo_awal = $this->db->get('t_sesi_user')->row()->tsu_saldo_awal;
+		
+		$this->db->select('SUM(ti_grandtotal) as total_keluar');
+		$this->db->where('tsud_tsu_id',$id);
+		$this->db->join('t_invoice', 't_invoice.ti_id = t_sesi_user_detail.tsud_ti_id', 'left');
+		
+		$uang_keluar = $this->db->get('t_sesi_user_detail')->row()->total_keluar;
+
+		$current = ($saldo_awal - $uang_keluar);
+		
+		$data_session = array(
+			'sesi_saldo'	=> $current
+		);
+
+		$this->session->set_userdata($data_session);
+
+		return $current;
+	}
 }

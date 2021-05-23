@@ -19,6 +19,15 @@ class Kasir extends CI_Controller {
 	{
 		if(!empty($this->session->userdata('id_sesi')))
 		{
+			//save ke db updatenya 
+			$saldo_sekarang = $this->alus_auth->get_sesi_saldo();
+			$update = array(
+				'tsu_saldo_akhir' 	=> $saldo_sekarang,
+				'tsu_jam_keluar'	=> date('Y-m-d H:i:s')
+			);
+			$this->db->where('tsu_id', $this->session->userdata('id_sesi'));
+			$this->db->update('t_sesi_user', $update);
+			
 			$this->session->unset_userdata('id_sesi');
 			$this->session->unset_userdata('sesi_saldo');
 			return true;
@@ -30,7 +39,6 @@ class Kasir extends CI_Controller {
 
 	public function index()
 	{
-
 		if($this->alus_auth->logged_in())
          {
 			if( empty($this->session->userdata('id_sesi')))
@@ -38,6 +46,7 @@ class Kasir extends CI_Controller {
 				redirect(base_url('kasir/login_kasir'));
 			}
 
+			$this->alus_auth->get_sesi_saldo();
          	$head['title'] = "Beranda";
 
 		 	$this->load->view('template/temaalus/header',$head);
@@ -56,6 +65,7 @@ class Kasir extends CI_Controller {
 			redirect(base_url('kasir/login_kasir'));
 		}
 
+		$this->alus_auth->get_sesi_saldo();
 		if($this->alus_auth->logged_in())
          {
          	$head['title'] = "Transaksi Baru";
@@ -151,7 +161,7 @@ class Kasir extends CI_Controller {
 			die();
 		}
 	}
-	
+
 	public function invoice_detail()
 	{
 
@@ -315,7 +325,15 @@ class Kasir extends CI_Controller {
 						$this->model->saveDetail($con);//save item ke detail
 					}
 				$this->model->update(array('ti_id' => $inv_id), array('ti_total_barang' => $jumlahBarang));//update jumlah barang di invoice
-
+				
+				//save ke sesi login kasir
+				$data_kasir_save = array(
+					'tsud_tsu_id' 	=> $this->session->userdata('id_sesi'),
+					'tsud_no_inv' 	=> $data->kode_inv,
+					'tsud_ti_id' 	=> $inv_id
+				);
+				$this->db->insert('t_sesi_user_detail', $data_kasir_save);
+				
 				$msg = "Transaksi Sukses!";
 			}else{
 				$msg = "Saldo kasir tidak mencukupi!";
