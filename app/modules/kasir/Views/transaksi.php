@@ -116,6 +116,50 @@
       <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
+  <div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form action="#" id="formdebit" class="form-horizontal" name="formnih">
+        <div class="modal-header">
+          <h3 class="modal-title">Bayar dengan Debit/Kredit</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body form">
+            <div class="form-body">
+              <div class="form-group">
+                <label class="control-label ">Due</label>
+                <input type="text" name="amount_due" class="form-control" placeholder="Rp. 000,00" disabled="">
+                <span class="help-block"></span>
+              </div>
+              <div class="form-group">
+                <label class="control-label ">Akun Bank</label>
+                <select name="akun" class='form-control'>
+                  <?php
+                    foreach ($this->db->get('m_akun_bank')->result() as $key => $value) {
+                    echo '<option value="' . $value->mab_id . '">Bank ' . $value->mab_bank . ' a/n '.$value->mab_nama_nasabah.' '.$value->mab_nomor_rekening.'</option>';
+                     }
+                    ?>
+                </select>
+                <span class="help-block"></span>
+              </div>
+              <div class="form-group">
+                <label class="control-label ">Nomor Referensi Pembayaran</label>
+                <input type="text" name="ref" class="form-control" value="" required="">
+                <!-- input id alkes ke tabel m_obat, SESUAIKAN dengan ID alkes di tabel m_kategori-->
+              </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="btnSave" class="btn btn-primary">Proses</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div><!-- /.modal-content -->
+      </form>
+    </div><!-- /.modal-dialog -->
+  </div>
+  <!-- / Modal -->
+
   <script type="text/javascript">
     var kode_inv = '<?php echo $uniqid; ?>';
     var datacari = [];
@@ -133,6 +177,10 @@
       //do something
       $("[name='nominal_bayar']").attr('disabled', true);
       $("[name='nominal_kembalian']").attr('disabled', true);
+      $("#formdebit").submit(function(e) {
+            e.preventDefault();
+            prosesDebit();
+        });
     });
 
 
@@ -228,6 +276,8 @@
                     // add new row to table
                     bodypencarian.appendChild(row);
               }
+            }else{
+              console.log(par);
             }
           },
           error: function(jqXHR, textStatus, errorThrown) {
@@ -347,7 +397,7 @@
 
   function tombolProses(){
       $('#checkoutButton').remove();
-      $('#checkoutWrapper').append('<a id="checkoutButton" class="btn btn-app btn-warning" onclick="batal()"><i class="fa fa-undo"></i> Batalkan</a><a id="prosesButton" class="btn btn-app btn-warning" onclick="proses()"><i class="fas fa-check"></i> Bayar</a>');
+      $('#checkoutWrapper').append('<a id="checkoutButton" class="btn btn-app btn-warning" onclick="batal()"><i class="fa fa-undo"></i> Batalkan</a><a id="prosesButton" class="btn btn-app btn-warning" onclick="proses()"><i class="fas fa-check"></i> Bayar</a><hr/><b>Cashless :</b><br/><a id="debitButton" class="btn btn-app" onclick="showFormDebit()"><i class="fas fa-credit-card"></i> Debit/Kredit</a>');
   }
   
   function cekArrayBeli(item, index, arr){
@@ -390,7 +440,7 @@
         dataType: "JSON",
         success: function(data) {
 
-          if (data.status) //if success close modal and reload ajax table
+          if (data.status) //if success exit
           {
             exit();
           } else {
@@ -400,6 +450,15 @@
            console.log(data.msg);
         }
       });
+  }
+
+  function prosesDebit(){
+
+  }
+
+  function showFormDebit(){
+    $('[name="amount_due"]').val(grandtotal);
+    $('#modal_form').modal('show');
   }
 
   function proses(){
