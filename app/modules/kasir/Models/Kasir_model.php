@@ -96,6 +96,14 @@ class Kasir_model extends CI_Model {
  
         return $query->row();
     }
+
+    public function cek_nomor_inv($nomor_inv)
+    {
+        $this->db->from($this->table);
+        $this->db->where('ti_nomor_inv',$nomor_inv);
+        $query = $this->db->get();
+        return $query->num_rows();
+    }
  
     public function save($data)
     {
