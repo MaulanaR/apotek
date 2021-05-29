@@ -683,5 +683,43 @@ class Alus_auth
 
     	return $rand;
     }
+
+    public function arrayBank(){
+    	//arraylist untuk bank tersedia
+    	//array ini berhubugan langsung dengan CSS bank_indonesia.css
+    	//by: Gemintang A.W.
+    	//ga12wijaya@gmail.com
+    	$arr[] = array("nama" => "Mandiri", "cssid" => "bank-mandiri");
+    	$arr[] = array("nama" => "Permata", "cssid" => "bank-permata");
+    	$arr[] = array("nama" => "Central Asia", "cssid" => "bank-bca");
+    	$arr[] = array("nama" => "Bukopin", "cssid" => "bank-bukopin");
+    	$arr[] = array("nama" => "Negara Indonesia", "cssid" => "bank-bni");
+    	$arr[] = array("nama" => "Jabar Banten", "cssid" => "bank-bjb");
+    	$arr[] = array("nama" => "Rakyat Indonesia", "cssid" => "bank-bri");
+    	$arr[] = array("nama" => "Tabungan Pensional Nasional", "cssid" => "bank-btpn");
+    	$arr[] = array("nama" => "Indonesia", "cssid" => "bank-bi");
+    	$arr[] = array("nama" => "United Overseas (UOB)", "cssid" => "bank-uob");
+    	$arr[] = array("nama" => "Tabungan Negara", "cssid" => "bank-btn");
+    	$arr[] = array("nama" => "CIMB", "cssid" => "bank-cimb");
+    	$arr[] = array("nama" => "Standard Chartered", "cssid" => "bank-chartered");
+    	$arr[] = array("nama" => "Other", "cssid" => "bank-other");
+
+    	return $arr;
+    }
+
+    public function getSingleBank($bank){
+    	$arr = $this->arrayBank();
+    	$find = FALSE;
+    	$data = "NULL";
+    	foreach ($arr as $value) {
+    		if($find == FALSE){
+	    		if($value['nama'] == $bank){
+	    			$data = $value['cssid'];
+	    			$find = TRUE;
+    			}
+    		}
+    	}
+    	return $data;
+    }
 }
 
