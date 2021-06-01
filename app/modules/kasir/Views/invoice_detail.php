@@ -24,8 +24,21 @@
               <h5><i class="fas fa-info"></i> Note:</h5>
               This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
             </div>
-
-
+            <div class="row">
+            <div class="col-4 text-left">
+              <p><a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a> Ukuran Normal</p>
+            </div>
+            <div class="col-4 text-center">
+              <p><a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a> Ukuran Kecil</p>
+            </div>
+            <div class="col-4 text-right">
+              <?php
+              if($resep == 1){
+              ?>
+              <p><a href="print_salinan_resep/<?php echo $kode_inv; ?>" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a> Salinan Resep</p>
+            <?php } ?>
+            </div>
+            </div>
             <!-- Main content -->
             <div class="invoice p-3 mb-3">
               <!-- title row -->
@@ -57,9 +70,10 @@
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
-                  <b>Invoice #<?php echo $id; ?></b><br>
-                  <br>
-                  <b>Order ID:</b> <?php echo $kode_inv; ?><br>
+                  <strong>Invoice #<?php echo $id; ?></strong><br>
+                  Order ID:<strong> <?php echo $kode_inv; ?></strong><br>
+                  Tipe pembayaran : <strong><?php echo $tipe_pembayaran; ?></strong><br>
+                  No Ref : <strong><?php echo $no_ref; ?></strong>
                 </div>
                 <!-- /.col -->
               </div>
@@ -90,12 +104,7 @@
               <div class="row">
                 <!-- accepted payments column -->
                 <div class="col-6">
-                  <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                   Terima kasih atas pembeliannya!
-                  </p>
-                </div>
-                <!-- /.col -->
-                <div class="col-6">
+                  
                   <p class="lead">Amount</p>
 
                   <div class="table-responsive">
@@ -122,6 +131,12 @@
                       </tr>
                     </tbody></table>
                   </div>
+                </div>
+                <!-- /.col -->
+                <div class="col-6">
+                  <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
+                   Terima kasih atas pembeliannya!
+                  </p>
                 </div>
                 <!-- /.col -->
               </div>

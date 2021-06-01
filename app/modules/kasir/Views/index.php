@@ -18,7 +18,10 @@
           </div>
           <div class="card-body">
             <a class="btn btn-app bg-success" href="<?php echo base_url('kasir/transaksi'); ?>">
-              <i class="fas fa-inbox"></i> Transaksi Baru
+              <i class="fas fa-laptop-medical"></i> Transaksi Baru
+            </a>
+            <a class="btn btn-app bg-primary" href="<?php echo base_url('kasir/transaksi_resep'); ?>">
+              <i class="fas fa-notes-medical"></i>Tebus Resep
             </a>
             <a class="btn btn-app bg-secondary" href="<?php echo base_url('kasir/cari_produk'); ?>">
               <i class="fas fa-barcode"></i>Cek Produk

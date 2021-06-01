@@ -721,5 +721,23 @@ class Alus_auth
     	}
     	return $data;
     }
+
+
+    public function tipePembayaran($action, $content){
+    	//Array jenis pembayaran
+    	$arr[0] = 'Cash';
+    	$arr[1] = 'Debit / Kredit';
+
+    	if($action == 'translate'){// maka int -> string
+    		return $arr[$content];
+    	}else if($action == 'interpret'){// maka cari key dan return -> int
+    		$key = array_search($content, $arr);
+    		return $key;
+    	}else if($action == 'get'){// ambil semua isi array
+    		return $arr;
+    	}else{
+    		return false;
+    	}
+    }
 }
 

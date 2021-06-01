@@ -87,6 +87,35 @@ class Kasir extends CI_Controller {
 		}
 	}
 
+	public function transaksi_resep()
+	{
+		if( empty($this->session->userdata('id_sesi')))
+		{
+			redirect(base_url('kasir/login_kasir'));
+		}
+
+		$this->alus_auth->get_sesi_saldo();
+		if($this->alus_auth->logged_in())
+         {
+         	$head['title'] = "Tebus Resep";
+         	$a = FALSE;
+         	do{
+         		$b = $this->alus_auth->generateUniqueId(8);
+         		$cek = $this->model->cek_nomor_inv($b);
+         		if($cek > 0) $a = TRUE;//jika ada, akan diulang kembali
+         	}while($a);
+         	
+         	$data['uniqid'] = $b;
+
+		 	$this->load->view('template/temaalus/header',$head);
+		 	$this->load->view('kasir/transaksi_resep.php', $data);
+		 	$this->load->view('template/temaalus/footer');
+		}else
+		{
+			redirect('admin/Login','refresh');
+		}
+	}
+
 	public function cari_produk()
 	{
 
@@ -185,7 +214,17 @@ class Kasir extends CI_Controller {
          	$data['nominal_kembalian'] = $this->alus_auth->rupiahrp($record->ti_nominal_kembalian);
          	$data['user_id'] = $record->ti_user_id;
          	$data['grandtotal'] = $this->alus_auth->rupiahrp($record->ti_grandtotal);
+         	$x = $this->alus_auth->tipePembayaran('translate', $record->ti_tipe_pembayaran);
+         	$data['tipe_pembayaran'] = $x;
+         	$y = $record->ti_no_ref_pembayaran;
+         	if($y){
+         		$data['no_ref'] = $y;
+         	}else{
+         		$data['no_ref'] = ' - ';
+         	}
+
          	$data['id'] = $record->ti_id;
+         	$data['resep'] = $record->ti_resep;
 
          	$this->db->select('username, job_title');
 			$this->db->from('alus_u');
@@ -244,6 +283,31 @@ class Kasir extends CI_Controller {
 		$arr = array('status' => $status, 'data' => $temp);
 		echo json_encode($arr);
 	}
+
+	function cari_data_resep($content){
+		$cari = $this->alus_auth->stok_like($content, TRUE);
+		$temp = array();
+		$status = FALSE;
+		if($cari[0] >= 1){
+			$status = TRUE;
+			foreach ($cari[1] as $key => $value) {
+			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
+				if($cek != 'kd'){
+					$temp[] = array(
+						"nama" => $value->mo_nama,
+						"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
+						"stok" => $value->stok,
+						"harga" => $value->tb_harga_jual,
+						"tb_id" => $value->tb_id,
+						"mo_id" => $value->mo_id
+					);
+				}
+			}
+		}
+		$arr = array('status' => $status, 'data' => $temp);
+		echo json_encode($arr);
+	}
+
 
 	function ajax_detail_items(){
 		$id = $_POST['id'];
@@ -309,11 +373,18 @@ class Kasir extends CI_Controller {
 					'ti_grandtotal' => $data->grandtotal,
 					'ti_nominal_bayar' => $data->nominal_bayar,
 					'ti_nominal_kembalian' => $data->nominal_kembalian,
+					'ti_tipe_pembayaran' => $data->tipe_pembayaran,
+					'ti_no_ref_pembayaran' => $data->no_ref_pembayaran,
+					'ti_mab_id' => $data->mab_id,
+					'ti_resep' => $data->resep,
+					'ti_resep_penerbit' => $data->penerbit,
+					'ti_resep_dokter' => $data->dokter,
+					'ti_resep_tgl' => $data->resep_tgl,
+					'ti_resep_ma_id' => $data->ma_id,
 				);
 
 				$inv_id = $this->model->save($content);//save ke invoice
 
-				$i = 0;
 				foreach ($item as $key => $value) {
 
 						$temp = $jumlahBarang + $value->jumlah;

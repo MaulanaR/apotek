@@ -3,7 +3,7 @@
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          Transaksi baru
+          Tebus Resep
         </h1>
       </section>
 
@@ -61,6 +61,32 @@
             <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4">
               <div class="row">
                 <div class="card col-md-8" style="border: none;">
+                  <form action="#">
+                    <div>
+                      <div class="form-group">
+                      <label>Instansi Penerbit Resep</label>
+                      <input type="text" name="namaPenerbit" class="form-control form-control-border" placeholder="Nama Instansi Penerbit Resep" name="total" required="">
+                      </div>
+                      <div class="form-group">
+                      <label>Nama Dokter</label>
+                      <input type="text" name="namaDokter" class="form-control form-control-border" placeholder="Nama Instansi/Dokter Penerbit Resep" name="total" required="">
+                      </div>
+                      <div class="form-group">
+                      <label>Tanggal Resep</label>
+                        <input type="date" name="tanggalResep" class="form-control form-control-border">
+                      </div>
+                      <div class="form-group">
+                      <label>Apoteker</label>
+                      <select name="apoteker" class='form-control' required="">
+                  <?php
+                    foreach ($this->db->get('m_apoteker')->result() as $key => $value) {
+                    echo '<option value="' . $value->ma_id . '">' . $value->ma_nama.'</option>';
+                     }
+                    ?>
+                </select>
+                      </div>
+                    </div>
+                  </form>
                   <table id="table" class="table table-bordered table-hover dataTable dtr-inline">
                     <thead>
                       <tr>
@@ -175,6 +201,11 @@
     var tipePembayaran = 0;//tipe pembayaran sealau cash kecuali diubah oleh proses
     var noRef = null;//no ref selalu null kecuali diubah oleh proses
     var mabId = null;//mabId selalu null kecuali diubah oleh proses
+    var status = false;
+    var penerbit;
+    var dokter;
+    var tanggalResep;
+    var apoteker;
 
     $(document).ready(function(){
       //do something
@@ -220,7 +251,7 @@
         console.log('param null');
       }else{
         $.ajax({
-          url: "<?php echo site_url('kasir/cari_data/'); ?>"+par,
+          url: "<?php echo site_url('kasir/cari_data_resep/'); ?>"+par,
           type: "GET",
           dataType: "JSON",
           success: function(data) {
@@ -423,44 +454,69 @@
     }
   }
 
+  function validateForm(){
+    /***** VARIABEL TRANSAKSI RESEP *****/
+    var statusForm = false;
+    penerbit = document.querySelector('[name="namaPenerbit"]').value;
+    dokter = document.querySelector('[name="namaDokter"]').value;
+    tanggalResep = document.querySelector('[name="tanggalResep"]').value;
+    apoteker = document.querySelector('[name="apoteker"]').value;
+    if(penerbit == ''){
+      alert('Instansi Penerbit resep belum diisi!');
+    }else if(dokter == ''){
+      alert('Nama Dokter belum diisi!');
+    }else if(tanggalResep == ''){
+      alert('Tanggal resep belum dipilih!');
+    }else if(apoteker == ''){
+      alert('Apoteker belum dipilih!');
+    }else{
+      statusForm = true;
+    }
+    return statusForm;
+  }
+
   function prosesBayar(){
-    var dataPembelian = {'kode_inv' : kode_inv,
-     'subtotal' : total,
-     'ppn_nilai' : n_ppn,
-     'grandtotal' : grandtotal,
-     'nominal_bayar' : bayar,
-     'nominal_kembalian' : kembalian,
-     'tipe_pembayaran' : tipePembayaran,
-     'no_ref_pembayaran' : noRef,
-     'mab_id' : mabId,
-     'resep' : 0, //ini adalah transaksi non-resep
-     'penerbit' : null,
-     'dokter' : null,
-     'resep_tgl' : null,
-     'ma_id' : null,
-   };
+    
+    var x = validateForm();
+    if(x){
+      var dataPembelian = {'kode_inv' : kode_inv,
+       'subtotal' : total,
+       'ppn_nilai' : n_ppn,
+       'grandtotal' : grandtotal,
+       'nominal_bayar' : bayar,
+       'nominal_kembalian' : kembalian,
+       'tipe_pembayaran' : tipePembayaran,
+       'no_ref_pembayaran' : noRef,
+       'mab_id' : mabId,
+       'resep' : 1, //ini adalah transaksi resep
+       'penerbit' : penerbit,
+       'dokter' : dokter,
+       'resep_tgl' : tanggalResep,
+       'ma_id' : apoteker,
+     };
 
-    console.log(arraybeli);
-    var x = JSON.stringify(dataPembelian);
-    var y = JSON.stringify(arraybeli);
+      console.log(arraybeli);
+      var x = JSON.stringify(dataPembelian);
+      var y = JSON.stringify(arraybeli);
 
-    $.ajax({
-        url: "<?php echo base_url('kasir/save_transaksi') ?>",
-        type: "POST",
-        data: {data : x, item : y},
-        dataType: "JSON",
-        success: function(data) {
+      $.ajax({
+          url: "<?php echo base_url('kasir/save_transaksi') ?>",
+          type: "POST",
+          data: {data : x, item : y},
+          dataType: "JSON",
+          success: function(data) {
 
-          if (data.status) //if success exit
-          {
-            exit();
-          } else {
-           alert(data.msg);
+            if (data.status) //if success exit
+            {
+              exit();
+            } else {
+             alert(data.msg);
+            }
+
+             console.log(data.msg);
           }
-
-           console.log(data.msg);
-        }
-      });
+        });
+    }
   }
 
   function showFormDebit(){
