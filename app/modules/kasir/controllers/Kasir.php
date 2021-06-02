@@ -308,6 +308,44 @@ class Kasir extends CI_Controller {
 		echo json_encode($arr);
 	}
 
+	function ajax_transaksi_sesi(){
+		$sesi_id = $this->session->userdata('id_sesi');
+		$status = false;
+		$c = 0;
+		if(isset($sesi_id)){
+			$status = true;
+			$this->db->select('tsud_no_inv, ti_id, ti_total_barang, ti_grandtotal', FALSE);
+			$this->db->from('t_sesi_user_detail');
+			$this->db->join('t_invoice', 't_invoice.ti_nomor_inv = t_sesi_user_detail.tsud_no_inv', 'left');
+			$this->db->where('tsud_tsu_id', $sesi_id);
+			$query = $this->db->get();
+			$data = $query->result();
+			$temp = array();
+			foreach ($data as $item) {
+				$c++;
+				$row = array();
+				$row[] = $item->ti_id;
+				$row[] = $item->tsud_no_inv;
+				$row[] = $item->ti_total_barang;
+				$row[] = $item->ti_grandtotal;
+				$row[] = '<a href="'.base_url('kasir/invoice_detail/'.$item->tsud_no_inv).'" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Print</a>';
+
+				$temp[] = $row;
+			}
+			$recordsTotal = $c;
+			$recordsFiltered = $query->num_rows();
+
+		}
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $recordsTotal,
+			"recordsFiltered" => $recordsFiltered,
+			"data" => $temp,
+		);
+
+		echo json_encode($output);
+	}
+
 
 	function ajax_detail_items(){
 		$id = $_POST['id'];

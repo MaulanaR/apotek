@@ -38,7 +38,7 @@
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/temaalus/dist/css/bootstrap-datetimepicker.min.css');?>">
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/temaalus/plugins/bootstrap-select/dist/css/bootstrap-select.min.css">
-  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/temaalus/dist/css/bank_indonesia.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/temaalus/dist/css/bank_indonesia.css">
 
   <script src="<?php echo base_url(); ?>assets/temaalus/plugins/jQuery/jquery.min.js"></script>
   <script src="<?php echo base_url(); ?>assets/temaalus/dist/js/jquery.cookie.js"></script>

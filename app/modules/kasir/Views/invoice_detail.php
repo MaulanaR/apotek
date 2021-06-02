@@ -1,3 +1,7 @@
+ <?php
+    $url = base_url('kasir/invoice_detail/'.$kode_inv);
+    //$img = $this->infiQr->generate($url);
+  ?>
 <div class="content-wrapper" style="min-height: 2644px;">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -20,16 +24,12 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-12">
-            <div class="callout callout-info">
-              <h5><i class="fas fa-info"></i> Note:</h5>
-              This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
-            </div>
             <div class="row">
             <div class="col-4 text-left">
-              <p><a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a> Ukuran Normal</p>
+              <p><a rel="noopener" class="btn btn-default" onclick="print(true)"><i class="fas fa-print"></i> Print</a> Ukuran Normal</p>
             </div>
             <div class="col-4 text-center">
-              <p><a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a> Ukuran Kecil</p>
+              <p><a rel="noopener" class="btn btn-default" onclick="print(false)"><i class="fas fa-print"></i> Print</a> Ukuran Kecil</p>
             </div>
             <div class="col-4 text-right">
               <?php
@@ -40,12 +40,12 @@
             </div>
             </div>
             <!-- Main content -->
-            <div class="invoice p-3 mb-3">
+            <div class="invoice p-3 mb-3" id="printarea">
               <!-- title row -->
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <i class="fas fa-globe"></i> Apotek APP
+                    <img src="<?php echo base_url('assets/logo/askrindo-mini.png'); ?>" width="30px" height="30px"> Apotek APP
                     <?php
                       $a = explode(" ", $tgl);
                     ?>
@@ -137,6 +137,7 @@
                   <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                    Terima kasih atas pembeliannya!
                   </p>
+                  <p class='text-center'><img src="<?php echo $img; ?>"><p>
                 </div>
                 <!-- /.col -->
               </div>
@@ -159,6 +160,7 @@
     </section>
     <!-- /.content -->
   </div>
+
 
   <script type="text/javascript">
     var ids = '<?php echo $id; ?>';
@@ -192,4 +194,33 @@
         }
       });
     }
+
+    function print(size){
+      var windownow = window.location.href;
+      var content = document.getElementById('printarea');
+      var print_area = window.open();
+      print_area.document.write('<html><head>');
+
+      var scripts = document.getElementsByTagName("link");
+      if(size){
+        for (var i = 0; i < scripts.length; i++) {
+          if (scripts[i].href) print_area.document.write('<link rel="stylesheet" type="text/css" href="'+scripts[i].href+'">')
+          else console.log(i, scripts[i].innerHTML)
+        }
+      }
+      print_area.document.write('<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/temaalus/dist/css/print.css">');
+      print_area.document.write('</head><body>');
+      print_area.document.write(content.innerHTML);
+      print_area.document.write('</body></html>');
+      print_area.document.close();
+      setTimeout(function (){
+
+        print_area.focus();
+        print_area.print();
+        print_area.close();
+
+      }, 500);
+
+      }
+      
   </script>

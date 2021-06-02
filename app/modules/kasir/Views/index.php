@@ -14,7 +14,7 @@
       <div class="row">
         <div class="card col-md-8 m-2">
           <div class="card-header text-left">
-            <p>Selamat datang dan selamat bekerja <b>Kasir</b>!</p>
+            <p>Selamat datang dan selamat bekerja <b><?php echo $this->session->userdata('username') ?></b>!</p>
           </div>
           <div class="card-body">
             <a class="btn btn-app bg-success" href="<?php echo base_url('kasir/transaksi'); ?>">
@@ -51,7 +51,7 @@
             </div>
           </div>
         </div>
-        <div class="card col-md-12 m-2">
+        <div class="card col-12 m-2">
           <div class="card-header text-left">
             <h7>Transaksi pada sesi ini :</h7>
           </div>
@@ -59,45 +59,15 @@
             <table id="tabelTransaksi" class="table table-bordered table-hover dataTable dtr-inline">
               <thead>
                 <tr>
-                  <th class="text">No Invoice</th>
-                  <th class="text">Jumlah Item</th>
-                  <th class="text">Grand Total</th>
-                  <th class="text">Status</th>
-                  <th class="text">Kasir</th>
-                  <th class="text"></th>
+                  <th class="text">ID</th>
+                  <th class="text">Invoice ID</th>
+                  <th class="text">Item</th>
+                  <th class="text">Total</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="bodyTransaksi">
-                <tr>
-                  <td class="text">FCA67B8Y</td>
-                  <td class="text">3</td>
-                  <td class="text">Rp. 25.000,00</td>
-                  <td class="text">Finished</td>
-                  <td class="text">Kasir 1</td>
-                  <td class="text">
-                    <a href="#" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text">FCA67B8Y</td>
-                  <td class="text">3</td>
-                  <td class="text">Rp. 25.000,00</td>
-                  <td class="text">Finished</td>
-                  <td class="text">Kasir 1</td>
-                  <td class="text">
-                    <a href="#" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text">FCA67B8Y</td>
-                  <td class="text">3</td>
-                  <td class="text">Rp. 25.000,00</td>
-                  <td class="text">Finished</td>
-                  <td class="text">Kasir 1</td>
-                  <td class="text">
-                    <a href="#" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                  </td>
-                </tr>
+                
               </tbody>
             </table>
           </div>
@@ -108,6 +78,37 @@
   </div>
 
   <script>
+    $(document).ready(function() {
+
+      //datatables
+      table = $('#tabelTransaksi').DataTable({
+        "processing": true, //Feature control the processing indicator.
+        "serverSide": true, //Feature control DataTables' server-side processing mode.
+        scrollX: true,
+        scroller: true,
+        stateSave: true,
+        searchDelay: 3050,
+
+        // Load data for the table's content from an Ajax source
+        "ajax": {
+          "url": "<?php echo base_url('kasir/ajax_transaksi_sesi') ?>",
+          "type": "POST"
+        },
+
+        //Set column definition initialisation properties.
+        "columnDefs": [{
+          "targets": [1, 2, 3], //last column
+          "orderable": true, //set not orderable
+          "className": "text-center",
+        }, ],
+        "lengthMenu": [
+          [10, 25, 100, 1000, -1],
+          [10, 25, 100, 1000, "All"]
+        ],
+      });
+
+    });
+
   $("#saldox").autoNumeric('init');
     function end_sesi() {
       var r = confirm("Apakah anda yakin ingin menyelesaikan sesi saat ini?");
