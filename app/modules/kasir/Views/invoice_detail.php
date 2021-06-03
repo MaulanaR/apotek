@@ -1,6 +1,7 @@
  <?php
     $url = base_url('kasir/invoice_detail/'.$kode_inv);
     //$img = $this->infiQr->generate($url);
+    $img = file_get_contents(base_url('assets/qrcode/index2.php').'?id='.$kode_inv);
   ?>
 <div class="content-wrapper" style="min-height: 2644px;">
     <!-- Content Header (Page header) -->
@@ -49,7 +50,9 @@
                     <?php
                       $a = explode(" ", $tgl);
                     ?>
-                    <small class="float-right">Date: <?php  echo $a[0]?></small>
+                    <span class="float-right">
+                      <img class="img" src="<?php echo base_url('assets/barcode/barcode.php?codetype=codabar&print=false&size=35&sizefactor=3&text=').$kode_inv;?>'">
+                    </span>
                   </h4>
                 </div>
                 <!-- /.col -->
@@ -60,6 +63,7 @@
                   <address>
                     <strong><?php echo $username; ?></strong><br>
                     <?php echo $job; ?><br>
+                    Date: <?php  echo $a[0]?> <br>
                     Kota, Kode POS 22114466<br>
                     Telepon: (000) 1112223<br>
                     Email: cs@appapotek
@@ -137,7 +141,10 @@
                   <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                    Terima kasih atas pembeliannya!
                   </p>
-                  <p class='text-center'><img src="<?php echo $img; ?>"><p>
+                  <p class='text-center'>
+                    <!-- lokasi gmbr qr -->
+                    <img src="<?php echo base_url('assets/qrcode/temp/qr_').$kode_inv;?>.png">
+                  <p>
                 </div>
                 <!-- /.col -->
               </div>

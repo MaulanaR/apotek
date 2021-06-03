@@ -114,8 +114,10 @@ class Stok_depan_model extends CI_Model {
                                     SUM(tj_masuk - tj_keluar) AS 'stok'", FALSE);
         $this->db->from('t_jurnal');
         $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','left');
-        if($resep){$a = 1;}
         $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','left');
+        if($resep){
+            $this->db->where("m_obat.mo_nama LIKE '%".$content."%' OR m_obat.mo_barcode LIKE '%".$content."%'");
+        }
         $this->db->where("m_obat.mo_resep = '".$a."' AND (m_obat.mo_nama LIKE '%".$content."%' OR m_obat.mo_barcode LIKE '%".$content."%')");
         $this->db->group_by('tj_tb_id');
         $query = $this->db->get();

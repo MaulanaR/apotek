@@ -2627,7 +2627,7 @@ class alus_auth_model extends CI_Model
 		$this->db->where('tsu_id', $id);
 		$saldo_awal = $this->db->get('t_sesi_user')->row()->tsu_saldo_awal;
 		
-		$this->db->select('SUM(ti_grandtotal) as total_keluar');
+		$this->db->select('SUM(ti_nominal_kembalian) as total_keluar');
 		$this->db->where('tsud_tsu_id',$id);
 		$this->db->join('t_invoice', 't_invoice.ti_id = t_sesi_user_detail.tsud_ti_id', 'left');
 		
