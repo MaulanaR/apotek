@@ -66,7 +66,7 @@
         console.log('param null');
       }else{
         $.ajax({
-          url: "<?php echo site_url('kasir/cari_data/'); ?>"+par,
+          url: "<?php echo site_url('kasir/cari_data_resep/'); ?>"+par,
           type: "GET",
           dataType: "JSON",
           success: function(data) {

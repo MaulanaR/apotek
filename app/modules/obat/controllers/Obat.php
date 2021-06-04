@@ -42,51 +42,6 @@ class Obat extends CI_Controller
 		}
 	}
 
-
-
-	public function save_hak_akses()
-	{
-		if ($this->privilege['can_edit'] == 0) {
-			echo json_encode(array("status" => FALSE, "msg" => "You Dont Have Permission"));
-		} else {
-			$this->form_validation->set_rules('bot[]', 'Menu', 'required');
-			if ($this->form_validation->run() == true) {
-				$id_group = $this->input->post('id_group');
-				$mlist = $this->input->post('bot');
-				$result = array();
-				$i = 0;
-				$sum = 0;
-				foreach ($mlist as $key => $val) {
-					if ($val) {
-						//delete hak sebelumnya clear all 
-						$this->model->del_ga($id_group);
-						//buat baru
-						$result[] = array(
-							"id_group" 	 => $id_group,
-							"id_menu" 	 => $_POST['menu'][$val],
-							"can_view" 	 => $_POST['canview'][$val],
-							"can_edit" 	 => $_POST['canedit'][$val],
-							"can_add" 	 => $_POST['canadd'][$val],
-							"can_delete" => $_POST['candelete'][$val],
-							"psv" 		 => date('Y-m-d H:i:s', strtotime($_POST['psv'][$val])),
-							"pev" 		 => date('Y-m-d H:i:s', strtotime($_POST['pev'][$val])),
-							"psed" 		 => date('Y-m-d H:i:s', strtotime($_POST['psed'][$val])),
-							"peed" 		 => date('Y-m-d H:i:s', strtotime($_POST['peed'][$val]))
-						);
-					}
-				}
-
-				$a = $this->model->upres($result);
-				if ($a) {
-					echo json_encode(array("status" => TRUE));
-				} else {
-					echo json_encode(array("status" => FALSE, "msg" => "Gagal update hak akses !"));
-				}
-			} else {
-				echo json_encode(array("status" => FALSE, "msg" => "ERROR[ID NOT FOUND]"));
-			}
-		}
-	}
 	/* SERVER SIDE */
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */

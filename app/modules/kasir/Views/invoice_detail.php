@@ -114,7 +114,7 @@
                   <div class="table-responsive">
                     <table class="table">
                       <tbody><tr>
-                        <th style="width:50%">Subtotal:</th>
+                        <th style="width:50%">Total:</th>
                         <td><?php echo $subtotal; ?></td>
                       </tr>
                       <tr>
@@ -122,7 +122,7 @@
                         <td><?php echo $ppn_nilai; ?></td>
                       </tr>
                       <tr>
-                        <th>Total:</th>
+                        <th>Grandtotal:</th>
                         <td><b><?php echo $grandtotal; ?></b></td>
                       </tr>
                       <tr>
@@ -150,15 +150,6 @@
               </div>
               <!-- /.row -->
 
-              <!-- this row will not appear when printing -->
-              <div class="row no-print">
-                <div class="col-12">
-                  <a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                  <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
-                    <i class="fas fa-download"></i> Generate PDF
-                  </button>
-                </div>
-              </div>
             </div>
             <!-- /.invoice -->
           </div><!-- /.col -->

@@ -3,8 +3,8 @@
   <!-- Full Width Column -->
   <div class="content-wrapper" style="min-height: 901px;">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <h1>
+    <section class="content-header text-right">
+      <h1 id="clock">
         <?php echo date("Y-m-d H:i:s"); ?>
       </h1>
     </section>
@@ -78,8 +78,33 @@
   </div>
 
   <script>
+    function checkTime(i) {
+      if (i<10) {
+        i = "0" + i;
+      }
+      return i;
+    }
+    function startTime() {
+      var days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum\'at', 'Sabtu'];
+      var today = new Date();
+      var h = today.getHours();
+      var m = today.getMinutes();
+      var s = today.getSeconds();
+      var Y = today.getFullYear();
+      var mt = today.getMonth();
+      var d = today.getDate();
+      var dnow = today.getDay();
+      var dname = days[dnow];
+      // add a zero in front of numbers<10
+      m = checkTime(m);
+      s = checkTime(s);
+      document.getElementById("clock").innerHTML = dname + " " + d + "/" + mt + "/" + Y + " " + h + ":" + m + ":" + s;
+      t = setTimeout(function(){ startTime() }, 500);
+    }
+
     $(document).ready(function() {
 
+      startTime();
       //datatables
       table = $('#tabelTransaksi').DataTable({
         "processing": true, //Feature control the processing indicator.
