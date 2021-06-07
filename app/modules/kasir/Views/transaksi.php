@@ -145,8 +145,7 @@
               </div>
               <div class="form-group">
                 <label class="control-label ">Nomor Referensi Pembayaran</label>
-                <input type="text" name="ref" class="form-control" value="" required="">
-                <!-- input id alkes ke tabel m_obat, SESUAIKAN dengan ID alkes di tabel m_kategori-->
+                <input type="text" id="ref" name="ref" class="form-control" value="" required="">
               </div>
             </div>
           </div>
@@ -162,6 +161,7 @@
 
   <script type="text/javascript">
     var kode_inv = '<?php echo $uniqid; ?>';
+    var availRek = '<?php echo $avail_rek; ?>';
     var datacari = [];
     var arraybeli = [];
     var bodypencarian = document.getElementById('bodypencarian');
@@ -183,6 +183,15 @@
       $("#formdebit").submit(function(e) {
         e.preventDefault();
         proses('debit');
+      });
+      $("#ref").on({
+        keydown: function(e) {
+          if (e.which === 32)
+            return false;
+        },
+        change: function() {
+          this.value = this.value.replace(/\s/g, "");
+        }
       });
     });
 
@@ -480,8 +489,12 @@
     }
 
     function showFormDebit() {
-      $('[name="amount_due"]').val(grandtotal);
-      $('#modal_form').modal('show');
+      if(availRek){
+        $('[name="amount_due"]').val(grandtotal);
+        $('#modal_form').modal('show');
+      }else{
+        alert('Belum ada akun terdaftar!');
+      }
     }
 
     function proses(con) {

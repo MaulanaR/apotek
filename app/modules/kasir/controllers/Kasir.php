@@ -78,6 +78,9 @@ class Kasir extends CI_Controller {
          	
          	$data['uniqid'] = $b;
 
+         	$this->db->from("m_akun_bank");
+	        if($this->db->count_all_results() > 0){$s = TRUE;}else{$s = FALSE;}
+	        $data['avail_rek'] = $s;
 		 	$this->load->view('template/temaalus/header',$head);
 		 	$this->load->view('kasir/transaksi.php', $data);
 		 	$this->load->view('template/temaalus/footer');
@@ -106,6 +109,10 @@ class Kasir extends CI_Controller {
          	}while($a);
          	
          	$data['uniqid'] = $b;
+
+         	$this->db->from("m_akun_bank");
+	        if($this->db->count_all_results() > 0){$s = TRUE;}else{$s = FALSE;}
+	        $data['avail_rek'] = $s;
 
 		 	$this->load->view('template/temaalus/header',$head);
 		 	$this->load->view('kasir/transaksi_resep.php', $data);
@@ -345,7 +352,6 @@ class Kasir extends CI_Controller {
 
 		echo json_encode($output);
 	}
-
 
 	function ajax_detail_items(){
 		$id = $_POST['id'];
