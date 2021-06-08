@@ -26,6 +26,9 @@
             <a class="btn btn-app bg-secondary" href="<?php echo base_url('kasir/cari_produk'); ?>">
               <i class="fas fa-barcode"></i>Cek Produk
             </a>
+            <a class="btn btn-app bg-secondary" href="<?php echo base_url('kasir/cari_produk'); ?>">
+              <i class="fas fa-outdent"></i>Retur Transaksi
+            </a>
           </div>
         </div>
         <div class="card col-md-3 m-2" alt="Max-width 100%">
@@ -56,20 +59,35 @@
             <h7>Transaksi pada sesi ini :</h7>
           </div>
           <div class="card-body">
-            <table id="tabelTransaksi" class="table table-bordered table-hover dataTable dtr-inline">
-              <thead>
-                <tr>
-                  <th class="text">ID</th>
-                  <th class="text">Invoice ID</th>
-                  <th class="text">Item</th>
-                  <th class="text">Total</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="bodyTransaksi">
-                
-              </tbody>
-            </table>
+            <div class="row">
+              <div class='col-md-8 m-2'>
+                <table id="tabelTransaksi" class="table table-bordered table-hover dataTable dtr-inline" >
+                  <thead>
+                    <tr>
+                      <th class="text">ID</th>
+                      <th class="text">Invoice ID</th>
+                      <th class="text">Item</th>
+                      <th class="text">Total</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="bodyTransaksi">
+                    
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-md-3 m-2">
+                <div class="form-group">
+                  <form action="#">
+                    <label for="inputCariInvoice">Cari Invoice</label>
+                    <input type="text" class="form-group" id="inputCariInvoice" name="cariInvoice" required="">
+                    <button class="btn btn-sm btn-success" onclick="cariTransaksi()">
+                    <strong><i class="fa fa-search" aria-hidden="true"></i> Cari</strong>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div><!-- /.row -->
           </div>
         </div>
       </div>
@@ -149,5 +167,29 @@
         popup('Info','Dibatalkan','info');
       }
     }
+
+  function cariTransaksi(){
+    var par = document.querySelector('[name="cariInvoice"]').value;
+      if(/^\s*$/.test(par)){
+        console.log('param null');
+      }else{
+        $.ajax({
+          url: "<?php echo site_url('kasir/cari_data_invoice/'); ?>"+par,
+          type: "GET",
+          dataType: "JSON",
+          success: function(data) {
+            if(data.status){
+                window.location.replace("<?php echo base_url('kasir/invoice_detail/'); ?>"+par);
+              }else{
+                alert(data.msg);
+                window.location.replace("<?php echo base_url('kasir/'); ?>");
+              }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            alert('Error get data from ajax');
+          }
+        });
+      }
+  }
   </script>
   <!-- /.content-wrapper -->

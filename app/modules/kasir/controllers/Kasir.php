@@ -315,6 +315,23 @@ class Kasir extends CI_Controller {
 		echo json_encode($arr);
 	}
 
+	function cari_data_invoice($uniqid){
+		$status = FALSE;
+		if($uniqid != ""){
+			$cari = $this->model->cek_nomor_inv($uniqid);
+			if($cari >= 1 ){
+				$status = TRUE;
+				$msg = "Success";
+			}else{
+				$msg = "Invoice tidak ditemukan!";
+			}
+		}else{
+			$msg = "Ajax error!";
+		}
+		$arr = array('status' => $status, 'msg' => $msg);
+		echo json_encode($arr);
+	}
+
 	function ajax_transaksi_sesi(){
 		$sesi_id = $this->session->userdata('id_sesi');
 		$status = false;
