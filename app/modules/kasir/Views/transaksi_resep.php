@@ -455,7 +455,6 @@
       alert("Cannot Proceed");
       cantCheckout = false; 
     }else{
-      //alert('SENT!');
       $("[name='nominal_bayar']").attr('disabled', false);
       clearTabelPencarian();
       $("#btn-cari").attr('disabled', true);
@@ -517,12 +516,13 @@
 
             if (data.status) //if success exit
             {
-              exit();
+              popup('Informasi', 'Berhasil');
+              setTimeout(function (){
+                exit();
+              }, 1000);
             } else {
-             alert(data.msg);
+             popup('Perhatian', data.msg, 'info');
             }
-
-             console.log(data.msg);
           }
         });
     }
@@ -533,25 +533,27 @@
         $('[name="amount_due"]').val(grandtotal);
         $('#modal_form').modal('show');
       }else{
-        alert('Belum ada akun terdaftar!');
+        popup('Perhatian', 'Belum ada akun yang terdaftar!', 'info');
       }
   }
 
   function proses(con){
-    if(con == 'cash'){
-      bayar = document.querySelector('[name="nominal_bayar"]').value;
-      if(bayar < grandtotal){
-        alert('Pembayaran Kurang!');
-      }else{
+    if (confirm('Psoses Transaksi ?')) {
+      if(con == 'cash'){
+        bayar = document.querySelector('[name="nominal_bayar"]').value;
+        if(bayar < grandtotal){
+          popup('Perhatian', 'Pembayaran Kurang!', 'info');
+        }else{
+          prosesBayar();
+        }
+      }else if(con == 'debit'){
+        kembalian = 0;
+        tipePembayaran = 1;
+        bayar = grandtotal;
+        noRef = document.querySelector('[name="ref"]').value;
+        mabId = document.querySelector('[name="akun"]').value;
         prosesBayar();
       }
-    }else if(con == 'debit'){
-      kembalian = 0;
-      tipePembayaran = 1;
-      bayar = grandtotal;
-      noRef = document.querySelector('[name="ref"]').value;
-      mabId = document.querySelector('[name="akun"]').value;
-      prosesBayar();
     }
 
   }

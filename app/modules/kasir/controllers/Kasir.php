@@ -352,7 +352,7 @@ class Kasir extends CI_Controller {
 				$row[] = $item->tsud_no_inv;
 				$row[] = $item->ti_total_barang;
 				$row[] = $item->ti_grandtotal;
-				$row[] = '<a href="'.base_url('kasir/invoice_detail/'.$item->tsud_no_inv).'" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i> Print</a>';
+				$row[] = '<a href="'.base_url('kasir/invoice_detail/'.$item->tsud_no_inv).'" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i></a>';
 
 				$temp[] = $row;
 			}
@@ -449,9 +449,9 @@ class Kasir extends CI_Controller {
 				foreach ($item as $key => $value) {
 
 						$temp = $jumlahBarang + $value->jumlah;
-						$jumlahBarang = $temp;
+						$jumlahBarang = $temp;//hitung jumlah item
 
-						$total = $value->harga * $value->jumlah;
+						$total = $value->harga * $value->jumlah;//hitung total per item
 						$con = array(
 							'tid_ti_id' => $inv_id,
 							'tid_mo_id' => $value->mo_id,
@@ -460,8 +460,16 @@ class Kasir extends CI_Controller {
 							'tid_harga_satuan' => $value->harga,
 							'tid_total'=> $total,
 						);
-
 						$this->model->saveDetail($con);//save item ke detail
+
+						$arrayItem = array(
+							'tj_ti_id' => $inv_id, 
+							'tj_mo_id' => $value->mo_id, 
+							'tj_tb_id' => $value->tb_id,
+							'tj_keluar' => $value->jumlah,
+							'tj_keterangan' => 'Transaksi pembelian',
+						);
+						$this->db->insert('t_jurnal', $arrayItem);//Kurangi stok item
 					}
 				$this->model->update(array('ti_id' => $inv_id), array('ti_total_barang' => $jumlahBarang));//update jumlah barang di invoice
 				
