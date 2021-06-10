@@ -160,6 +160,7 @@ class Alkes extends CI_Controller
 					'tj_mo_id' => $this->input->post('id', true),
 					'tj_tb_id' => $this->input->post('tb_id', true),
 					'tj_masuk' => $this->input->post('jumlah', true),
+					'tj_keterangan' => $this->input->post('keterangan', true),
 				);
 
 				$this->stok->save($data);
@@ -208,6 +209,7 @@ class Alkes extends CI_Controller
 					'tj_mo_id' => $this->input->post('id', true),
 					'tj_tb_id' => $this->input->post('tb_id', true),
 					'tj_keluar' => $this->input->post('jumlah', true),
+					'tj_keterangan' => $this->input->post('keterangan', true),
 				);
 
 				$this->stok->save($data);
@@ -255,6 +257,7 @@ class Alkes extends CI_Controller
             $data['mo_deskripsi'] = $record->mo_deskripsi;
             $data['mo_picture'] = $record->mo_picture;
             $data['mo_resep'] = $record->mo_resep;
+            $data['mo_ppn_10'] = $record->mo_ppn_10;
             
             $this->load->view('template/temaalus/header',$head);
             $this->load->view('detail.php',$data);

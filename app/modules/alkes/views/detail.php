@@ -22,12 +22,27 @@
               <div class="col-md-8">
                 <div class="card-body">
                   <dl class="row">
-                    <dt class="col-sm-8">Nomor barcode</dt>
-                    <dd class="col-sm-8"><?php echo $mo_barcode; ?></dd>
+                    <dt class="col-sm-8">Nomor barcode <a href="" onclick="printBarcode()"><i class="fas fa-print"></i></a></dt>
+                    <dd class="col-sm-8 text-center" id="imgbarcode"><p style="text-align: center;"><img class="img" src="<?php echo base_url('assets/barcode/barcode.php?codetype=codabar&print=false&size=35&sizefactor=3&text=').$mo_barcode;?>'"><br/><strong style="letter-spacing: 4px;"><?php echo $mo_barcode; ?></strong></p></dd>
                     <dt class="col-sm-8">Penyimpanan</dt>
                     <dd class="col-sm-8"><?php echo $mo_penyimpanan; ?></dd>
                     <dt class="col-sm-8">Kategori</dt>
                     <dd class="col-sm-8"><?php echo $mk_nama; ?></dd>
+                    <dt class="col-sm-8">Pajak</dt>
+                    <?php
+                      $a = "";
+                      if($mo_ppn_10 == 1){
+                        $a = "checked";
+                      }
+                    ?>
+                    <dd class="col-sm-8">
+                      <div class="form-group">
+                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                      <input type="checkbox" class="custom-control-input" id="customSwitch3" <?php echo $a;?>>
+                      <label class="custom-control-label" for="customSwitch3">PPN 10%</label>
+                    </div>
+                  </div>
+                    </dd>
                     <dt class="col-sm-8">Deskripsi</dt>
                     <dd class="col-sm-8"><?php echo $mo_deskripsi; ?>
                     </dd>
@@ -61,11 +76,10 @@
                           <button type="button" class="btn btn-warning" onclick="add_stok()">Tambah</button>
                     </div>
                   </div>
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Disuplai oleh <b id="supplier"></b></li>
-                  </ul>
                   <div class="card-body">
-                    <span></span>
+                    <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Disuplai oleh <b id="supplier"></b></li>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -96,7 +110,10 @@
             <input type="hidden" value="<?php echo $mo_id; ?>" name="id" required/>
             <input type="hidden" id="tb_id" name="tb_id" required/>
             <div class="form-body">
-              <div class="form-group">
+              <div id="fgroup1" class="form-group">
+                
+              </div>
+              <div id="fgroup2" class="form-group">
                 
               </div>
         </div>
@@ -134,6 +151,22 @@ function reset_field(){
   $("#supplier").empty();
 }
 
+function printBarcode(){
+      var barcode = document.getElementById('imgbarcode');
+      var print = window.open();
+      print.document.write('<html><head><style>@page { size: auto;  margin: 0mm;}</style></head><body style="float: left;">');
+      print.document.write(barcode.innerHTML);
+      print.document.write('</body></html>');
+      print.document.close();
+      
+      setTimeout(function() {
+        print.focus();
+        print.print();
+        print.close();
+      }, 100);
+      
+    }
+
 function load_data(){
   reset_field();//reset sebelum diisi data
   $.ajax({
@@ -164,8 +197,9 @@ function add_stok(id) {
       aksi= 'insert';
       $('#formaddstok')[0].reset(); // reset form on modals
       $('.form-group').empty();//reset input container
-      $('.form-group').append('<label class="control-label ">Jumlah</label><input type="number" name="jumlah" class="form-control" min="1" required><span class="help-block"></span>');
       $('.form-group').removeClass('has-error'); // clear error class
+      $('#fgroup1').append('<label class="control-label ">Jumlah</label><input type="number" name="jumlah" class="form-control" min="1" required><span class="help-block"></span>');
+      $('#fgroup2').append('<label class="control-label ">Keterangan</label><textarea name="keterangan" class="form-control"></textarea><span class="help-block"></span>');
       $('.help-block').empty(); // clear error string
       $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
       $('.modal-title').text('Tambah Stok'); // Set title to Bootstrap modal title
@@ -175,8 +209,9 @@ function min_stok(id) {
       aksi= 'take';
       $('#formaddstok')[0].reset(); // reset form on modals
       $('.form-group').empty();//reset input container
-      $('.form-group').append('<label class="control-label ">Jumlah</label><input type="number" name="jumlah" class="form-control" min="1" required><span class="help-block"></span>');
       $('.form-group').removeClass('has-error'); // clear error class
+      $('#fgroup1').append('<label class="control-label ">Jumlah</label><input type="number" name="jumlah" class="form-control" min="1" required><span class="help-block"></span>');
+      $('#fgroup2').append('<label class="control-label ">Keterangan</label><textarea name="keterangan" class="form-control"></textarea><span class="help-block"></span>');
       $('.help-block').empty(); // clear error string
   
       $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
@@ -187,7 +222,7 @@ function adj_harga() {
       aksi = 'ubah_harga';
       $('#formaddstok')[0].reset(); // reset form on modals
       $('.form-group').empty();//reset input container
-      $('.form-group').append('<label class="control-label ">Masukan Harga Baru</label><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">Rp.</span></div><input type="number" name="harga" min="1" class="form-control col-sm-6" value="'+ hargajual +'" required><div class="input-group-append"><span class="input-group-text">,00</span></div><span class="help-block"></span></div>');
+      $('#fgroup1').append('<label class="control-label ">Masukan Harga Baru</label><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">Rp.</span></div><input type="number" name="harga" min="1" class="form-control col-sm-6" value="'+ hargajual +'" required><div class="input-group-append"><span class="input-group-text">,00</span></div><span class="help-block"></span></div>');
       $('.form-group').removeClass('has-error'); // clear error class
       $('.help-block').empty(); // clear error string
   

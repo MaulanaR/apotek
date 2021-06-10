@@ -188,6 +188,7 @@ class Obat extends CI_Controller
 			$data['mo_deskripsi'] = $record->mo_deskripsi;
 			$data['mo_picture'] = $record->mo_picture;
 			$data['mo_resep'] = $record->mo_resep;
+			$data['mo_ppn_10'] = $record->mo_ppn_10;
 
 			$this->load->view('template/temaalus/header', $head);
 			$this->load->view('Obat/detail.php', $data);

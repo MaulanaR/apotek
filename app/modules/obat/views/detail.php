@@ -22,12 +22,27 @@
               <!-- /.card-header -->
               <div class="card-body">
                 <dl class="row">
-                  <dt class="col-sm-8">Nomor barcode</dt>
-                  <dd class="col-sm-12 text-center" id="imgbarcode"><img class="img" src="<?php echo base_url('assets/barcode/barcode.php?codetype=codabar&print=false&size=35&sizefactor=3&text=').$mo_barcode;?>'"><a href="" onclick="printBarcode()"><i class="fas fa-print"></i></a><br/><strong><?php echo $mo_barcode; ?></strong></dd>
+                  <dt class="col-sm-8">Nomor barcode <a href="" onclick="printBarcode()"><i class="fas fa-print"></i></a></dt>
+                  <dd class="col-sm-12 text-center" id="imgbarcode"><p style="text-align: center;"><img class="img" src="<?php echo base_url('assets/barcode/barcode.php?codetype=codabar&print=false&size=35&sizefactor=3&text=').$mo_barcode;?>'"><br/><strong style="letter-spacing: 4px;"><?php echo $mo_barcode; ?></strong></p></dd>
                   <dt class="col-sm-8">Penyimpanan</dt>
                   <dd class="col-sm-8"><?php echo $mo_penyimpanan; ?></dd>
                   <dt class="col-sm-8">Kategori</dt>
                   <dd class="col-sm-8"><?php echo $mk_nama; ?></dd>
+                  <dt class="col-sm-8">Pajak</dt>
+                    <?php
+                      $a = "";
+                      if($mo_ppn_10 == 1){
+                        $a = "checked";
+                      }
+                    ?>
+                    <dd class="col-sm-8">
+                      <div class="form-group">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                          <input type="checkbox" class="custom-control-input" id="customSwitch3" <?php echo $a;?>>
+                          <label class="custom-control-label" for="customSwitch3">PPN 10%</label>
+                        </div>
+                      </div>
+                    </dd>
                   <dt class="col-sm-8">Deskripsi</dt>
                   <dd class="col-sm-8"><?php echo $mo_deskripsi; ?>
                   </dd>
@@ -71,7 +86,7 @@
     function printBarcode(){
       var barcode = document.getElementById('imgbarcode');
       var print = window.open();
-      print.document.write('<html><head></head><body>');
+      print.document.write('<html><head><style>@page { size: auto;  margin: 0mm;}</style></head><body style="float: left;">');
       print.document.write(barcode.innerHTML);
       print.document.write('</body></html>');
       print.document.close();
@@ -80,7 +95,7 @@
         print.focus();
         print.print();
         print.close();
-      }, 10);
+      }, 100);
       
     }
 
