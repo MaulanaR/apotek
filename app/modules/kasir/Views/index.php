@@ -181,7 +181,7 @@
             if(data.status){
                 window.location.replace("<?php echo base_url('kasir/invoice_detail/'); ?>"+par);
               }else{
-                alert(data.msg);
+                popup('Info', data.msg, 'info');
                 window.location.replace("<?php echo base_url('kasir/'); ?>");
               }
           },

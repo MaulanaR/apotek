@@ -354,6 +354,22 @@ class Obat extends CI_Controller
 			echo json_encode(array("status" => FALSE, "msg" => validation_errors()));
 		}
 	}
+
+	public function ajax_ubah_ppn_10($id){
+		$this->db->select('mo_ppn_10');
+		$this->db->from('m_obat');
+        $this->db->where('mo_id',$id);
+        $query = $this->db->get();
+        $data = $query->row();
+        if($data->mo_ppn_10 == '0'){
+        	$a = TRUE;
+        }else{
+        	$a = FALSE;
+        }
+		$this->db->update('m_obat', array('mo_ppn_10' => $a), array('mo_id' => $id));
+
+		echo json_encode(array("status" => TRUE));
+	}
 }
 
 /* End of file  Home.php */

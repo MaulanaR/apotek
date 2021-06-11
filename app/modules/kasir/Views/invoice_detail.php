@@ -89,10 +89,11 @@
                   <table class="table table-striped">
                     <thead>
                     <tr>
+                      <th>Item</th>
                       <th>Qty</th>
-                      <th>Produk</th>
                       <th>Deskripsi</th>
                       <th>Harga</th>
+                      <th>PPN</th>
                       <th>Subtotal</th>
                     </tr>
                     </thead>
@@ -118,7 +119,7 @@
                         <td><?php echo $subtotal; ?></td>
                       </tr>
                       <tr>
-                        <th>PPN (10%)</th>
+                        <th>Total PPN</th>
                         <td><?php echo $ppn_nilai; ?></td>
                       </tr>
                       <tr>
@@ -173,6 +174,8 @@
     }
 
     function generateData(){
+      var ppn_item = 0;
+      var subtotal = 0;
       $.ajax({
         url: "<?php echo base_url('kasir/ajax_detail_items') ?>",
         type: "POST",
@@ -183,8 +186,13 @@
           if (data.status)
           {
             $.each(data.data, function(index, val) {
-
-            $('#bodyItem').append('<tr><td>'+val.qty+'</td><td>'+val.nama+'</td><td>'+val.deskripsi+'</td><td>'+rupiah(val.harga)+'</td><td>'+rupiah(val.total)+'</td></tr>')
+              if(val.ppn_status == 1){
+                ppn_item = parseInt(val.harga) * 0.1;
+              }else{
+                ppn_item = 0;
+              }
+              subtotal = parseInt(val.total);
+            $('#bodyItem').append('<tr><td>'+val.nama+'</td><td>'+val.qty+'</td><td>'+val.deskripsi+'</td><td>'+rupiah(val.harga)+'</td><td>'+rupiah(ppn_item)+'</td><td>'+rupiah(subtotal)+'</td></tr>')
           });
           } else {
             alert('Ajax error!');

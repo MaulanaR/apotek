@@ -34,7 +34,7 @@
                 <table id="tabelpencarian" class="table table-bordered table-hover dataTable dtr-inline">
                   <thead>
                     <tr>
-                      <th class="text">Item ID</th>
+                      <th class="text">ID <small>item</small></th>
                       <th class="text">Nama</th>
                       <th class="text">Tanggal Kadaluarsa</th>
                       <th class="text">Stok</th>
@@ -64,9 +64,10 @@
                 <table id="table" class="table table-bordered table-hover dataTable dtr-inline">
                   <thead>
                     <tr>
-                      <th class="text">Item ID</th>
+                      <th class="text">ID <small>item</small></th>
                       <th class="text">Nama</th>
                       <th class="text">Jumlah</th>
+                      <th class="text">PPN <small>10%</small></th>
                       <th class="text">Sub Total</th>
                       <th class="text-center"></th>
                     </tr>
@@ -83,7 +84,7 @@
                       <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00" name="total" readonly>
                     </div>
                     <div class="form-group">
-                      <label>PPN 10%</label>
+                      <label>Total PPN</label>
                       <input type="text" class="form-control form-control-border" placeholder="RP. 000.000,00" name="ppn" readonly>
                     </div>
                     <dv class="form-group text-center">
@@ -169,6 +170,7 @@
     var total;
     var grandtotal;
     var n_ppn;
+    var status_ppn = true; //PPN selalu true kecuali diubah oleh check_ppn()
     var bayar;
     var kembalian;
     var cantCheckout = false;
@@ -260,6 +262,19 @@
                 inv.value = dat.tb_id;
                 // add to end of the row
                 cel.appendChild(inv);
+                var inv2 = document.createElement('input');
+                inv2.name = 'mo_id' + i;
+                inv2.type = 'hidden';
+                inv2.value = dat.mo_id;
+                // add to end of the row
+                cel.appendChild(inv2);
+
+                var inv3 = document.createElement('input');
+                inv3.name = 'ppn_item' + i;
+                inv3.type = 'hidden';
+                inv3.value = dat.mo_ppn_10;
+                // add to end of the row
+                cel.appendChild(inv3);
 
                 var properties = ['nama', 'tgl_kadaluarsa', 'stok', 'harga'];
                 for (var j = 0; j < properties.length; ++j) {
@@ -310,11 +325,19 @@
     }
 
     function tambahkan(x) {
+      var status_ppn = document.querySelector('[name="ppn_item' + x + '"]').value;
+      console.log(status_ppn);
       var jumlah = document.querySelector('[name="jumlahobat' + x + '"]').value;
       var xarray = datacari[x];
       var cek;
       var index;
       xarray.jumlah = jumlah; //tambah jumlah ke array obat yang dipilih
+      var ppn = 0;
+      if(status_ppn == 1){
+        ppn = parseInt(xarray.harga) * 0.1;//dikali 10%
+      }
+      xarray.ppn_item = ppn;
+      xarray.ppn_status = status_ppn;
       var tb_id = document.querySelector('[name="tb_id' + x + '"]').value;
       for (var i = 0; i < arraybeli.length; i++) {
         if (arraybeli[i]['tb_id'] === tb_id) {
@@ -329,6 +352,9 @@
       } else { //jika item baru
         arraybeli.push(xarray); //tambah item ke array
       }
+      //perhitungan ppn
+
+
       clearTabelPencarian();
       console.log(arraybeli);
       refreshKeranjang();
@@ -356,8 +382,11 @@
         var cell2 = document.createElement('td');
         cell2.innerHTML = dat['jumlah'];
         row.appendChild(cell2);
+        var cell5 = document.createElement('td');
+        cell5.innerHTML = dat['jumlah'] * dat['ppn_item'];
+        row.appendChild(cell5);
         var cell3 = document.createElement('td');
-        total = dat['jumlah'] * dat['harga'];
+        total = (dat['jumlah'] * dat['harga']);
         cell3.innerHTML = rupiah(total);
         row.appendChild(cell3);
         var cell4 = document.createElement('td');
@@ -380,15 +409,19 @@
 
     function hitungTotal() {
       var temp = 0;
+      var temp2 = 0;
+      var total_ppn = 0;
       var ppn = 0.1;
       total = 0;
       for (var i = 0; i < arraybeli.length; i++) {
+        temp2 = (parseInt(arraybeli[i]['jumlah']) * parseInt(arraybeli[i]['ppn_item'])) + total_ppn;
+        total_ppn = temp2;
         total = (parseInt(arraybeli[i]['jumlah']) * parseInt(arraybeli[i]['harga'])) + temp;
         temp = total;
       }
       $('[name="total"]').attr('value', rupiah(total));
 
-      n_ppn = total * ppn;
+      n_ppn = total_ppn;
       $('[name="ppn"]').attr('value', rupiah(n_ppn));
 
       grandtotal = total + n_ppn;

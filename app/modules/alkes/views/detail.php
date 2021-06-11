@@ -38,7 +38,7 @@
                     <dd class="col-sm-8">
                       <div class="form-group">
                         <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                          <input type="checkbox" class="custom-control-input" id="customSwitch3" <?php echo $a;?>>
+                          <input type="checkbox" class="custom-control-input" id="customSwitch3" onclick="ubah_ppn()" <?php echo $a;?>>
                           <label class="custom-control-label" for="customSwitch3">PPN 10%</label>
                         </div>
                       </div>
@@ -270,4 +270,25 @@ function save() {
       window.location = "<?php echo base_url('alkes/index_edit/'). $mo_id ; ?>";
     }
 
+    function ubah_ppn(){
+      $.ajax({
+        url: "<?php echo site_url('alkes/ajax_ubah_ppn_10/') . $mo_id . ""; ?>",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success close modal and reload ajax table
+          {
+            popup('Informasi', 'Berhasil!');
+            setTimeout(function (){
+              window.location.reload();
+              }, 2000);
+
+          } else {
+            popup('Perhatian', 'Gagal mengubah status PPN!', 'info');
+            
+          }
+        }
+      });
+    }
   </script>

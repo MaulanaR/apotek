@@ -38,8 +38,8 @@
                     <dd class="col-sm-8">
                       <div class="form-group">
                         <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                          <input type="checkbox" class="custom-control-input" id="customSwitch3" <?php echo $a;?>>
-                          <label class="custom-control-label" for="customSwitch3">PPN 10%</label>
+                          <input type="checkbox" class="custom-control-input" id="switchPPN" onclick="ubah_ppn()" <?php echo $a;?>>
+                          <label class="custom-control-label" for="switchPPN">PPN 10%</label>
                         </div>
                       </div>
                     </dd>
@@ -97,6 +97,28 @@
         print.close();
       }, 100);
       
+    }
+
+    function ubah_ppn(){
+      $.ajax({
+        url: "<?php echo site_url('Obat/ajax_ubah_ppn_10/') . $mo_id . ""; ?>",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success close modal and reload ajax table
+          {
+            popup('Informasi', 'Berhasil!');
+            setTimeout(function (){
+              window.location.reload();
+              }, 2000);
+
+          } else {
+            popup('Perhatian', 'Gagal mengubah status PPN!', 'info');
+            
+          }
+        }
+      });
     }
 
     $(document).ready(function() {

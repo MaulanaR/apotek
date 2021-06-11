@@ -282,7 +282,8 @@ class Kasir extends CI_Controller {
 						"stok" => $value->stok,
 						"harga" => $value->tb_harga_jual,
 						"tb_id" => $value->tb_id,
-						"mo_id" => $value->mo_id
+						"mo_id" => $value->mo_id,
+						"mo_ppn_10" => $value->mo_ppn_10,
 					);
 				}
 			}
@@ -306,7 +307,8 @@ class Kasir extends CI_Controller {
 						"stok" => $value->stok,
 						"harga" => $value->tb_harga_jual,
 						"tb_id" => $value->tb_id,
-						"mo_id" => $value->mo_id
+						"mo_id" => $value->mo_id,
+						"mo_ppn_10" => $value->mo_ppn_10,
 					);
 				}
 			}
@@ -375,7 +377,7 @@ class Kasir extends CI_Controller {
 		$status = false;
 		if(isset($id)){
 		$status = true;
-		$this->db->select('tid_mo_id, tid_qty, tid_harga_satuan, tid_total, mo_nama, mo_barcode, mo_deskripsi', FALSE);
+		$this->db->select('tid_mo_id, tid_qty, tid_harga_satuan, tid_total, tid_ppn_status, mo_nama, mo_barcode, mo_deskripsi',  FALSE);
 		$this->db->from('t_invoice_detail');
 		$this->db->join('m_obat', 'm_obat.mo_id = t_invoice_detail.tid_mo_id', 'inner');
 		$this->db->where('tid_ti_id', $id);
@@ -389,7 +391,8 @@ class Kasir extends CI_Controller {
 						'barcode' => $itemdata->mo_barcode, 
 						'deskripsi' => $itemdata->mo_deskripsi, 
 						'harga' => $itemdata->tid_harga_satuan, 
-						'total' => $itemdata->tid_total
+						'total' => $itemdata->tid_total,
+						'ppn_status' => $itemdata->tid_ppn_status,
 					);
 				
 			}
@@ -459,6 +462,7 @@ class Kasir extends CI_Controller {
 							'tid_qty' => $value->jumlah,
 							'tid_harga_satuan' => $value->harga,
 							'tid_total'=> $total,
+							'tid_ppn_status' => $value->ppn_status,
 						);
 						$this->model->saveDetail($con);//save item ke detail
 
