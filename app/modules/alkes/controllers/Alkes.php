@@ -100,8 +100,6 @@ class Alkes extends CI_Controller
 
 			$this->form_validation->set_rules('id', 'id', 'required');
 			$this->form_validation->set_rules('nama_obat', 'nama obat', 'required');
-			$this->form_validation->set_rules('kategori_obat', 'kategori obat', 'required');
-			$this->form_validation->set_rules('unit', 'unit', 'required');
 			if($this->input->post('old_barcode') != $this->input->post('barcode'))
 			{
 				$this->form_validation->set_rules('barcode', 'barcode', 'required|callback__barcodeunique[barcode]');
@@ -113,11 +111,8 @@ class Alkes extends CI_Controller
 				$data = array(
 					'mo_nama' => $this->input->post('nama_obat', true),
 					'mo_deskripsi' => $this->input->post('des_obat', true),
-					'mo_mk_id' => $this->input->post('kategori_obat', true),
 					'mo_barcode' => $this->input->post('barcode', true),
 					'mo_penyimpanan' => $this->input->post('penyimpanan', true),
-					'mo_mu_id' => $this->input->post('unit', true),
-					'mo_resep' => $this->input->post('resep', true),
 				);
 
 				$this->model->update(array('mo_id' => $this->input->post('id')), $data);
@@ -268,6 +263,37 @@ class Alkes extends CI_Controller
         }
     }
 
+    public function index_edit($mo_id)
+    {
+    
+        if($this->alus_auth->logged_in())
+         {
+            $head['title'] = "Edit Alat Kesehatan";
+            $data = array();
+            $record = $this->model->get_by_id($mo_id);
+            $data['can_edit'] = $this->privilege['can_add'];
+            $data['mo_id'] = $mo_id;
+            $data['mo_nama'] = $record->mo_nama;
+            $data['mo_barcode'] = $record->mo_barcode;
+            $data['mo_penyimpanan'] = $record->mo_penyimpanan;
+
+            $datakategori = $this->kategori->get_by_id($record->mo_mk_id);
+            $data['mk_nama'] = $datakategori->mk_nama;
+            
+            $data['mo_deskripsi'] = $record->mo_deskripsi;
+            $data['mo_picture'] = $record->mo_picture;
+            $data['mo_resep'] = $record->mo_resep;
+            $data['mo_ppn_10'] = $record->mo_ppn_10;
+            
+            $this->load->view('template/temaalus/header',$head);
+            $this->load->view('index_edit.php',$data);
+            $this->load->view('template/temaalus/footer');
+        }else
+        {
+            redirect('admin/Login','refresh');
+        }
+    }
+
 	public function save_obat_new()
 	{
 		if ($this->privilege['can_add'] == 0) {
@@ -316,7 +342,7 @@ class Alkes extends CI_Controller
 
 				 $this->stok->save($data3);
 
-				echo json_encode(array("status" => TRUE));
+				echo json_encode(array("status" => TRUE, "id" => $mo_generated_id));
 			} else {
 				echo json_encode(array("status" => FALSE, "msg" => validation_errors()));
 			}

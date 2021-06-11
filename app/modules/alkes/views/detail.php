@@ -37,11 +37,11 @@
                     ?>
                     <dd class="col-sm-8">
                       <div class="form-group">
-                    <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                      <input type="checkbox" class="custom-control-input" id="customSwitch3" <?php echo $a;?>>
-                      <label class="custom-control-label" for="customSwitch3">PPN 10%</label>
-                    </div>
-                  </div>
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                          <input type="checkbox" class="custom-control-input" id="customSwitch3" <?php echo $a;?>>
+                          <label class="custom-control-label" for="customSwitch3">PPN 10%</label>
+                        </div>
+                      </div>
                     </dd>
                     <dt class="col-sm-8">Deskripsi</dt>
                     <dd class="col-sm-8"><?php echo $mo_deskripsi; ?>
@@ -56,9 +56,7 @@
                   </dd>
                   </dl>
                   <div class="row">
-                  <button type="button" class="btn btn-xs bg-gradient-success col-sm-2"><i class="fa fa-pencil-alt"></i>Edit</button>
-                  <span style="width:15px"></span>
-                  <button type="button" class="btn btn-xs bg-gradient-danger col-sm-2"><i class="fa fa-trash"></i>Hapus</button>
+                  <button type="button" class="btn btn-xs bg-gradient-success col-sm-2" onclick="edit()"><i class="fa fa-pencil-alt"></i>Edit</button>
                   </div>
                 </div>
               </div>
@@ -266,6 +264,10 @@ function save() {
           $('#btnSave').attr('disabled', false); //set button enable 
         }
       });
+    }
+
+    function edit(){
+      window.location = "<?php echo base_url('alkes/index_edit/'). $mo_id ; ?>";
     }
 
   </script>

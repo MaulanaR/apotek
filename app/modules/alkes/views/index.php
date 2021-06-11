@@ -54,62 +54,8 @@
   <!-- /.content-wrapper -->
   <!--Modal -->
 
-  <div class="modal fade" id="modal_form" role="dialog">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <form action="#" id="formnih" class="form-horizontal" name="formnih">
-        <div class="modal-header">
-          <h3 class="modal-title">Edit Master Alat Kesehatan</h3>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body form">
-            <input type="hidden" value="" name="id" required/>
-            <div class="form-body">
-              <div class="form-group">
-                <label class="control-label ">Nama Item</label>
-                <input type="text" name="nama_obat" class="form-control" placeholder="Nama Obat" required>
-                <span class="help-block"></span>
-              </div>
-              <div class="form-group">
-                <label class="control-label ">Deskripsi</label>
-                <input type="text" name="des_obat" class="form-control" placeholder="Deskripsi Obat" >
-                <span class="help-block"></span>
-              </div>
-              <div class="form-group">
-                <label class="control-label ">Kategori</label>
-                <input type="text" name="f_kat" class="form-control" value="Alat Kesehatan" disabled>
-                <input type="hidden" class="form-control" name="kategori_obat" value="3">
-                <!-- input id alkes ke tabel m_obat, SESUAIKAN dengan ID alkes di tabel m_kategori-->
-              </div>
-              <div class="form-group">
-                <label class="control-label ">Barcode</label>
-                <input type="hidden" name="old_barcode" class="form-control" placeholder="Barcode" required>
-                <input type="text" name="barcode" class="form-control" placeholder="Barcode" required>
-                <span class="help-block"></span>
-              </div>
-              <div class="form-group">
-                <label class="control-label ">Penyimpanan</label>
-                <input type="text" name="penyimpanan" class="form-control" placeholder="Lokasi Penyimpanan">
-                <span class="help-block"></span>
-              </div>
-                <input type="hidden" class="form-control" name="unit" value="5">
-                <!-- input id item ke tabel m_obat, SESUAIKAN dengan ID item di tabel m_unit-->
-              <input type='hidden' name='resep' value='0'>
-              <!-- input fake resep-->
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" id="btnSave" class="btn btn-primary">Update</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
-      </div><!-- /.modal-content -->
-      </form>
-    </div><!-- /.modal-dialog -->
-  </div>
-  <!-- / Modal -->
 
   <script type="text/javascript">
-    var save_method; //for save method string
     var table;
 
     $(document).on("preInit.dt", function () {
@@ -158,78 +104,12 @@
 
     });
 
-
     function edit_person(id) {
-      save_method = 'update';
-      $('#formnih')[0].reset(); // reset form on modals
-      $('.form-group').removeClass('has-error'); // clear error class
-      $('.help-block').empty(); // clear error string
-
-      //Ajax Load data from ajax
-      $.ajax({
-        url: "<?php echo base_url('alkes/ajax_edit/') ?>/" + id,
-        type: "GET",
-        dataType: "JSON",
-        success: function(data) {
-          $('[name="id"]').val(data.mo_id);
-          $('[name="nama_obat"]').val(data.mo_nama);
-          $('[name="des_obat"]').val(data.mo_deskripsi);
-          //$('[name="kategori_obat"]').val(data.mo_mk_id);
-          $('[name="barcode"]').val(data.mo_barcode);
-          $('[name="old_barcode"]').val(data.mo_barcode);
-          $('[name="penyimpanan"]').val(data.mo_penyimpanan);
-          //$('[name="unit"]').val(data.mo_mu_id);
-          //$('[name="resep"]').val(data.mo_resep);
-
-          $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
-          //$('.modal-title').text('Edit Group'); // Set title to Bootstrap modal title
-
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          alert('Error get data from ajax');
-        }
-      });
+      window.location = "<?php echo base_url('alkes/index_edit/')?>" + id;
     }
 
     function reload_table() {
       table.ajax.reload(null, false); //reload datatable ajax 
-    }
-
-    
-
-    function save() {
-      $('#btnSave').text('saving...'); //change button text
-      $('#btnSave').attr('disabled', true); //set button disable 
-      var url;
-
-      if (save_method == 'add') {
-        url = "<?php echo base_url('alkes/ajax_add') ?>";
-      } else {
-        url = "<?php echo base_url('alkes/ajax_update') ?>";
-      }
-
-      // ajax adding data to database
-      $.ajax({
-        url: url,
-        type: "POST",
-        data: $('#formnih').serialize(),
-        dataType: "JSON",
-        success: function(data) {
-
-          if (data.status) //if success close modal and reload ajax table
-          {
-            popup('Informasi', 'Data berhasil di update');
-            $('#modal_form').modal('hide');
-            reload_table();
-          } else {
-            popup('Perhatian', data.msg, 'info');
-            reload_table();
-          }
-
-          $('#btnSave').text('save'); //change button text
-          $('#btnSave').attr('disabled', false); //set button enable 
-        }
-      });
     }
 
     function delete_person(id) {
@@ -242,7 +122,6 @@
           success: function(data) {
             if (data.status) //if success close modal and reload ajax table
             {
-              //$('#modal_form').modal('hide');
               popup('Informasi', 'Berhasil');
               reload_table();
             } else {
