@@ -13,6 +13,8 @@ class Alkes_model extends CI_Model {
 	{
 		parent::__construct();
 		$this->alus_co = $this->alus_auth->alus_co();
+        $temp = $this->alus_auth->getAlkesOrItemID('Alkes');
+        $this->id_alkes = $temp->mk_id;
 	}
 
 	/* Server Side Data */
@@ -22,7 +24,7 @@ class Alkes_model extends CI_Model {
          
         $this->db->from($this->table);
         $this->db->join('m_unit', 'm_unit.mu_id = m_obat.mo_mu_id', 'left');
-        $this->db->where('mo_mk_id', '3');//Pilih hanya alkes
+        $this->db->where('mo_mk_id', $this->id_alkes);//Pilih hanya alkes
         
         $i = 0;
      

@@ -26,8 +26,8 @@
             <a class="btn btn-app bg-secondary" href="<?php echo base_url('kasir/cari_produk'); ?>">
               <i class="fas fa-barcode"></i>Cek Produk
             </a>
-            <a class="btn btn-app bg-secondary" href="<?php echo base_url('kasir/cari_produk'); ?>">
-              <i class="fas fa-outdent"></i>Retur Transaksi
+            <a class="btn btn-app bg-secondary" href="<?php echo base_url('kasir/retur'); ?>">
+              <i class="fas fa-outdent"></i>Retur Produk
             </a>
           </div>
         </div>

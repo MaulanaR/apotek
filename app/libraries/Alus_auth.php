@@ -739,5 +739,26 @@ class Alus_auth
     		return false;
     	}
     }
+
+    public function getAlkesOrItemID($x){
+    	if($x != null || $x != ''){
+	    	if($x == 'Alkes'){
+	    		$field = 'mk_id';
+	    		$table = 'm_kategori';
+	    		$param = 'mk_nama';
+	    	}else if($x == 'Item'){
+	    		$field = 'mu_id';
+	    		$table = 'm_unit';
+	    		$param = 'mu_nama';
+	    	}
+	    	$this->db->select($field, FALSE);
+	    	$this->db->from($table);
+	    	$this->db->where($param, $x);
+	    	$query = $this->db->get();
+	        return $query->row();
+	    }else{
+	    	return null;
+	    }
+    }
 }
 

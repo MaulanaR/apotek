@@ -123,6 +123,26 @@ class Kasir extends CI_Controller {
 		}
 	}
 
+	public function retur()
+	{
+		if($this->alus_auth->logged_in())
+         {
+			if( empty($this->session->userdata('id_sesi')))
+			{
+				redirect(base_url('kasir/login_kasir'));
+			}
+
+			$this->alus_auth->get_sesi_saldo();
+         	$head['title'] = "Retur Item";
+
+		 	$this->load->view('template/temaalus/header',$head);
+		 	$this->load->view('kasir/retur.php');
+		 	$this->load->view('template/temaalus/footer');
+		}else
+		{
+			redirect('admin/Login','refresh');
+		}
+	}
 	public function cari_produk()
 	{
 
@@ -294,6 +314,7 @@ class Kasir extends CI_Controller {
 
 	function cari_data_resep($content){
 		$cari = $this->alus_auth->stok_like($content, TRUE);
+		$id_alkes = $this->alus_auth->getAlkesOrItemID('Alkes');
 		$temp = array();
 		$status = FALSE;
 		if($cari[0] >= 1){
@@ -301,15 +322,43 @@ class Kasir extends CI_Controller {
 			foreach ($cari[1] as $key => $value) {
 			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
 				if($cek != 'kd'){
-					$temp[] = array(
-						"nama" => $value->mo_nama,
-						"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
-						"stok" => $value->stok,
-						"harga" => $value->tb_harga_jual,
-						"tb_id" => $value->tb_id,
-						"mo_id" => $value->mo_id,
-						"mo_ppn_10" => $value->mo_ppn_10,
-					);
+					if($value->mo_mk_id != $id_alkes->mk_id){//exclude produk Alkes
+						$temp[] = array(
+							"nama" => $value->mo_nama,
+							"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
+							"stok" => $value->stok,
+							"harga" => $value->tb_harga_jual,
+							"tb_id" => $value->tb_id,
+							"mo_id" => $value->mo_id,
+							"mo_ppn_10" => $value->mo_ppn_10,
+						);
+					}
+				}
+			}
+		}
+		$arr = array('status' => $status, 'data' => $temp);
+		echo json_encode($arr);
+	}
+
+	function ajax_cari_produk($content){
+		$cari = $this->alus_auth->stok_like($content, TRUE);
+		$id_alkes = $this->alus_auth->getAlkesOrItemID('Alkes');
+		$temp = array();
+		$status = FALSE;
+		if($cari[0] >= 1){
+			$status = TRUE;
+			foreach ($cari[1] as $key => $value) {
+			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
+				if($cek != 'kd'){
+						$temp[] = array(
+							"nama" => $value->mo_nama,
+							"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
+							"stok" => $value->stok,
+							"harga" => $value->tb_harga_jual,
+							"tb_id" => $value->tb_id,
+							"mo_id" => $value->mo_id,
+							"mo_ppn_10" => $value->mo_ppn_10,
+						);
 				}
 			}
 		}
@@ -319,10 +368,12 @@ class Kasir extends CI_Controller {
 
 	function cari_data_invoice($uniqid){
 		$status = FALSE;
+		$data;
 		if($uniqid != ""){
 			$cari = $this->model->cek_nomor_inv($uniqid);
 			if($cari >= 1 ){
 				$status = TRUE;
+				$data = $this->model->get_by_kode($uniqid);
 				$msg = "Success";
 			}else{
 				$msg = "Invoice tidak ditemukan!";
@@ -330,7 +381,7 @@ class Kasir extends CI_Controller {
 		}else{
 			$msg = "Ajax error!";
 		}
-		$arr = array('status' => $status, 'msg' => $msg);
+		$arr = array('status' => $status, 'msg' => $msg, 'data' => $data);
 		echo json_encode($arr);
 	}
 

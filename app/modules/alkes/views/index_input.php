@@ -72,8 +72,11 @@
                                 <input type="number" name="jual" class="form-control" placeholder="Harga Jual" value='1' min-value='1' required>
                                 <span class="help-block"></span>
                             </div>
-                            <input type="hidden" class="form-control" name="unit" value="5">
+                            <?php
+                            $temp = $this->alus_auth->getAlkesOrItemID('Item');
+                            ?>
                             <!-- input id item ke tabel m_obat, SESUAIKAN dengan ID item di tabel m_unit-->
+                            <input type="hidden" class="form-control" name="unit" value="<?php echo $temp->mu_id; ?>">
                             <input type='hidden' name='resep' value='0'>
                             <!-- input fake resep-->
                             <div class="col-12 pb-3">
