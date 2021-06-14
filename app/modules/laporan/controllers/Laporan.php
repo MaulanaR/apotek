@@ -44,6 +44,43 @@ class Laporan extends CI_Controller {
 		}
 	}
 
+	function generate()
+	{
+		switch ($this->input->post('jenis')) {
+			case 'Transaksi':
+				$this->db->select("DATE_FORMAT(ti_tgl, '%d-%m-%Y') as tgl_inv, COUNT(*) as total_order, SUM(ti_grandtotal) as total_uang");
+				$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
+				$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->post('tgl_akhir'))));
+				$this->db->group_by('tgl_inv');
+				
+				$dtinv = $this->db->get('t_invoice');
+				
+				$data['data'] = $dtinv->result();
+				$data['tgl_awal'] = $this->input->post('tgl_awal');
+				$data['tgl_akhir'] = $this->input->post('tgl_akhir');
+
+				$arrdate = array();
+				$count_order = array();
+				$sum_order = array();
+				foreach ($dtinv->result() as $key => $value) {
+					array_push($arrdate, $value->tgl_inv);
+					array_push($count_order, (int)$value->total_order);
+					array_push($sum_order, (float)$value->total_uang);
+				}
+
+				$data['datex'] = $arrdate;
+				$data['count_order'] = $count_order;
+				$data['sum_order'] = $sum_order;
+				$this->load->view('ajax/view_transaksi', $data);
+				
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+
+	}
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
 }
