@@ -13,6 +13,7 @@ class Kasir extends CI_Controller {
 			redirect('admin/Login','refresh');
 		}
 		$this->load->model('Kasir_model','model');
+		$this->load->model('Retur_model','retur');
 	}
 
 	public function end_sesi()
@@ -404,7 +405,7 @@ class Kasir extends CI_Controller {
 				$row[] = $item->ti_id;
 				$row[] = $item->tsud_no_inv;
 				$row[] = $item->ti_total_barang;
-				$row[] = $item->ti_grandtotal;
+				$row[] = $this->alus_auth->rupiahrp($item->ti_grandtotal);
 				$row[] = '<a href="'.base_url('kasir/invoice_detail/'.$item->tsud_no_inv).'" rel="noopener" class="btn btn-default"><i class="fas fa-print"></i></a>';
 
 				$temp[] = $row;
@@ -428,7 +429,7 @@ class Kasir extends CI_Controller {
 		$status = false;
 		if(isset($id)){
 		$status = true;
-		$this->db->select('tid_mo_id, tid_qty, tid_harga_satuan, tid_total, tid_ppn_status, mo_nama, mo_barcode, mo_deskripsi',  FALSE);
+		$this->db->select('tid_mo_id, tid_qty, tid_harga_satuan, tid_total, tid_ppn_status, tid_mo_id, tid_tb_id, mo_nama, mo_barcode, mo_deskripsi',  FALSE);
 		$this->db->from('t_invoice_detail');
 		$this->db->join('m_obat', 'm_obat.mo_id = t_invoice_detail.tid_mo_id', 'inner');
 		$this->db->where('tid_ti_id', $id);
@@ -537,6 +538,63 @@ class Kasir extends CI_Controller {
 				$this->db->insert('t_sesi_user_detail', $data_kasir_save);
 				
 				$msg = "Transaksi Sukses!";
+			}else{
+				$msg = "Saldo kasir tidak mencukupi!";
+			}
+		}else{
+			$msg = "Ajax error!";
+		}
+		echo json_encode(array("status" => $success, "msg" => $msg));
+	}
+
+	public function save_retur(){
+		$success = FALSE;
+		$sesi_saldo = $this->alus_auth->get_sesi_saldo();
+		$jumlahBarang = 0;
+		$arr = array();
+		if(isset($_POST['data'])){
+			$data = json_decode( html_entity_decode( stripslashes ($_POST['data']) ) );
+			$item = json_decode( html_entity_decode( stripslashes ($_POST['item']) ) );
+			if($data->nominal_pengembalian <= $sesi_saldo){//jika saldo mencukupi untuk kembalian
+
+				$success = TRUE;
+
+				$content = array(
+					'tr_ti_id' => $data->id,
+					'tr_user_id' => $this->alus_auth->get_user_id(),
+					'tr_tgl' => date('Y-m-d H:i:s'),
+        			'tr_nomor_inv' =>  $data->kode_inv,
+        			'tr_total_harga' => $data->total,
+        			'tr_ppn_kembali' => $data->ppn_status,
+        			'tr_total_ppn' => $data->totalppn,
+        			'tr_nilai_pengembalian' => $data->nilaipengembalian,
+				);
+
+				$tr_id = $this->retur->save($content);//save ke retur
+
+				foreach ($item as $key => $value) {
+
+						$con = array(
+							'trd_tr_id' => $tr_id,
+							'trd_mo_id' => $value->mo_id,
+							'trd_tb_id' => $value->tb_id,
+							'trd_qty' => $value->qty,
+							'tid_harga_satuan' => $value->harga,
+							'tid_ppn_status' => $value->ppn_status,
+						);
+						$this->retur->save_detail($con);//save item ke detail
+					}
+				
+				//save ke sesi login kasir
+					/*
+				$data_kasir_save = array(
+					'tsud_tsu_id' 	=> $this->session->userdata('id_sesi'),
+					'tsud_no_inv' 	=> $data->kode_inv,
+					'tsud_ti_id' 	=> $inv_id
+				);
+				$this->db->insert('t_sesi_user_detail', $data_kasir_save);
+				*/
+				$msg = "Sukses!";
 			}else{
 				$msg = "Saldo kasir tidak mencukupi!";
 			}

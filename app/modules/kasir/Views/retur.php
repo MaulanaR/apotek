@@ -53,15 +53,28 @@
             <p><H3>Informasi Retur</H3></p>
           </div>
           <div class="card-body">
-            <form action="#" id="formnih" class="form-horizontal" name="formnih">
+            <form action="#" id="formretur" class="form-horizontal" name="formnih">
                         <div class="form-body">
                             <div class="form-group">
-                                <label class="control-label ">Dari Transaksi <strong id='kodewrapper'></strong></label>
+                                <label class="control-label ">Dari Transaksi : <strong id='kodewrapper'></strong></label>
+                                <p>
+                                  Per tanggal : <span id='tglwrapper'></span><br>
+                                </p>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label ">Total Harga</label>
+                                <h5 id='totalwrapper'></h5>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label ">Total PPN</label>
+                                <h5 id='totalppnwrapper'></h5>
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
                                 <label class="control-label ">Grandtotal</label>
-                                <span id='grandwrapper'></span>
+                                <h5 id='grandwrapper'></h5>
                                 <span class="help-block"></span>
                             </div>
                             <div class="form-group">
@@ -73,6 +86,11 @@
                             <div class="form-group">
                                 <label class="control-label ">Nilai Pengembalian Uang</label>
                                 <input type="text" name="nilaipengembalian" class="form-control" placeholder="Lokasi Penyimpanan" disabled="">
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label ">Keterangan Pengembalian</label>
+                                <textarea name="Keterangan" class="form-control" placeholder="Keterangan pengembalian produk"></textarea>
                                 <span class="help-block"></span>
                             </div>
                             <!-- input fake resep-->
@@ -95,13 +113,19 @@
     var ids;
     var arrayRetur = [];
     var arrayCari = [];
+    var tglTransaksi;
     var total;
     var totalppn = 0;
     var grandtotal = 0;
     var nilaipengembalian = 0;
+    var ppn_status = true;
 
     $(document).ready(function(){
       $("#btnproses").attr('disabled', true);
+      $("#formretur").submit(function(e) {
+        e.preventDefault();
+        save_retur();
+      });
     });
 
     function rupiah(x) {
@@ -123,14 +147,17 @@
     function hitung(){
       var temp;
       var temp2;
+      var tempppn;
+      var tempharga;
       var totalharga = 0;
       var ppn_item;
       for (var i = 0; i < arrayRetur.length; ++i) {
         var dat = arrayRetur[i];
-
-        temp = parseInt(dat.ppn_item) + totalppn;
+        tempppn = parseInt(dat.ppn_item) * parseInt(dat.qty);
+        temp = tempppn + totalppn;
         totalppn = temp;
-        temp2 = parseInt(dat.harga) + totalharga;
+        tempharga = parseInt(dat.harga) * parseInt(dat.qty);
+        temp2 = tempharga + totalharga;
         totalharga = temp2;
       }
       total = totalharga;
@@ -138,6 +165,9 @@
       nilaipengembalian = grandtotal;
       $("#kodewrapper").append(par);
       $("#grandwrapper").append(rupiah(grandtotal));
+      $("#tglwrapper").append(tglTransaksi);
+      $("#totalwrapper").append(rupiah(total));
+      $("#totalppnwrapper").append(rupiah(totalppn));
       $('[name="nilaipengembalian"]').val(rupiah(nilaipengembalian));
       if(totalppn > 0){
         $("#ubahppn").attr('checked', true);
@@ -159,6 +189,8 @@
               $("#buttonCari").attr('disabled', true);
               $("[name='inputbar']").attr('disabled', true);
                 ids = data.data.ti_id;
+                var i = data.data.ti_tgl.split(" ");
+                tglTransaksi = i[0];
                 generateData();
               }else{
                 popup('Info', data.msg, 'info');
@@ -177,8 +209,6 @@
     }
     
     function generateData(){
-      var ppn_item = 0;
-      var subtotal = 0;
       $.ajax({
         url: "<?php echo base_url('kasir/ajax_detail_items') ?>",
         type: "POST",
@@ -273,6 +303,50 @@
     }
 
     function reset(){
+      window.location.reload();
+    }
+
+    function save_retur() {
+      var dataRetur = {
+        'id' : ids,
+        'kode_inv': par,
+        'total': total,
+        'ppn_status' : ppn_status,
+        'total_ppn': totalppn,
+        'nilaipengembalian': nilaipengembalian,
+      };
+
+      console.log(dataRetur);
+      console.log(arrayRetur);
+      var x = JSON.stringify(dataRetur);
+      var y = JSON.stringify(arrayRetur);
+
+      /*
+      $.ajax({
+        url: "<?php //echo base_url('kasir/save_retur') ?>",
+        type: "POST",
+        data: {
+          data: x,
+          item: y
+        },
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success exit
+          {
+            popup('Informasi', 'Berhasil');
+            setTimeout(function (){
+              exit();
+              }, 1000);
+          } else {
+            popup('Perhatian', data.msg, 'info');
+          }
+        }
+      });
+      */
+    }
+
+    function exit(){
       window.location.reload();
     }
 
