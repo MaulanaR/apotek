@@ -90,7 +90,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label ">Keterangan Pengembalian</label>
-                                <textarea name="Keterangan" class="form-control" placeholder="Keterangan pengembalian produk"></textarea>
+                                <textarea id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan pengembalian produk" maxlength="250"></textarea>
                                 <span class="help-block"></span>
                             </div>
                             <!-- input fake resep-->
@@ -119,6 +119,7 @@
     var grandtotal = 0;
     var nilaipengembalian = 0;
     var ppn_status = true;
+    var keterangan;
 
     $(document).ready(function(){
       $("#btnproses").attr('disabled', true);
@@ -307,23 +308,27 @@
     }
 
     function save_retur() {
+      keterangan = $('textarea#keterangan').val();
+      const cb = document.getElementById('ubahppn');
+
       var dataRetur = {
         'id' : ids,
         'kode_inv': par,
         'total': total,
-        'ppn_status' : ppn_status,
+        'ppn_status' : cb.checked,
         'total_ppn': totalppn,
-        'nilaipengembalian': nilaipengembalian,
+        'nilaipengembalian' : nilaipengembalian,
+        'keterangan' : keterangan,
       };
 
-      console.log(dataRetur);
-      console.log(arrayRetur);
+      //console.log(dataRetur);
+      //console.log(arrayRetur);
       var x = JSON.stringify(dataRetur);
       var y = JSON.stringify(arrayRetur);
 
-      /*
+      
       $.ajax({
-        url: "<?php //echo base_url('kasir/save_retur') ?>",
+        url: "<?php echo base_url('kasir/save_retur') ?>",
         type: "POST",
         data: {
           data: x,
@@ -343,11 +348,10 @@
           }
         }
       });
-      */
+      
     }
 
     function exit(){
-      window.location.reload();
+      window.location = '<?php echo base_url('retur/retur_detail/'); ?>' + par;
     }
-
   </script>

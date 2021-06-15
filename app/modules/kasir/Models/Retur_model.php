@@ -84,7 +84,7 @@ class retur_model extends CI_Model {
 
     public function cek_nomor_inv($nomor_inv)
     {
-        $this->db->from($this->table);
+        $this->db->from($this->table1);
         $this->db->where('tr_ti_nomor_inv',$nomor_inv);
         $query = $this->db->get();
         return $query->num_rows();
@@ -99,13 +99,13 @@ class retur_model extends CI_Model {
  
     public function count_all()
     {
-        $this->db->from($this->table);
+        $this->db->from($this->table1);
         return $this->db->count_all_results();
     }
  
     public function get_by_id($id)
     {
-        $this->db->from($this->table);
+        $this->db->from($this->table1);
         $this->db->where('tr_id',$id);
         $query = $this->db->get();
  
@@ -114,7 +114,7 @@ class retur_model extends CI_Model {
  
     public function save($data)
     {
-        $this->db->insert($this->table, $data);
+        $this->db->insert($this->table1, $data);
         return $this->db->insert_id();
     }
 
@@ -126,14 +126,14 @@ class retur_model extends CI_Model {
  
     public function update($where, $data)
     {
-        $this->db->update($this->table, $data, $where);
+        $this->db->update($this->table1, $data, $where);
         return $this->db->affected_rows();
     }
  
     public function delete_by_id($id)
     {
         $this->db->where('tr_id', $id);
-        $this->db->delete($this->table);
+        $this->db->delete($this->table1);
     }
 
 }

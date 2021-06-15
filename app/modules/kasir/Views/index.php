@@ -78,7 +78,7 @@
               </div>
               <div class="col-md-3 m-2">
                 <div class="form-group">
-                  <form action="#">
+                  <form action="#" id="formcariinvoice">
                     <label for="inputCariInvoice">Cari Invoice</label>
                     <input type="text" class="form-group" id="inputCariInvoice" name="cariInvoice" required="">
                     <button class="btn btn-sm btn-success" onclick="cariTransaksi()">
@@ -150,6 +150,10 @@
         ],
       });
 
+      $("#formcariinvoice").submit(function(e) {
+        e.preventDefault();
+      });
+
     });
 
   $("#saldox").autoNumeric('init');
@@ -182,7 +186,7 @@
                 window.location.replace("<?php echo base_url('kasir/invoice_detail/'); ?>"+par);
               }else{
                 popup('Info', data.msg, 'info');
-                window.location.replace("<?php echo base_url('kasir/'); ?>");
+                //window.location.replace("<?php echo base_url('kasir/'); ?>");
               }
           },
           error: function(jqXHR, textStatus, errorThrown) {

@@ -233,6 +233,9 @@ class Kasir extends CI_Controller {
          {
          	$arrayItem = array();
          	$kode_inv = basename($_SERVER['REQUEST_URI']);
+         	if($kode_inv != "" | $kode_inv != NULL){
+                $cek = $this->model->cek_nomor_inv($kode_inv);
+                if($cek > 0){
          	$record = $this->model->get_by_kode($kode_inv);
          	$data['kode_inv'] = $kode_inv;
          	$data['tgl'] = $record->ti_tgl;
@@ -240,7 +243,7 @@ class Kasir extends CI_Controller {
          	$data['ppn_nilai'] = $this->alus_auth->rupiahrp($record->ti_ppn_nilai);
          	$data['nominal_bayar'] = $this->alus_auth->rupiahrp($record->ti_nominal_bayar);
          	$data['nominal_kembalian'] = $this->alus_auth->rupiahrp($record->ti_nominal_kembalian);
-         	$data['user_id'] = $record->ti_user_id;
+         	$data['user_id'] = $record->tr_user_id;
          	$data['grandtotal'] = $this->alus_auth->rupiahrp($record->ti_grandtotal);
          	$x = $this->alus_auth->tipePembayaran('translate', $record->ti_tipe_pembayaran);
          	$data['tipe_pembayaran'] = $x;
@@ -256,7 +259,7 @@ class Kasir extends CI_Controller {
 
          	$this->db->select('username, job_title');
 			$this->db->from('alus_u');
-			$this->db->where('id', $this->alus_auth->get_user_id());
+			$this->db->where('id', $record->tr_user_id);
 			$query = $this->db->get();
 			$userdata = $query->row();
 			$data['username'] = $userdata->username;
@@ -266,6 +269,12 @@ class Kasir extends CI_Controller {
 		 	$this->load->view('template/temaalus/header',$head);
 		 	$this->load->view('kasir/invoice_detail.php', $data);
 		 	$this->load->view('template/temaalus/footer');
+		 }else{
+		 	redirect('kasir','refresh');
+		 }
+		}else{
+			redirect('kasir','refresh');
+		}
 		}else
 		{
 			redirect('admin/Login','refresh');
@@ -429,7 +438,7 @@ class Kasir extends CI_Controller {
 		$status = false;
 		if(isset($id)){
 		$status = true;
-		$this->db->select('tid_mo_id, tid_qty, tid_harga_satuan, tid_total, tid_ppn_status, tid_mo_id, tid_tb_id, mo_nama, mo_barcode, mo_deskripsi',  FALSE);
+		$this->db->select('tid_mo_id, tid_qty, tid_harga_satuan, tid_total, tid_ppn_status, tid_tb_id, mo_nama, mo_barcode, mo_deskripsi',  FALSE);
 		$this->db->from('t_invoice_detail');
 		$this->db->join('m_obat', 'm_obat.mo_id = t_invoice_detail.tid_mo_id', 'inner');
 		$this->db->where('tid_ti_id', $id);
@@ -445,6 +454,8 @@ class Kasir extends CI_Controller {
 						'harga' => $itemdata->tid_harga_satuan, 
 						'total' => $itemdata->tid_total,
 						'ppn_status' => $itemdata->tid_ppn_status,
+						'mo_id' => $itemdata->tid_mo_id,
+						'tb_id' => $itemdata->tid_tb_id,
 					);
 				
 			}
@@ -547,7 +558,7 @@ class Kasir extends CI_Controller {
 		echo json_encode(array("status" => $success, "msg" => $msg));
 	}
 
-	public function save_retur(){
+	function save_retur(){
 		$success = FALSE;
 		$sesi_saldo = $this->alus_auth->get_sesi_saldo();
 		$jumlahBarang = 0;
@@ -556,6 +567,8 @@ class Kasir extends CI_Controller {
 			$data = json_decode( html_entity_decode( stripslashes ($_POST['data']) ) );
 			$item = json_decode( html_entity_decode( stripslashes ($_POST['item']) ) );
 			if($data->nominal_pengembalian <= $sesi_saldo){//jika saldo mencukupi untuk kembalian
+				$cek = $this->retur->cek_nomor_inv($data->kode_inv);
+                if($cek == 0){
 
 				$success = TRUE;
 
@@ -563,11 +576,12 @@ class Kasir extends CI_Controller {
 					'tr_ti_id' => $data->id,
 					'tr_user_id' => $this->alus_auth->get_user_id(),
 					'tr_tgl' => date('Y-m-d H:i:s'),
-        			'tr_nomor_inv' =>  $data->kode_inv,
+        			'tr_ti_nomor_inv' =>  $data->kode_inv,
         			'tr_total_harga' => $data->total,
         			'tr_ppn_kembali' => $data->ppn_status,
-        			'tr_total_ppn' => $data->totalppn,
+        			'tr_total_ppn' => $data->total_ppn,
         			'tr_nilai_pengembalian' => $data->nilaipengembalian,
+        			'tr_keterangan' => $data->keterangan,
 				);
 
 				$tr_id = $this->retur->save($content);//save ke retur
@@ -579,8 +593,8 @@ class Kasir extends CI_Controller {
 							'trd_mo_id' => $value->mo_id,
 							'trd_tb_id' => $value->tb_id,
 							'trd_qty' => $value->qty,
-							'tid_harga_satuan' => $value->harga,
-							'tid_ppn_status' => $value->ppn_status,
+							'trd_harga_satuan' => $value->harga,
+							'trd_ppn_status' => $value->ppn_status,
 						);
 						$this->retur->save_detail($con);//save item ke detail
 					}
@@ -595,6 +609,9 @@ class Kasir extends CI_Controller {
 				$this->db->insert('t_sesi_user_detail', $data_kasir_save);
 				*/
 				$msg = "Sukses!";
+			}else{
+				$msg = "Invoice sudah dipakai untuk Retur!";
+			}
 			}else{
 				$msg = "Saldo kasir tidak mencukupi!";
 			}
