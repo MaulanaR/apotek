@@ -1,7 +1,5 @@
  <?php
-    $url = base_url('kasir/invoice_detail/'.$kode_inv);
-    //$img = $this->infiQr->generate($url);
-    $img = file_get_contents(base_url('assets/qrcode/index2.php').'?id='.$kode_inv);
+    $ti = explode(" ", $tgl);
   ?>
 <div class="content-wrapper" style="min-height: 2644px;">
     <!-- Content Header (Page header) -->
@@ -9,12 +7,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Invoice</h1>
+            <h1>Salinan Resep</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="<?php echo base_url("kasir"); ?>">Home</a></li>
-              <li class="breadcrumb-item active">Invoice</li>
+              <li class="breadcrumb-item"><a href="<?php echo base_url("resep"); ?>">Home</a></li>
+              <li class="breadcrumb-item active">Salinan Resep</li>
             </ol>
           </div>
         </div>
@@ -30,14 +28,9 @@
               <p><a rel="noopener" class="btn btn-default" onclick="print(true)"><i class="fas fa-print"></i> Print</a> Ukuran Normal</p>
             </div>
             <div class="col-4 text-center">
-              <p><a rel="noopener" class="btn btn-default" onclick="print(false)"><i class="fas fa-print"></i> Print</a> Ukuran Kecil</p>
+              <!--<p><a rel="noopener" class="btn btn-default" onclick="print(false)"><i class="fas fa-print"></i> Print</a> Ukuran Kecil</p>-->
             </div>
             <div class="col-4 text-right">
-              <?php
-              if($resep == 1){
-              ?>
-              <p><a class="btn btn-default" onclick="salinan()"><i class="fas fa-print"></i> Print</a> Salinan Resep</p>
-            <?php } ?>
             </div>
             </div>
             <!-- Main content -->
@@ -46,7 +39,7 @@
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <img src="<?php echo base_url('assets/logo/askrindo-mini.png'); ?>" width="30px" height="30px"> Apotek APP
+                    <img src="<?php echo base_url('assets/logo/askrindo-mini.png'); ?>" width="30px" height="30px"> Apotek APP 
                     <?php
                       $a = explode(" ", $tgl);
                     ?>
@@ -61,40 +54,51 @@
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
                   <address>
-                    <strong><?php echo $username; ?></strong><br>
-                    <?php echo $job; ?><br>
-                    Date: <?php  echo $a[0]?> <br>
                     Kota, Kode POS 22114466<br>
                     Telepon: (000) 1112223<br>
                     Email: cs@appapotek
                   </address>
                 </div>
                 <!-- /.col -->
-                <div class="col-sm-4 invoice-col">
+                <div class="col-sm-4 invoice-col text-center">
+                </p>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
-                  <strong>Invoice #<?php echo $id; ?></strong><br>
-                  Order ID:<strong> <?php echo $kode_inv; ?></strong><br>
-                  Tipe pembayaran : <strong><?php echo $tipe_pembayaran; ?></strong><br>
-                  No Ref : <strong><?php echo $no_ref; ?></strong>
+                  Invoice ID:<strong> <?php echo $kode_inv; ?></strong><br>
+                  Tanggal Invoice : <strong> <?php echo $ti[0]; ?></strong><br>
                 </div>
                 <!-- /.col -->
               </div>
               <!-- /.row -->
-
+              <div class="col-12 text-center">
+                      <h4>SALINAN RESEP</h4>
+              </div>
+              <div class="col-12">
+                  <table class="table table-hovered" border="1px" style="width:100%; border:solid 1px gray;">
+                      <tr>
+                       <td style="width: 30%;">Instansi Penerbit</td>
+                        <td><?php echo $resep_penerbit; ?></td>
+                      </tr>
+                      <tr>
+                        <td>Dokter</td>
+                        <td><?php echo $resep_dokter; ?></td>
+                      </tr>
+                      <tr>
+                        <td>Tanggal Resep</td>
+                        <td><?php $d = explode(" ", $resep_tgl); echo $d[0]; ?></td>
+                      </tr>
+                  </table>
+              </div>
               <!-- Table row -->
               <div class="row">
                 <div class="col-12 table-responsive">
-                  <table class="table table-striped">
+                  <table id="resep" aria-describecby="resep_info" class="table table-striped">
                     <thead>
                     <tr>
                       <th>Item</th>
-                      <th>Qty</th>
                       <th>Deskripsi</th>
-                      <th>Harga</th>
-                      <th>PPN</th>
-                      <th>Subtotal</th>
+                      <th>Qty</th>
                     </tr>
                     </thead>
                     <tbody id="bodyItem">
@@ -110,42 +114,19 @@
                 <!-- accepted payments column -->
                 <div class="col-6">
                   
-                  <p class="lead">Amount</p>
-
-                  <div class="table-responsive">
-                    <table class="table">
-                      <tbody><tr>
-                        <th style="width:50%">Total:</th>
-                        <td><?php echo $subtotal; ?></td>
-                      </tr>
-                      <tr>
-                        <th>Total PPN</th>
-                        <td><?php echo $ppn_nilai; ?></td>
-                      </tr>
-                      <tr>
-                        <th>Grandtotal:</th>
-                        <td><b><?php echo $grandtotal; ?></b></td>
-                      </tr>
-                      <tr>
-                        <th>Bayar:</th>
-                        <td><?php echo $nominal_bayar; ?></td>
-                      </tr>
-                      <tr>
-                        <th>Kembalian:</th>
-                        <td><?php echo $nominal_kembalian; ?></td>
-                      </tr>
-                    </tbody></table>
-                  </div>
                 </div>
                 <!-- /.col -->
-                <div class="col-6">
-                  <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
-                   Terima kasih atas pembeliannya!
-                  </p>
-                  <p class='text-center'>
-                    <!-- lokasi gmbr qr -->
-                    <img src="<?php echo base_url('assets/qrcode/temp/qr_').$kode_inv;?>.png">
-                  <p>
+                <div class="col-6 text-center">
+                  <span style="display:block;height:auto;">
+                    <p><?php echo $keterangan; ?></p>
+                  </span>
+                    <p>
+                      <strong>Apoteker,</strong><br/>
+                      <br/>
+                      <br/>
+                      <strong><?php echo $username; ?></strong><br>
+                      <?php echo $job; ?><br>
+                    </p>
                 </div>
                 <!-- /.col -->
               </div>
@@ -163,6 +144,8 @@
 
   <script type="text/javascript">
     var ids = '<?php echo $id; ?>';
+    var kode_inv = '<?php echo $kode_inv; ?>';
+    var total = 0;
     $(document).ready(function(){
       //do something
       generateData();
@@ -176,8 +159,9 @@
     function generateData(){
       var ppn_item = 0;
       var subtotal = 0;
+      var tmp = 0;
       $.ajax({
-        url: "<?php echo base_url('kasir/ajax_detail_items') ?>",
+        url: "<?php echo base_url('resep/ajax_detail_items') ?>",
         type: "POST",
         data: {id : ids},
         dataType: "JSON",
@@ -186,14 +170,10 @@
           if (data.status)
           {
             $.each(data.data, function(index, val) {
-              if(val.ppn_status == 1){
-                ppn_item = parseInt(val.harga) * 0.1;
-              }else{
-                ppn_item = 0;
-              }
-              subtotal = parseInt(val.total);
-            $('#bodyItem').append('<tr><td>'+val.nama+'</td><td>'+val.qty+'</td><td>'+val.deskripsi+'</td><td>'+rupiah(val.harga)+'</td><td>'+rupiah(ppn_item)+'</td><td>'+rupiah(subtotal)+'</td></tr>')
+
+            $('#bodyItem').append('<tr><td>'+val.nama+'</td><td>'+val.deskripsi+'</td><td>'+val.qty+'</td></tr>')
           });
+
           } else {
             alert('Ajax error!');
           }
@@ -228,9 +208,5 @@
       }, 500);
 
       }
-
-    function salinan(){
-      window.location = '<?php echo base_url('resep/salinan_resep/').$kode_inv; ?>';
-    }
       
-  </script>    
+  </script>
