@@ -384,6 +384,30 @@ class Alkes extends CI_Controller
 
 		echo json_encode(array("status" => TRUE));
 	}
+
+	public function ajax_data_penjualan(){
+		//$startdate = json_decode( html_entity_decode( stripslashes ($_POST['stardate']) ) );
+		//$enddate = json_decode( html_entity_decode( stripslashes ($_POST['enddate']) ) );
+		$mo_id = json_decode( html_entity_decode( stripslashes ($_POST['id']) ) );
+		$this->db->select('tid_mo_id, SUM(tid_qty) AS qty, tid_created');
+		$this->db->from('t_invoice_detail');
+		$this->db->where('tid_mo_id', $mo_id);
+		$this->db->group_by('tid_mo_id, date(tid_created)');
+		$query = $this->db->get();
+        $res = $query->result();
+        $data = array();
+        $tgl = array();
+        foreach ($res as $val) {
+        	$pisah = explode(" ", $val->tid_created);
+        	$pisahlagi = explode("-", $pisah[0]);
+        	$data[intval($pisahlagi[2])] = $val->qty;		
+        	//array_push($data, $val->tid_created);
+        }
+        $arr = array(
+        		"data" => $data
+        );
+        echo json_encode($data);
+	}
 }
 
 /* End of file  Home.php */

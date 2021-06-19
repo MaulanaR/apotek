@@ -259,7 +259,7 @@ class Kasir extends CI_Controller {
 
          	$this->db->select('username, job_title');
 			$this->db->from('alus_u');
-			$this->db->where('id', $record->tr_user_id);
+			$this->db->where('id', $record->ti_user_id);
 			$query = $this->db->get();
 			$userdata = $query->row();
 			$data['username'] = $userdata->username;

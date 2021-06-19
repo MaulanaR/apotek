@@ -11,6 +11,14 @@
       <!-- Main content -->
       <section class="content">
         <div class='row'>
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class='card-title' id='grafik' onclick="show()" style="cursor: pointer;">Grafik Penjualan Bulan Ini</h3>
+              </div>
+              <div id="container" class="col-md-12 collapse"></div>
+            </div>
+          </div>
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
@@ -82,6 +90,11 @@
   <!-- /.content-wrapper -->
 
   <script type="text/javascript">
+    var namaobat = '<?php echo $mo_nama; ?>';
+    var moid = '<?php echo $mo_id; ?>';
+    var datapenjualan;
+    var datatgl;
+    var today = new Date();
     
     function printBarcode(){
       var barcode = document.getElementById('imgbarcode');
@@ -123,6 +136,69 @@
 
     $(document).ready(function() {
 
+      Highcharts.chart('container', {
+          chart: {
+            type: 'column'
+          },
+
+          title: {
+            text: 'Penjualan Obat '+namaobat
+          },
+
+          subtitle: {
+            text: 'App Apotek'
+          },
+
+          yAxis: {
+            title: {
+              text: 'Jumlah Penjualan'
+            }
+          },
+
+          xAxis: {
+            title: {
+              text: bulan(today.getMonth())+'/2021'
+            },
+            type: 'category'
+          },
+
+          legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+          },
+
+          plotOptions: {
+            series: {
+              label: {
+                connectorAllowed: false
+              },
+              pointStart: 1
+            }
+          },
+
+          series: [{
+            name: 'Penjualan',
+            data: []
+          }],
+
+          responsive: {
+            rules: [{
+              condition: {
+                maxWidth: 300
+              },
+              chartOptions: {
+                legend: {
+                  layout: 'horizontal',
+                  align: 'center',
+                  verticalAlign: 'bottom'
+                }
+              }
+            }]
+          }
+
+        });
+
       $.ajax({
         url: "<?php echo site_url('Obat/ajax_stok_obat_by_id/') . $mo_id . ""; ?>",
         type: "GET",
@@ -154,5 +230,65 @@
         }
       });
 
+      tampilkanChart();
+
     });
+
+    function tampilkanChart(){
+      var d = getTotalDay(today.getMonth(),today.getYear());
+      var chart = $('#container').highcharts();
+  
+      $.ajax({
+        url: "<?php echo base_url('Obat/ajax_data_penjualan') ?>",
+        type: "POST",
+        data: {
+          id: moid
+        },
+        dataType: "JSON",
+        success: function(data) {
+          var arr = data;
+            datapenjualan = convertToDataSplice(d, arr);
+            console.log(datapenjualan);
+            chart.series[0].setData(datapenjualan);
+        }
+      });
+    }
+
+    function convertToDataSplice(d, arrayData){
+      var series = [];
+        for (var i = 0; i < d; i++) {
+          series[i] = 0;
+          if(arrayData[i]){
+            series[i-1] = parseInt(arrayData[i]);
+          }
+        }
+      return series;
+    }
+
+    function getTotalDay(month, year){
+      //month 0-11
+      var dat = new Date();
+      var monthnow = dat.getMonth();
+      var days;
+      if(month == monthnow){
+        days = parseInt(dat.getDate());
+      }else{
+        days = parseInt(new Date(year, month, 0).getDate());
+      }
+      return days;
+    }
+
+    function bulan(a){
+      x = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'July', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      return x[a];
+    }
+
+    function show(){
+      $('.collapse').collapse('show');
+      $('#grafik').attr('onclick', hide());
+    }
+    function hide(){
+      $('.collapse').collapse('hide');
+      $('#grafik').attr('onclick', show());
+    }
   </script>

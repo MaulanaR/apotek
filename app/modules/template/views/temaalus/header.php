@@ -50,6 +50,11 @@
   <!-- alert -->
   <script src="<?php echo base_url(); ?>assets/sweetalert2/dist/sweetalert2.all.min.js"></script>
   <script src="<?php echo base_url(); ?>assets/temaalus/plugins/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+  <script src="<?php echo base_url(); ?>assets/highcharts/highcharts.js"></script>
+  <script src="<?php echo base_url(); ?>assets/highcharts/modules/series-label.js"></script>
+  <script src="<?php echo base_url(); ?>assets/highcharts/modules/exporting.js"></script>
+  <script src="<?php echo base_url(); ?>assets/highcharts/modules/export-data.js"></script>
+  <script src="<?php echo base_url(); ?>assets/highcharts/modules/accessibility.js"></script>
 
 <style>
 #loading {
