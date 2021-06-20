@@ -1,9 +1,10 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * @author 		Maulana Rahman <maulana.code@gmail.com>
-*/
-class Laporan extends CI_Controller {
+ */
+class Laporan extends CI_Controller
+{
 
 	private $privilege;
 
@@ -11,36 +12,32 @@ class Laporan extends CI_Controller {
 	{
 		parent::__construct();
 		//load model
-		$this->load->model('laporan_model','model');
+		$this->load->model('laporan_model', 'model');
 
-		if(!$this->alus_auth->logged_in())
-		{
-			redirect('admin/Login','refresh');
+		if (!$this->alus_auth->logged_in()) {
+			redirect('admin/Login', 'refresh');
 		}
 		$this->privilege = $this->Alus_hmvc->cek_privilege($this->uri->segment(1));
-        if($this->privilege['can_view'] == '0')
-        {
-            echo "<script type='text/javascript'>alert('You dont have permission to access this menu');</script>";
-            redirect('dashboard','refresh');
-        }
+		if ($this->privilege['can_view'] == '0') {
+			echo "<script type='text/javascript'>alert('You dont have permission to access this menu');</script>";
+			redirect('dashboard', 'refresh');
+		}
 	}
-		
+
 
 	public function index()
 	{
-	
-		if($this->alus_auth->logged_in())
-         {
-            $head['title'] = "Buat Laporan";
-         	//$data['tree'] = $this->model->all_tree();
-         	$data['can_add'] = $this->privilege['can_add'];
-    		
-		 	$this->load->view('template/temaalus/header',$head);
-		 	$this->load->view('laporan/index.php',$data);
-		 	$this->load->view('template/temaalus/footer');
-		}else
-		{
-			redirect('admin/Login','refresh');
+
+		if ($this->alus_auth->logged_in()) {
+			$head['title'] = "Buat Laporan";
+			//$data['tree'] = $this->model->all_tree();
+			$data['can_add'] = $this->privilege['can_add'];
+
+			$this->load->view('template/temaalus/header', $head);
+			$this->load->view('laporan/index.php', $data);
+			$this->load->view('template/temaalus/footer');
+		} else {
+			redirect('admin/Login', 'refresh');
 		}
 	}
 
@@ -48,13 +45,21 @@ class Laporan extends CI_Controller {
 	{
 		switch ($this->input->post('jenis')) {
 			case 'Transaksi':
-				$this->db->select("DATE_FORMAT(ti_tgl, '%d-%m-%Y') as tgl_inv, COUNT(*) as total_order, SUM(ti_grandtotal) as total_uang");
-				$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
-				$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->post('tgl_akhir'))));
-				$this->db->group_by('tgl_inv');
-				
+				if ($this->input->post('kelompok') == 'harian') {
+					$this->db->select("*, DATE_FORMAT(ti_tgl, '%m%d') as orderx, DATE_FORMAT(ti_tgl, '%d-%m-%Y') as tgl_inv, COUNT(*) as total_order, SUM(ti_grandtotal) as total_uang");
+					$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
+					$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->post('tgl_akhir'))));
+					$this->db->order_by('orderx', 'asc');
+					$this->db->group_by('tgl_inv');
+				} else {
+					$this->db->select("*, YEAR(ti_tgl) as tahun,DATE_FORMAT(ti_tgl, '%M') as tgl_inv, MONTH(ti_tgl) as bulan, COUNT(*) AS total_order, SUM(ti_grandtotal) AS total_uang");
+					$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
+					$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->post('tgl_akhir'))));
+					$this->db->group_by('YEAR(ti_tgl) , MONTH(ti_tgl)');
+				}
+
 				$dtinv = $this->db->get('t_invoice');
-				
+
 				$data['data'] = $dtinv->result();
 				$data['tgl_awal'] = $this->input->post('tgl_awal');
 				$data['tgl_akhir'] = $this->input->post('tgl_akhir');
@@ -71,15 +76,100 @@ class Laporan extends CI_Controller {
 				$data['datex'] = $arrdate;
 				$data['count_order'] = $count_order;
 				$data['sum_order'] = $sum_order;
+				$data['kelompok'] = $this->input->post('kelompok');
 				$this->load->view('ajax/view_transaksi', $data);
-				
+
 				break;
-			
+
 			default:
 				# code...
 				break;
 		}
+	}
 
+	function export_transaksi()
+	{
+		$jenis = $this->input->get('jenis') ? $this->input->get('jenis') : 'excel';
+
+		if ($jenis == 'excel') {
+			if ($this->input->get('kelompok') == 'harian') {
+				$this->db->select("*, DATE_FORMAT(ti_tgl, '%m%d') as orderx, DATE_FORMAT(ti_tgl, '%d-%m-%Y') as tgl_inv, COUNT(*) as total_order, SUM(ti_grandtotal) as total_uang");
+				$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->get('awal'))));
+				$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->get('akhir'))));
+				$this->db->order_by('orderx', 'asc');
+				$this->db->group_by('tgl_inv');
+			} else {
+				$this->db->select("*, YEAR(ti_tgl) as tahun,DATE_FORMAT(ti_tgl, '%M') as tgl_inv, MONTH(ti_tgl) as bulan, COUNT(*) AS total_order, SUM(ti_grandtotal) AS total_uang");
+				$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->get('awal'))));
+				$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->get('akhir'))));
+				$this->db->group_by('YEAR(ti_tgl) , MONTH(ti_tgl)');
+			}
+
+			$dtinv = $this->db->get('t_invoice');
+
+			$data['data'] = $dtinv->result();
+			$data['awal'] = date('d-m-Y', strtotime($this->input->get('awal')));
+			$data['akhir'] = date('d-m-Y', strtotime($this->input->get('akhir')));
+			$this->load->view('ajax/export_transaksi', $data, FALSE);
+		} else {
+			if ($this->input->get('kelompok') == 'harian') {
+				$this->db->select("*, DATE_FORMAT(ti_tgl, '%m%d') as orderx, DATE_FORMAT(ti_tgl, '%d-%m-%Y') as tgl_inv, COUNT(*) as total_order, SUM(ti_grandtotal) as total_uang");
+				$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->get('awal'))));
+				$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->get('akhir'))));
+				$this->db->order_by('orderx', 'asc');
+				$this->db->group_by('tgl_inv');
+			} else {
+				$this->db->select("*, YEAR(ti_tgl) as tahun,DATE_FORMAT(ti_tgl, '%M') as tgl_inv, MONTH(ti_tgl) as bulan, COUNT(*) AS total_order, SUM(ti_grandtotal) AS total_uang");
+				$this->db->where('ti_tgl >=', date('Y-m-d H:i:s', strtotime($this->input->get('awal'))));
+				$this->db->where('ti_tgl <=', date('Y-m-d 23:59:59', strtotime($this->input->get('akhir'))));
+				$this->db->group_by('YEAR(ti_tgl) , MONTH(ti_tgl)');
+			}
+
+			$data = $this->db->get('t_invoice')->result();
+
+
+			$this->load->library('pdf');
+			$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+			$pdf->setPrintFooter(false);
+			$pdf->setPrintHeader(false);
+			$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+			$pdf->AddPage('');
+			$pdf->SetFont('');
+
+
+			$tabel = '
+			<table class="table table-bordered table-strip" border="1px">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Bulan/Tanggal</th>
+                <th>Jumlah Transaksi</th>
+                <th>Total Pemasukan</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+			$no = 1;
+			foreach ($data as $key => $value) {
+				$tabel .= '
+                <tr>
+                    <td>' . $no . '</td>
+                    <td>' . $value->tgl_inv . '</td>
+                    <td class="text-center">' . $value->total_order . '</td>
+                    <td>' . $this->alus_auth->rupiahrp($value->total_uang) . '</td>
+                </tr>';
+				$no++;
+			}
+			$table .= '</tbody></table>';
+
+			/*echo $tabel;
+	        die();*/
+			$pdf->writeHTML($tabel);
+
+			ob_end_clean();
+
+			$pdf->Output('Laporan Transaksi (' . date('d-m-Y', strtotime($this->input->get('awal'))) . ' - ' . date('d-m-Y', strtotime($this->input->get('akhir'))) . ').pdf', 'D');
+		}
 	}
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
