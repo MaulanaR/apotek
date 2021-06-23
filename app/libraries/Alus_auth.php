@@ -657,7 +657,7 @@ class Alus_auth
     	return $this->stok_depan_model->is_in_stock($moid, $tbid, $jumlahRequested);
     }
 
-    public function cek_kadaluarsa($tanggal){
+    public function cek_kadaluarsa($tanggal, $interval){
     	$now = new DateTime();
     	$cek = new DateTime($tanggal);
     	$diff = $now->diff($cek);
@@ -665,13 +665,16 @@ class Alus_auth
     	if($now > $cek){
             $status_kd = "kd";//kadaluarsa
         }else{
-	        if($days <= 10){
+	        if($days <= $interval){
 	            $status_kd = "hr";//hampir
 	        }else{
 	            $status_kd = "ok";//ok
 	        }
         }
-        return $status_kd;
+        $data = new stdClass();
+        $data->status = $status_kd;
+        $data->sisahari = $days;
+        return $data;
     }
 
     public function generateUniqueId($limit){

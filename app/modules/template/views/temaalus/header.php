@@ -39,6 +39,7 @@
   <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/temaalus/dist/css/bootstrap-datetimepicker.min.css');?>">
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/temaalus/plugins/bootstrap-select/dist/css/bootstrap-select.min.css">
   <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/temaalus/dist/css/bank_indonesia.css">
+  <link href="<?php echo base_url(); ?>assets/toastr/toastr.css" rel="stylesheet"/>
 
   <script src="<?php echo base_url(); ?>assets/temaalus/plugins/jQuery/jquery.min.js"></script>
   <script src="<?php echo base_url(); ?>assets/temaalus/dist/js/jquery.cookie.js"></script>
@@ -55,6 +56,7 @@
   <script src="<?php echo base_url(); ?>assets/highcharts/modules/exporting.js"></script>
   <script src="<?php echo base_url(); ?>assets/highcharts/modules/export-data.js"></script>
   <script src="<?php echo base_url(); ?>assets/highcharts/modules/accessibility.js"></script>
+  <script src="<?php echo base_url(); ?>assets/toastr/toastr.min.js"></script>
 
 <style>
 #loading {
