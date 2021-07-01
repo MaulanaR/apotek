@@ -20,7 +20,8 @@
                 <div class="form-group">
                   <label for="jenisLaporan">Jenis laporan</label>
                   <select id="jenisLaporan" name="jenisLaporan" class="form-control" onchange="pilihLaporan(this.value)">
-                    <option>Persediaan Obat</option>
+                    <option>--Option--</option>
+                    <option value="StokObat">Persediaan Obat</option>
                     <option>Persediaan Alkes</option>
                     <option>Obat Kadaluarsa</option>
                     <option value="Transaksi">Transaksi</option>
@@ -53,7 +54,7 @@
       </div>
       <div class="row">
         <div class="col-md-12 text-center">
-          <button class="btn btn-flat btn-md btn-primary" onclick="proses()" type="button"><i class='fa fa-search'></i> Tampilkan</button>
+          <button class="btn btn-flat btn-md btn-primary" type="button" id="Tampilkan"><i class='fa fa-search'></i> Tampilkan</button>
         </div>
       </div>
       <!-- /.card -->
@@ -73,33 +74,61 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-
+    $("#Tampilkan").click(function(){
+      var par = $('#jenisLaporan').val();
+        proses(par);
+      });
   });
 
-  function proses() {
+  function dateinput(a){
+    $("#tglAwal").attr('disabled', a);
+    $("#tglAkhir").attr('disabled', a);
+  }
+
+  function proses(par) {
     // $("#isichart").empty();
-    $("#isitable").empty();
-    $.ajax({
-      type: "POST",
-      url: "<?php echo base_url(); ?>laporan/generate",
-      data: {
-        'jenis': $("#jenisLaporan").val(),
-        'tgl_awal': $("#tglAwal").val(),
-        'tgl_akhir': $("#tglAkhir").val(),
-        'kelompok' : $("#kelompok").val()
-      },
-      dataType: "html",
-      success: function(response) {
-        $("#isitable").html(response);
-      },
-      error: function(xhr, err, x) {
-        popup('Perhatian', 'Gagal mengambil data', 'error');
-      }
-    });
+    if(par == 'Transaksi'){
+      $("#isitable").empty();
+      $.ajax({
+        type: "POST",
+        url: "<?php echo base_url(); ?>laporan/generate",
+        data: {
+          'jenis': $("#jenisLaporan").val(),
+          'tgl_awal': $("#tglAwal").val(),
+          'tgl_akhir': $("#tglAkhir").val(),
+          'kelompok' : $("#kelompok").val()
+        },
+        dataType: "html",
+        success: function(response) {
+          $("#isitable").html(response);
+        },
+        error: function(xhr, err, x) {
+          popup('Perhatian', 'Gagal mengambil data', 'error');
+        }
+      });
+    }else if(par == 'StokObat'){
+      $("#isitable").empty();
+      $.ajax({
+        type: "POST",
+        url: "<?php echo base_url(); ?>laporan/generate",
+        data: {
+          'jenis': $("#jenisLaporan").val(),
+          'type' : $("#dataset").val()
+        },
+        dataType: "html",
+        success: function(response) {
+          $("#isitable").html(response);
+        },
+        error: function(xhr, err, x) {
+          popup('Perhatian', 'Gagal mengambil data', 'error');
+        }
+      });
+    }
   }
 
   function pilihLaporan(va) {
     if (va == 'Transaksi') {
+      dateinput(false);
       $("#filter_tambahan").empty();
       $("#filter_tambahan").append(
         '<div class="col-md-12">' +
@@ -109,6 +138,20 @@
         '</div>' +
         '</div>'
       );
+    }else if (va == 'StokObat') {
+      dateinput(true);
+      $("#filter_tambahan").empty();
+      $("#filter_tambahan").append(
+        '<div class="col-md-12">' +
+        '<div class="form-group">' +
+        '<label for="dataset">Pilih Dataset : </label>' +
+        '<select class="form-control" id="dataset"><option value="All">Semua Obat</option><option value="Single">Pilih Obat</option></select>' +
+        '</div>' +
+        '</div>'
+      );
+      $("#dataset").change(function(){
+        //code..
+      });
     }
   }
 </script>

@@ -13,6 +13,8 @@ class Laporan extends CI_Controller
 		parent::__construct();
 		//load model
 		$this->load->model('laporan_model', 'model');
+		$this->load->model('Unit_model', 'unit');
+		$this->load->model('Suppliers_model', 'supplier');
 
 		if (!$this->alus_auth->logged_in()) {
 			redirect('admin/Login', 'refresh');
@@ -22,6 +24,8 @@ class Laporan extends CI_Controller
 			echo "<script type='text/javascript'>alert('You dont have permission to access this menu');</script>";
 			redirect('dashboard', 'refresh');
 		}
+		$temp = $this->alus_auth->getAlkesOrItemID('Alkes');
+        $this->id_alkes = $temp->mk_id;
 	}
 
 
@@ -78,9 +82,18 @@ class Laporan extends CI_Controller
 				$data['sum_order'] = $sum_order;
 				$data['kelompok'] = $this->input->post('kelompok');
 				$this->load->view('ajax/view_transaksi', $data);
-
 				break;
 
+			case 'StokObat' :
+				if($this->input->post('type') == 'All'){
+					$data['data'] = $this->alus_auth->ajax_stok_obat_by_id();
+					$arr = $data['data'];
+				}else if($this->input->post('type') == 'Single'){
+					//$dt = $this->alus_auth->ajax_stok_obat_by_id($this->input->post('id'));
+				}
+				$this->load->view('ajax/stok', $data, FALSE);
+				break;
+			
 			default:
 				# code...
 				break;
