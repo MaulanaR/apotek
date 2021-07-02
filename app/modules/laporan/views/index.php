@@ -20,7 +20,8 @@
                 <div class="form-group">
                   <label for="jenisLaporan">Jenis laporan</label>
                   <select id="jenisLaporan" name="jenisLaporan" class="form-control" onchange="pilihLaporan(this.value)">
-                    <option>Persediaan Obat</option>
+                    <option value="">- Pilih Jenis -</option>
+                    <option value="persediaan_obat">Persediaan Obat</option>
                     <option>Persediaan Alkes</option>
                     <option>Obat Kadaluarsa</option>
                     <option value="Transaksi">Transaksi</option>
@@ -109,6 +110,9 @@
         '</div>' +
         '</div>'
       );
+    }else{
+      $("#filter_tambahan").empty();
+
     }
   }
 </script>
