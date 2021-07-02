@@ -21,6 +21,7 @@ class Stok_depan_model extends CI_Model {
         $this->db->select("`m_obat`.mo_id,
                             `m_obat`.mo_mu_id,
                                     `m_obat`.mo_nama,
+                                    `m_obat`.mo_mk_id,
                                     `t_batch`.tb_id,
                                     `t_batch`.tb_tgl_kadaluarsa,
                                     `t_batch`.tb_harga_beli,

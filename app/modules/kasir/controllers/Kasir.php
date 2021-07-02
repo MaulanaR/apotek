@@ -298,14 +298,15 @@ class Kasir extends CI_Controller {
 
 
 	function cari_data($content){
+		$interval = 10;
 		$cari = $this->alus_auth->stok_like($content, FALSE);
 		$temp = array();
 		$status = FALSE;
 		if($cari[0] >= 1){
 			$status = TRUE;
 			foreach ($cari[1] as $key => $value) {
-			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
-				if($cek != 'kd'){
+			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa, $interval);
+				if($cek->status != 'kd'){
 					$temp[] = array(
 						"nama" => $value->mo_nama,
 						"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
@@ -323,6 +324,7 @@ class Kasir extends CI_Controller {
 	}
 
 	function cari_data_resep($content){
+		$interval = 10;
 		$cari = $this->alus_auth->stok_like($content, TRUE);
 		$id_alkes = $this->alus_auth->getAlkesOrItemID('Alkes');
 		$temp = array();
@@ -330,8 +332,8 @@ class Kasir extends CI_Controller {
 		if($cari[0] >= 1){
 			$status = TRUE;
 			foreach ($cari[1] as $key => $value) {
-			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
-				if($cek != 'kd'){
+			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa, $interval);
+				if($cek->status != 'kd'){
 					if($value->mo_mk_id != $id_alkes->mk_id){//exclude produk Alkes
 						$temp[] = array(
 							"nama" => $value->mo_nama,
@@ -351,6 +353,7 @@ class Kasir extends CI_Controller {
 	}
 
 	function ajax_cari_produk($content){
+		$interval = 10;
 		$cari = $this->alus_auth->stok_like($content, TRUE);
 		$id_alkes = $this->alus_auth->getAlkesOrItemID('Alkes');
 		$temp = array();
@@ -358,8 +361,8 @@ class Kasir extends CI_Controller {
 		if($cari[0] >= 1){
 			$status = TRUE;
 			foreach ($cari[1] as $key => $value) {
-			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa);
-				if($cek != 'kd'){
+			$cek = $this->alus_auth->cek_kadaluarsa($value->tb_tgl_kadaluarsa, $interval);
+				if($cek->status != 'kd'){
 						$temp[] = array(
 							"nama" => $value->mo_nama,
 							"tgl_kadaluarsa" => $value->tb_tgl_kadaluarsa,
@@ -539,7 +542,14 @@ class Kasir extends CI_Controller {
 						$this->db->insert('t_jurnal', $arrayItem);//Kurangi stok item
 					}
 				$this->model->update(array('ti_id' => $inv_id), array('ti_total_barang' => $jumlahBarang));//update jumlah barang di invoice
-				
+
+				//save ke tabel keuangan
+				$data_save_uang = array(
+					'tjk_ti_id' => $inv_id,
+					'tjk_masuk' => $data->grandtotal,
+				);
+				$this->db->insert('t_jurnal_keuangan', $data_save_uang);
+
 				//save ke sesi login kasir
 				$data_kasir_save = array(
 					'tsud_tsu_id' 	=> $this->session->userdata('id_sesi'),
@@ -598,6 +608,12 @@ class Kasir extends CI_Controller {
 						);
 						$this->retur->save_detail($con);//save item ke detail
 					}
+
+				$data_save_uang = array(
+					'tjk_ti_id' => $data->id,
+					'tjk_keluar' => $data->nilaipengembalian,
+				);
+				$this->db->insert('t_jurnal_keuangan', $data_save_uang);
 				
 				//save ke sesi login kasir
 					/*

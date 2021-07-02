@@ -13,6 +13,9 @@ class Dashboard extends CI_Controller {
 			redirect('admin/Login','refresh');
 		}
 		$this->load->model('Dashboard_model','model');
+		$this->load->model('Unit_model', 'unit');
+		$this->load->model('Kategori_obat_model', 'kategori');
+		$this->load->model('Suppliers_model', 'supplier');
 	}
 
 
@@ -101,6 +104,52 @@ class Dashboard extends CI_Controller {
 		$this->db->insert('t_sync', $ins);
 
 		echo json_encode(['status' => TRUE]);
+	}
+
+	public function ajax_cek_kadaluarsa_all(){
+		$kd_interval = 10; //interval hari sebelum kadaluarsa
+		$status = FALSE;
+		$kadaluarsa = FALSE;
+        $hampir = FALSE;
+		$con = $this->model->get_all_stok_obat();
+		$data = array();
+		$data2 = array();
+		foreach ($con as $record2) {
+            $cekkd = $this->alus_auth->cek_kadaluarsa($record2->tb_tgl_kadaluarsa, $kd_interval);
+            if($cekkd->status == 'kd'){
+            	$status = TRUE;
+            	$kadaluarsa = TRUE;
+            	$row2 = array();
+	            $row2[] = $record2->mo_nama;//0
+	            $row2[] = $record2->tb_tgl_kadaluarsa;//1
+	            $row2[] = $record2->stok;//2
+	            $row2[] = $record2->tb_id;//3
+	            $sisahari = $cekkd->sisahari;
+	            $status_kd = $cekkd->status;
+	            $row2[] = $kadaluarsa;//4
+	            $row2[] = $sisahari;//5
+	            $row2[] = $status_kd;
+	            $row2[] = $record2->mo_id;//7
+	            $data[] = $row2;
+	            $msg = 'Ada obat kadaluarsa!';
+            }else if($cekkd->status == 'hr'){
+            	$hampir = TRUE;
+            	$row = array();
+	            $row[] = $record2->mo_nama;//0
+	            $row[] = $record2->tb_tgl_kadaluarsa;//1
+	            $row[] = $record2->stok;//2
+	            $row[] = $record2->tb_id;//3
+	            $sisahari = $cekkd->sisahari;
+	            $status_kd = $cekkd->status;
+	            $row[] = $kadaluarsa;//4
+	            $row[] = $sisahari;//5
+	            $row[] = $status_kd;//6
+	            $row[] = $record2->mo_id;//7
+	            $data2[] = $row;
+            }
+		}
+		echo json_encode(array('status' => $status, 'statuskd' => $kadaluarsa, 'statushr' => $hampir, 'msg' => $msg, 'datakd' => $data, 'datahr' => $data2));
+		//echo json_encode(["status" => true]);
 	}
 
 }
