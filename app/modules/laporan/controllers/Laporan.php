@@ -86,12 +86,23 @@ class Laporan extends CI_Controller
 
 			case 'StokObat' :
 				if($this->input->post('type') == 'All'){
-					$data['data'] = $this->alus_auth->ajax_stok_obat_by_id();
-					$arr = $data['data'];
+					$arr = $this->alus_auth->ajax_stok_obat_by_id();
+					$data['data'] = $arr;
+					$data['id_alkes'] = $this->id_alkes;
 				}else if($this->input->post('type') == 'Single'){
 					//$dt = $this->alus_auth->ajax_stok_obat_by_id($this->input->post('id'));
 				}
 				$this->load->view('ajax/stok', $data, FALSE);
+				break;
+			case 'StokAlkes' :
+				if($this->input->post('type') == 'All'){
+					$arr = $this->alus_auth->ajax_stok_obat_by_id();
+					$data['data'] = $arr;
+					$data['id_alkes'] = $this->id_alkes;
+				}else if($this->input->post('type') == 'Single'){
+					//$dt = $this->alus_auth->ajax_stok_obat_by_id($this->input->post('id'));
+				}
+				$this->load->view('ajax/stok_alkes', $data, FALSE);
 				break;
 			
 			default:

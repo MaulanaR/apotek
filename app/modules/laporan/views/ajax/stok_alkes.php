@@ -16,7 +16,7 @@
 	      $totalitem = 0;
 	      $other = 0;
 	       for($i = 0; $i < count($arr); $i++){
-	       	if($arr[$i][11] != $id_alkes){
+	       	if($arr[$i][11] == $id_alkes){
 		        echo "
 		         <tr>
 		          <td>".($i + 1)."</td>
@@ -32,7 +32,7 @@
 	       }
 			$arrayItem = array();
 			for($i = 0; $i < count($arr); $i++){
-				if($arr[$i][11] != $id_alkes){
+				if($arr[$i][11] == $id_alkes){
 				$y = ((int)$arr[$i][2] / $totalitem) * 100;
 				if($y < 2){//jika persentasi kurang dari 5%
 					$temp = $other + $y;//tambah ke persentasi other
@@ -63,7 +63,7 @@
     type: 'pie'
   },
   title: {
-    text: 'Persentasi Jumlah Obat'
+    text: 'Persentasi Jumlah Item'
   },
   tooltip: {
     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
