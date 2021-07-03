@@ -16,39 +16,43 @@
 	      $totalitem = 0;
 	      $other = 0;
 	      $ar2 = $this->alus_auth->filter_array_2d_not_match($ar, 11, $id_alkes);//filter alkes
-	      $arr = $this->alus_auth->filter_array_2d_not_match($ar2, 4, TRUE);//filter kadaluarsa
+	      $arr = $this->alus_auth->filter_array_2d_match($ar2, 4, TRUE);//filter kadaluarsa
+	      $arrayItem = array();
 	       for($i = 0; $i < count($arr); $i++){
-		        echo "
-		         <tr>
-		          <td>".($i + 1)."</td>
-		          <td>".$arr[$i][0]."</td>
-		          <td>".$arr[$i][3]."</td>
-		          <td>".$arr[$i][2]." ".$arr[$i][7]."</td>
-		          <td>".$arr[$i][6]."</td>
-		         </tr>
-		        ";
-		        $temp = $totalitem + (int)$arr[$i][2];
-				$totalitem = $temp;
+	       	if((int)$arr[$i][2] > 0){//jika stok lebih dari 0
+				        echo "
+				         <tr>
+				          <td>".($i + 1)."</td>
+				          <td>".$arr[$i][0]."</td>
+				          <td>".$arr[$i][3]."</td>
+				          <td>".$arr[$i][2]." ".$arr[$i][7]."</td>
+				          <td>".$arr[$i][6]."</td>
+				         </tr>
+				        ";
+				        $temp = $totalitem + (int)$arr[$i][2];
+						$totalitem = $temp;
+
+				}
 	       }
-			$arrayItem = array();
 			for($i = 0; $i < count($arr); $i++){
-
-						$y = ((int)$arr[$i][2] / $totalitem) * 100;
-						if($y < 2){//jika persentasi kurang dari 2%
-							$temp = $other + $y;//tambah ke persentasi other
-							$other = $temp;
-						}else{
-							$row['nama'] = $arr[$i][0];
-							$row['y'] = $y;
-							$arrayItem[] = $row;
-						}
-
+				if((int)$arr[$i][2] > 0){ //jika stok lebih dari 0
+							$y = ((int)$arr[$i][2] / $totalitem) * 100;
+							if($y < 2){//jika persentasi kurang dari 2%
+								$temp = $other + $y;//tambah ke persentasi other
+								$other = $temp;
+							}else{
+								$row['nama'] = $arr[$i][0];
+								$row['y'] = $y;
+								$arrayItem[] = $row;
+							}
+				}
 			}
 			if($other != 0 | $other != null){//jika other tidak kosong
 					$c = count($arrayItem);
 					$arrayItem[$c]['nama'] = "Obat Lainnya";
 					$arrayItem[$c]['y'] = $other;
-				}
+			}
+	
 	      ?>
 	     </tbody>
 	</table>
@@ -63,7 +67,7 @@
     type: 'pie'
   },
   title: {
-    text: 'Persentasi Jumlah Obat'
+    text: 'Persentasi Jumlah Obat kadaluarsa'
   },
   tooltip: {
     pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'

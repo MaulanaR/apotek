@@ -764,5 +764,33 @@ class Alus_auth
 	    	return null;
 	    }
     }
+
+    public function filter_array_2d_not_match($array, $index, $val){
+		        if(is_array($array) && count($array)>0) 
+		        {
+		            foreach(array_keys($array) as $key){
+		                $temp[$key] = $array[$key][$index];
+		                
+		                if ($temp[$key] != $val){
+		                    $newarray[] = $array[$key];
+		                }
+		            }
+		          }
+		      return $newarray;
+	}
+
+	public function filter_array_2d_match($array, $index, $val){
+		        if(is_array($array) && count($array)>0) 
+		        {
+		            foreach(array_keys($array) as $key){
+		                $temp[$key] = $array[$key][$index];
+		                
+		                if ($temp[$key] == $val){
+		                    $newarray[] = $array[$key];
+		                }
+		            }
+		          }
+		      return $newarray;
+	}
 }
 

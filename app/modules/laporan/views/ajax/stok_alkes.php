@@ -12,11 +12,11 @@
 	     </thead>
 	     <tbody>
 	      <?php
-	      $arr = $data['data'];
+	      $ar = $data['data'];
 	      $totalitem = 0;
 	      $other = 0;
+	      $arr = $this->alus_auth->filter_array_2d_match($ar, 11, $id_alkes);//filter alkes
 	       for($i = 0; $i < count($arr); $i++){
-	       	if($arr[$i][11] == $id_alkes){
 		        echo "
 		         <tr>
 		          <td>".($i + 1)."</td>
@@ -28,11 +28,9 @@
 		        ";
 		        $temp = $totalitem + (int)$arr[$i][2];
 				$totalitem = $temp; 
-			}
 	       }
 			$arrayItem = array();
 			for($i = 0; $i < count($arr); $i++){
-				if($arr[$i][11] == $id_alkes){
 				$y = ((int)$arr[$i][2] / $totalitem) * 100;
 				if($y < 2){//jika persentasi kurang dari 5%
 					$temp = $other + $y;//tambah ke persentasi other
@@ -41,7 +39,6 @@
 					$row['nama'] = $arr[$i][0];
 					$row['y'] = $y;
 					$arrayItem[] = $row;
-				}
 				}
 			}
 			if($other != 0 | $other != null){//jika other tidak kosong
