@@ -7,7 +7,6 @@
 	       <th>Nama</th>
 	       <th>Batch ID</th>
 	       <th>Stok</th>
-	       <th>Status</th>
 	     </tr>
 	     </thead>
 	     <tbody>
@@ -26,7 +25,6 @@
 				          <td>".$arr[$i][0]."</td>
 				          <td>".$arr[$i][3]."</td>
 				          <td>".$arr[$i][2]." ".$arr[$i][7]."</td>
-				          <td>".$arr[$i][6]."</td>
 				         </tr>
 				        ";
 				        $temp = $totalitem + (int)$arr[$i][2];
@@ -41,7 +39,7 @@
 								$temp = $other + $y;//tambah ke persentasi other
 								$other = $temp;
 							}else{
-								$row['nama'] = $arr[$i][0];
+								$row['nama'] = $arr[$i][0]." [".$arr[$i][2]." ".$arr[$i][7]."]";
 								$row['y'] = $y;
 								$arrayItem[] = $row;
 							}
