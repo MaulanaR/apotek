@@ -103,6 +103,9 @@
           if (data.status) //if success close modal and reload ajax table
           {
             popup('Informasi', 'Data berhasil di simpan');
+            setTimeout(function (){
+              window.location = "<?php echo base_url('obat/detail/');?>" + data.id;
+              }, 2000);
           } else {
             popup('Perhatian', data.msg, 'info');
           }
