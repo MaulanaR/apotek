@@ -1,5 +1,15 @@
+<div class="row" style="min-height: 400px;">
+    <div class="col-md-9" style="border: 1px solid grey;" id="pieobat"></div>
+    <div class="col-md-3">
+        <h4>Export Laporan</h4>
+        <hr>
+        <div class="btn-group-vertical btn-block">
+            <button class="btn btn-sm btn-primary" onclick="export_x('excel')">Export to Excel</button>
+            <button class="btn btn-sm btn-warning" onclick="export_x('pdf')">Export to PDF</button>
+        </div>
+    </div>
+</div>
 <div class='row'>
-	<div class="col-md-12" id="pieobat"></div>
 	<table id="table" class="table table-bordered table-hover dataTable dtr-inline" style="width: 100%">
 	     <thead>
 	     <tr>
@@ -95,4 +105,9 @@
     ?>]
   }]
 });
+	function export_x(par) {
+        // Opens a new window
+        myWindow = window.open("<?php echo base_url('laporan/export_stok/');?>?jenis="+par+"&content=obatkd", "Export", "width=200, height=100");
+        // myWindow.close();
+    }
 </script>

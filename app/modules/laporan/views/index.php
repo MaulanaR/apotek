@@ -112,8 +112,7 @@
         type: "POST",
         url: "<?php echo base_url(); ?>laporan/generate",
         data: {
-          'jenis': $("#jenisLaporan").val(),
-          'type' : $("#dataset").val()
+          'jenis': $("#jenisLaporan").val()
         },
         dataType: "html",
         success: function(response) {
@@ -130,10 +129,7 @@
         type: "POST",
         url: "<?php echo base_url(); ?>laporan/generate",
         data: {
-          'jenis': $("#jenisLaporan").val(),
-          'type' : $("#dataset").val(),
-          'tgl_awal': $("#tglAwal").val(),
-          'tgl_akhir': $("#tglAkhir").val()
+          'jenis': $("#jenisLaporan").val()
         },
         dataType: "html",
         success: function(response) {
@@ -150,8 +146,7 @@
         type: "POST",
         url: "<?php echo base_url(); ?>laporan/generate",
         data: {
-          'jenis': $("#jenisLaporan").val(),
-          'type' : $("#dataset").val()
+          'jenis': $("#jenisLaporan").val()
         },
         dataType: "html",
         success: function(response) {
@@ -179,49 +174,12 @@
     }else if (va == 'StokObat') {
       dateinput(true);
       $("#filter_tambahan").empty();
-      $("#filter_tambahan").append(
-        '<div class="col-md-12">' +
-        '<div class="form-group">' +
-        '<label for="dataset">Pilih Dataset : </label>' +
-        '<select class="form-control" id="dataset"><option value="All">Semua Obat</option><option value="Single">Pilih Obat</option></select>' +
-        '</div>' +
-        '</div>'
-      );
-      $("#dataset").change(function(){
-        //code..
-      });
     }else if (va == 'StokAlkes') {
       dateinput(true);
       $("#filter_tambahan").empty();
-      $("#filter_tambahan").append(
-        '<div class="col-md-12">' +
-        '<div class="form-group">' +
-        '<label for="dataset">Pilih Dataset : </label>' +
-        '<select class="form-control" id="dataset"><option value="All">Semua Item</option><option value="Single">Pilih Item</option></select>' +
-        '</div>' +
-        '</div>'
-      );
-      $("#dataset").change(function(){
-        //code..
-      });
     }else if (va == 'StokObatKd') {
       dateinput(true);
       $("#filter_tambahan").empty();
-      $("#filter_tambahan").append(
-        '<div class="col-md-12">' +
-        '<div class="form-group">' +
-        '<label for="dataset">Pilih Dataset : </label>' +
-        '<select class="form-control" id="dataset"><option value="All">Semua Item</option><option value="Range">Pilih Berdasarkan Range</option></select>' +
-        '</div>' +
-        '</div>'
-      );
-      $("#dataset").change(function(){
-        if($("#dataset").val() == 'Range'){
-          dateinput(false);
-        }else{
-          dateinput(true);
-        }
-      });
     }
   }
 </script>
