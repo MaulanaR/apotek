@@ -28,7 +28,9 @@
                                 <select class="sel form-control" name="kategori_obat" required>
                                     <?php
                                     foreach ($this->db->get('m_kategori')->result() as $key => $value_kategori) {
+                                        if($value_kategori->mk_id != $this->alus_auth->getAlkesOrItemID('Alkes')->mk_id){
                                         echo '<option value="' . $value_kategori->mk_id . '">' . $value_kategori->mk_nama . '</option>';
+                                        }
                                     }
                                     ?>
                                 </select>
@@ -101,6 +103,9 @@
           if (data.status) //if success close modal and reload ajax table
           {
             popup('Informasi', 'Data berhasil di simpan');
+            setTimeout(function (){
+              window.location = "<?php echo base_url('obat/detail/');?>" + data.id;
+              }, 2000);
           } else {
             popup('Perhatian', data.msg, 'info');
           }
