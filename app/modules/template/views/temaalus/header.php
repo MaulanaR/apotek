@@ -93,6 +93,13 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Messages Dropdown Menu -->
+      <?php if($this->alus_auth->in_group('admin')){?> 
+      <li class="nav-item dropdown">
+        <a class="btn btn-sm btn-block btn-outline-success" href="<?php echo base_url('setting');?>">
+          Setting
+        </a>
+      </li>&nbsp;
+      <?php } ?>
       <li class="nav-item dropdown">
         <a class="btn btn-sm btn-block btn-outline-info" href="<?php echo base_url('user_profile');?>">
           Profile
@@ -108,8 +115,8 @@
 
    <aside class="main-sidebar sidebar-dark-warning elevation-4">
     <a href="<?php echo base_url();?>" class="brand-link">
-      <img src="<?php echo base_url('assets/logo/askrindo-mini.png'); ?>" alt="Askrindo Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">Apotek App</span>
+      <img src="<?php echo base_url('assets/logo').'/'.$this->db->get('setting_app')->row()->app_logo;?>" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light"><?php echo $this->db->get('setting_app')->row()->app_nama;?></span>
     </a>
     <section class="sidebar">
       <!-- Sidebar user panel -->

@@ -31,9 +31,9 @@
 <body class="hold-transition login-page cover">
 <div class="card">
     <div class="card-body login-card-body">
-      <img src="<?php echo base_url();?>assets/logo/askrindo.png" class="p-3" style="width: 100%">
-      <p class="login-box-msg mt-5">Sign in to start your session</p>
-
+      <img src="<?php echo base_url('assets/logo').'/'.$this->db->get('setting_app')->row()->app_logo;?>" class="p-3" style="width: 100%; align:center">
+      <p class="mt-2 text-center" style="font-weight:bold"><?php echo $this->db->get('setting_app')->row()->app_nama;?></p>
+      <p class="login-box-msg">Sign in to start your session</p>
       <form action="<?php echo base_url('admin/Login/login'); ?>" method="post" id="form">
         <div class="input-group mb-3">
           <input type="email" class="form-control" placeholder="Email" name="identity">

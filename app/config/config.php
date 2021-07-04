@@ -468,7 +468,7 @@ $config['csrf_token_name'] = 'csrf_apotekapp';
 $config['csrf_cookie_name'] = 'apotek_cookieapp';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
-//$config['csrf_exclude_uris'] = array('nrckur/upload_act','nrcnonkur/upload_act','nrctb/upload_act','eliminasi/submit_elim');
+$config['csrf_exclude_uris'] = array();
 
 /*
 |--------------------------------------------------------------------------

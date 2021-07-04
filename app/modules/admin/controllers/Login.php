@@ -14,9 +14,24 @@ class Login extends CI_Controller {
 
 	public function index()
 	{
-	
+		$qur = "CREATE TABLE IF NOT EXISTS `setting_app` (
+			`setting_id` int(11) NOT NULL AUTO_INCREMENT,
+			`app_nama` varchar(255) NOT NULL,
+			`app_logo` varchar(255) NOT NULL,
+			PRIMARY KEY (`setting_id`)
+		  )";
+
+		$this->db->query($qur);
+
+		$x = $this->db->get('setting_app');
+		if($x->num_rows() < 1)
+		{
+			$this->db->insert('setting_app', ['app_nama' => 'Apotek Apps', 'app_logo' => 'askrindo-mini.png']);
+			$x = $this->db->get('setting_app');
+		}
+
 		if($this->alus_auth->logged_in())
-         {
+        {
 		 redirect('dashboard/','refresh');
 		}else
 		{	

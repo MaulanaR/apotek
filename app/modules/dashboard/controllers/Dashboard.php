@@ -12,6 +12,8 @@ class Dashboard extends CI_Controller {
 		{
 			redirect('admin/Login','refresh');
 		}
+        $this->load->library('upload');
+
 		$this->load->model('Dashboard_model','model');
 		$this->load->model('Unit_model', 'unit');
 		$this->load->model('Kategori_obat_model', 'kategori');
@@ -57,6 +59,93 @@ class Dashboard extends CI_Controller {
 		{
 			redirect('admin/Login','refresh');
 		}
+	}
+
+	function setting()
+	{
+		if($this->alus_auth->logged_in())
+         {
+         	$head['title'] = "Setting Apps";
+
+			$x = $this->db->get('setting_app');
+			if($x->num_rows() > 0)
+			{
+				//ada
+				$data['data'] = $x->row();
+			}else{
+				$this->db->insert('setting_app', ['app_nama' => 'Apotek Apps', 'app_logo' => 'askrindo-mini.png']);
+				
+				$x = $this->db->get('setting_app');
+				$data['data'] = $x->row();
+			}
+			
+		 	$this->load->view('template/temaalus/header',$head);
+		 	$this->load->view('setting.php',$data);
+		 	$this->load->view('template/temaalus/footer');
+		}else
+		{
+			redirect('admin/Login','refresh');
+		}
+	}
+
+	public function save_setting()
+	{
+		$config['upload_path'] = './assets/logo/';
+        $config['allowed_types'] = 'gif|jpg|png|jpeg';
+        $config['max_size']  = '1000';
+        $config['max_width']  = '1000';
+        $config['max_height']  = '1000';
+        $config['overwrite'] = TRUE;
+        $config['file_name'] = time();
+
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+		$data_update = array(
+			'app_nama' => $this->input->post('nama_app')
+		);
+
+        if($_FILES['logo']['name'] != "")
+        {
+			//upload logo baru
+			if ( ! $this->upload->do_upload('logo')){
+				echo json_encode(['status' => FALSE, 'msg' => $this->upload->display_errors()]);
+				die();
+			}
+			else{
+				if($this->input->post('old_logo') != 'askrindo-mini.png')
+				{
+					//maka logo lama hapus
+					if(file_exists('./assets/logo/'.$this->input->post('old_logo')))
+					{
+						unlink('./assets/logo/'.$this->input->post('old_logo'));
+					}
+				}
+				///[ RESIZE IMAGE ]
+				$config2['image_library'] = 'gd2';
+				$config2['source_image'] = $this->upload->upload_path.$this->upload->file_name;
+				$config2['new_image'] = './assets/logo';
+				$config2['maintain_ratio'] = FALSE;
+				$config2['create_thumb'] = TRUE;
+				$config2['thumb_marker'] = '';
+				$config2['width'] = 300;
+				$config2['height'] = 300;
+				$this->load->library('image_lib',$config2);
+				if ( !$this->image_lib->resize()){
+					echo json_encode(['status' => FALSE, 'msg' => $this->image_lib->display_errors('', '')]);
+					die();
+				}
+				$data_upload = array('upload_data' => $this->upload->data());
+				$data_update['app_logo'] = $data_upload['upload_data']['file_name'];
+			}
+		}
+
+		$this->db->where('setting_id', $this->input->post('id'));
+		$this->db->update('setting_app', $data_update);
+		
+		echo json_encode(['status' => TRUE, 'msg' => 'Berhasil']);
+		die();
 	}
 
 	public function sync()
