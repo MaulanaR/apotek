@@ -1,3 +1,20 @@
+<?php
+$ar = $data['data'];
+$totalitem = 0;
+$other = 0;
+$stok_obat_terbanyak = 0;
+$ar2 = $this->alus_auth->filter_array_2d_not_match($ar, 11, $id_alkes);//filter alkes
+$arr = $this->alus_auth->filter_array_2d_not_match($ar2, 4, TRUE);//filter kadaluarsa
+for($i = 0; $i < count($arr); $i++){
+	if((int)$arr[$i][2] > $stok_obat_terbanyak){
+		$stok_obat_terbanyak = (int)$arr[$i][2];
+		$obat_terbanyak = $arr[$i][0];
+		$unit_obat_terbanyak = $arr[$i][7];
+	}
+	$temp = $totalitem + (int)$arr[$i][2];
+	$totalitem = $temp;
+}
+?>
 <div class="row" style="min-height: 400px;">
     <div class="col-md-9" style="border: 1px solid grey;" id="pieobat"></div>
     <div class="col-md-3">
@@ -17,21 +34,21 @@
 		<dl>
 			<dt class='text-center'><p>Jumlah Item Terdaftar</p></dt>
 			<dd class='text-center'><p>&nbsp;</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><h4><?php echo $totalitem; ?></h4> Item</p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
 			<dt class='text-center'><p>Terbaru</p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><?php echo $obat_terbaru; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $stok_obat_terbaru; ?></h4> <?php echo $unit_obat_terbaru; ?></p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
 			<dt class='text-center'><p>Stok Paling Banyak</p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><?php echo $obat_terbanyak; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $stok_obat_terbanyak; ?></h4> <?php echo $unit_obat_terbanyak; ?></p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
@@ -72,11 +89,6 @@
 	     </thead>
 	     <tbody>
 	      <?php
-	      $ar = $data['data'];
-	      $totalitem = 0;
-	      $other = 0;
-	      $ar2 = $this->alus_auth->filter_array_2d_not_match($ar, 11, $id_alkes);//filter alkes
-	      $arr = $this->alus_auth->filter_array_2d_not_match($ar2, 4, TRUE);//filter kadaluarsa
 	       for($i = 0; $i < count($arr); $i++){
 		        echo "
 		         <tr>
@@ -86,8 +98,6 @@
 		          <td>".$arr[$i][2]." ".$arr[$i][7]."</td>
 		         </tr>
 		        ";
-		        $temp = $totalitem + (int)$arr[$i][2];
-				$totalitem = $temp;
 	       }
 			$arrayItem = array();
 			for($i = 0; $i < count($arr); $i++){

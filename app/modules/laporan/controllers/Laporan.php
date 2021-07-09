@@ -89,6 +89,12 @@ class Laporan extends CI_Controller
 				$arr = $this->alus_auth->ajax_stok_obat_by_id();
 				$data['data'] = $arr;
 				$data['id_alkes'] = $this->id_alkes;
+				$ter = $this->terbaru('t_batch', 'tb_created');
+				$obat = $this->alus_auth->ajax_stok_obat_by_id($ter['tb_mo_id']);
+				$d = $obat['data'];
+				$data['obat_terbaru'] = $d[0][0];
+				$data['stok_obat_terbaru'] = $d[0][2];
+				$data['unit_obat_terbaru'] = $d[0][7];
 
 				$this->load->view('ajax/stok', $data, FALSE);
 				break;
@@ -350,6 +356,19 @@ class Laporan extends CI_Controller
 	        $paper = 'A4';
 	        $this->pdf2->generate($tabel, $judul, $paper, $orientation);
 		}
+	}
+
+	function terbaru($table, $column){
+		$this->db->select_max($column, 'newest');
+		$this->db->select("tb_mo_id");
+		$query = $this->db->get($table);
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['tb_created'] = $value->newest;
+			$data['tb_mo_id'] = $value->tb_mo_id;
+		}
+
+		return $data;
 	}
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
