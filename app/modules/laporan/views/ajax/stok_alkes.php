@@ -9,7 +9,58 @@
         </div>
     </div>
 </div>
-<div class='row'>
+<div class='row col-12 p-0'>
+	<div class='col-12'>
+		<p><h3>Summary</h3></p>
+	</div>
+	<div class='card mr-2 pt-2' style='width:32%'>
+		<dl>
+			<dt class='text-center'><p>Jumlah Item Terdaftar</p></dt>
+			<dd class='text-center'><p>&nbsp;</p></dd>
+			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+		</dl>
+	</div>
+	<div class='card mr-2 pt-2' style='width:32%'>
+		<dl>
+			<dt class='text-center'><p>Terbaru</p></dt>
+			<dd class='text-center'><p>Placeholder</p></dd>
+			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+		</dl>
+	</div>
+	<div class='card mr-2 pt-2' style='width:32%'>
+		<dl>
+			<dt class='text-center'><p>Stok Paling Banyak</p></dt>
+			<dd class='text-center'><p>Placeholder</p></dd>
+			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+		</dl>
+	</div>
+	<div class='card mr-2 pt-2' style='width:32%'>
+		<dl>
+			<dt class='text-center'><p>Paling Sering Terjual <small>(Item)</small></p></dt>
+			<dd class='text-center'><p>Placeholder</p></dd>
+			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+		</dl>
+	</div>
+	<div class='card mr-2 pt-2' style='width:32%'>
+		<dl>
+			<dt class='text-center'><p>Paling Banyak Terjual <small>(Item)</small></p></dt>
+			<dd class='text-center'><p>Placeholder</p></dd>
+			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+		</dl>
+	</div>
+	<div class='card mr-2 pt-2' style='width:32%'>
+		<dl>
+			<dt class='text-center'><p>Terakhir dijual</p></dt>
+			<dd class='text-center'><p>Placeholder</p></dd>
+			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+		</dl>
+	</div>
+</div>	
+<div class='row col-12 p-0'>
+	<div class='col-12'>
+		<p><h3 onclick="shtable()" style="cursor:pointer;">Data Table <i id="datatablearrow" class="fas fa-angle-down" aria-hidden="true"></i></h3></p>
+	</div>
+	<div class='col-12' id='divtable' style="display:none;visibility: none;">
 	<table id="table" class="table table-bordered table-hover dataTable dtr-inline" style="width: 100%">
 	     <thead>
 	     <tr>
@@ -58,6 +109,7 @@
 	     </tbody>
 	</table>
 </div>
+</div>
                  
 <script type="text/javascript">
 	Highcharts.chart('pieobat', {
@@ -103,4 +155,18 @@
         myWindow = window.open("<?php echo base_url('laporan/export_stok/');?>?jenis="+par+"&content=alkes", "Export", "width=200, height=100");
         // myWindow.close();
     }
+
+ function shtable(){
+	var ea = document.getElementById('datatablearrow');
+	var el = document.getElementById('divtable');
+	if(window.getComputedStyle(el).display !== 'none') {
+        el.style.display = 'none';
+        ea.classList.remove('fa-angle-up');
+		ea.classList.add('fa-angle-down');
+    }else{
+    	el.style.display = 'block';
+        ea.classList.remove('fa-angle-down');
+		ea.classList.add('fa-angle-up');
+    }
+}
 </script>
