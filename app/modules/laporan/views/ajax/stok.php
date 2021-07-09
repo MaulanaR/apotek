@@ -53,23 +53,23 @@ for($i = 0; $i < count($arr); $i++){
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
-			<dt class='text-center'><p>Paling Sering Terjual <small>(Item)</small></p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dt class='text-center'><p>Paling Sering Terjual <small></small></p></dt>
+			<dd class='text-center'><p><?php echo $obat_sering_jual; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $jumlah_obat_sering_jual; ?></h4> Penjualan</p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
-			<dt class='text-center'><p>Paling Banyak Terjual <small>(Item)</small></p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dt class='text-center'><p>Paling Banyak Terjual <small></small></p></dt>
+			<dd class='text-center'><p><?php echo $obat_banyak_jual; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $jumlah_obat_banyak_jual; ?></h4> Item</p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
 			<dt class='text-center'><p>Terakhir dijual</p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><?php echo $obat_dijual_baru; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $jumlah_obat_dijual_baru; ?></h4> <?php echo $tanggal_obat_dijual_baru; ?></p></dd>
 		</dl>
 	</div>
 </div>	

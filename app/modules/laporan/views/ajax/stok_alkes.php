@@ -1,3 +1,18 @@
+<?php
+$ar = $data['data'];
+$totalitem = 0;
+$other = 0;
+$arr = $this->alus_auth->filter_array_2d_match($ar, 11, $id_alkes);//filter alkes
+for($i = 0; $i < count($arr); $i++){
+	if((int)$arr[$i][2] > $stok_alkes_terbanyak){
+		$stok_alkes_terbanyak = (int)$arr[$i][2];
+		$alkes_terbanyak = $arr[$i][0];
+		$unit_alkes_terbanyak = $arr[$i][7];
+	}
+	$temp = $totalitem + (int)$arr[$i][2];
+	$totalitem = $temp;
+}
+?>
 <div class="row" style="min-height: 400px;">
     <div class="col-md-9" style="border: 1px solid grey;" id="pieobat"></div>
     <div class="col-md-3">
@@ -17,42 +32,42 @@
 		<dl>
 			<dt class='text-center'><p>Jumlah Item Terdaftar</p></dt>
 			<dd class='text-center'><p>&nbsp;</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><h4><?php echo $totalitem; ?></h4> Item</p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
 			<dt class='text-center'><p>Terbaru</p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><?php echo $alkes_terbaru; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $stok_alkes_terbaru; ?></h4> <?php echo $unit_alkes_terbaru; ?></p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
 			<dt class='text-center'><p>Stok Paling Banyak</p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><?php echo $alkes_terbanyak; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $stok_alkes_terbanyak; ?></h4> <?php echo $unit_alkes_terbanyak; ?></p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
-			<dt class='text-center'><p>Paling Sering Terjual <small>(Item)</small></p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dt class='text-center'><p>Paling Sering Terjual <small></small></p></dt>
+			<dd class='text-center'><p><?php echo $alkes_sering_jual; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $jumlah_alkes_sering_jual; ?></h4> Penjualan</p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
-			<dt class='text-center'><p>Paling Banyak Terjual <small>(Item)</small></p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dt class='text-center'><p>Paling Banyak Terjual <small></small></p></dt>
+			<dd class='text-center'><p><?php echo $alkes_banyak_jual; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $jumlah_alkes_banyak_jual; ?></h4> Item</p></dd>
 		</dl>
 	</div>
 	<div class='card mr-2 pt-2' style='width:32%'>
 		<dl>
 			<dt class='text-center'><p>Terakhir dijual</p></dt>
-			<dd class='text-center'><p>Placeholder</p></dd>
-			<dd class='text-center'><p><h4>00</h4> Item</p></dd>
+			<dd class='text-center'><p><?php echo $alkes_dijual_baru; ?></p></dd>
+			<dd class='text-center'><p><h4><?php echo $jumlah_alkes_dijual_baru; ?></h4> <?php echo $tanggal_alkes_dijual_baru; ?></p></dd>
 		</dl>
 	</div>
 </div>	
@@ -72,10 +87,6 @@
 	     </thead>
 	     <tbody>
 	      <?php
-	      $ar = $data['data'];
-	      $totalitem = 0;
-	      $other = 0;
-	      $arr = $this->alus_auth->filter_array_2d_match($ar, 11, $id_alkes);//filter alkes
 	       for($i = 0; $i < count($arr); $i++){
 		        echo "
 		         <tr>
@@ -85,8 +96,6 @@
 		          <td>".$arr[$i][2]." ".$arr[$i][7]."</td>
 		         </tr>
 		        ";
-		        $temp = $totalitem + (int)$arr[$i][2];
-				$totalitem = $temp; 
 	       }
 			$arrayItem = array();
 			for($i = 0; $i < count($arr); $i++){

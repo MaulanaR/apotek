@@ -89,12 +89,23 @@ class Laporan extends CI_Controller
 				$arr = $this->alus_auth->ajax_stok_obat_by_id();
 				$data['data'] = $arr;
 				$data['id_alkes'] = $this->id_alkes;
-				$ter = $this->terbaru('t_batch', 'tb_created');
+				$ter = $this->obat_terbaru();
 				$obat = $this->alus_auth->ajax_stok_obat_by_id($ter['tb_mo_id']);
 				$d = $obat['data'];
 				$data['obat_terbaru'] = $d[0][0];
 				$data['stok_obat_terbaru'] = $d[0][2];
 				$data['unit_obat_terbaru'] = $d[0][7];
+				$pt = $this->penjualan_obat_terbaru();
+				$data['obat_dijual_baru'] = $pt['mo_nama'];
+				$data['jumlah_obat_dijual_baru'] = $pt['tid_qty'];
+				$data['tanggal_obat_dijual_baru'] = $pt['tid_created'];
+				//$data['invoice_obat_dijual_baru'] = $pt->tid_ti_id;
+				$osj = $this->obat_sering_jual();
+				$data['obat_sering_jual'] = $osj['mo_nama'];
+				$data['jumlah_obat_sering_jual'] = $osj['occ'];
+				$joj = $this->obat_banyak_jual();
+				$data['obat_banyak_jual'] = $joj['mo_nama'];
+				$data['jumlah_obat_banyak_jual'] = $joj['jumlah'];
 
 				$this->load->view('ajax/stok', $data, FALSE);
 				break;
@@ -103,12 +114,28 @@ class Laporan extends CI_Controller
 				$arr = $this->alus_auth->ajax_stok_obat_by_id();
 				$data['data'] = $arr;
 				$this->load->view('ajax/stok_obat_kadaluarsa', $data, FALSE);
-
 				break;
 			case 'StokAlkes' :
 				$arr = $this->alus_auth->ajax_stok_obat_by_id();
 				$data['data'] = $arr;
 				$data['id_alkes'] = $this->id_alkes;
+				$ter = $this->alkes_terbaru();
+				$obat = $this->alus_auth->ajax_stok_obat_by_id($ter['tb_mo_id']);
+				$d = $obat['data'];
+				$data['alkes_terbaru'] = $d[0][0];
+				$data['stok_alkes_terbaru'] = $d[0][2];
+				$data['unit_alkes_terbaru'] = $d[0][7];
+				$pt = $this->penjualan_alkes_terbaru();
+				$data['alkes_dijual_baru'] = $pt['mo_nama'];
+				$data['jumlah_alkes_dijual_baru'] = $pt['tid_qty'];
+				$data['tanggal_alkes_dijual_baru'] = $pt['tid_created'];
+				//$data['invoice_obat_dijual_baru'] = $pt->tid_ti_id;
+				$osj = $this->alkes_sering_jual();
+				$data['alkes_sering_jual'] = $osj['mo_nama'];
+				$data['jumlah_alkes_sering_jual'] = $osj['occ'];
+				$joj = $this->alkes_banyak_jual();
+				$data['alkes_banyak_jual'] = $joj['mo_nama'];
+				$data['jumlah_alkes_banyak_jual'] = $joj['jumlah'];
 				$this->load->view('ajax/stok_alkes', $data, FALSE);
 				break;
 			
@@ -358,16 +385,145 @@ class Laporan extends CI_Controller
 		}
 	}
 
-	function terbaru($table, $column){
-		$this->db->select_max($column, 'newest');
-		$this->db->select("tb_mo_id");
-		$query = $this->db->get($table);
+	function obat_terbaru(){
+		$this->db->select("tb_mo_id, tb_created");
+		$this->db->from("t_batch");
+		$this->db->join("m_obat", "m_obat.mo_id = t_batch.tb_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id !=", $this->id_alkes);
+		$this->db->order_by("tb_created", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
 		$re = $query->result();
 		foreach ($re as $value) {
-			$data['tb_created'] = $value->newest;
+			$data['tb_created'] = $value->tb_created;
 			$data['tb_mo_id'] = $value->tb_mo_id;
 		}
 
+		return $data;
+	}
+
+	function alkes_terbaru(){
+		$this->db->select("tb_mo_id, tb_created");
+		$this->db->from("t_batch");
+		$this->db->join("m_obat", "m_obat.mo_id = t_batch.tb_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id", $this->id_alkes);
+		$this->db->order_by("tb_created", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['tb_created'] = $value->tb_created;
+			$data['tb_mo_id'] = $value->tb_mo_id;
+		}
+
+		return $data;
+	}
+
+	function penjualan_obat_terbaru($por){
+		$this->db->select("tid_created, mo_nama, tid_qty");
+		$this->db->from("t_invoice_detail");
+		$this->db->join("m_obat", "m_obat.mo_id = t_invoice_detail.tid_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id !=", $this->id_alkes);
+		$this->db->order_by("tid_created", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['mo_nama'] = $value->mo_nama;
+			$data['tid_qty'] = $value->tid_qty;
+			$data['tid_created'] = date("l, d F Y", strtotime($value->tid_created));
+		}
+
+		return $data;
+	}
+
+	function penjualan_alkes_terbaru($por){
+		$this->db->select("tid_created, mo_nama, tid_qty");
+		$this->db->from("t_invoice_detail");
+		$this->db->join("m_obat", "m_obat.mo_id = t_invoice_detail.tid_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id", $this->id_alkes);
+		$this->db->order_by("tid_created", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['mo_nama'] = $value->mo_nama;
+			$data['tid_qty'] = $value->tid_qty;
+			$data['tid_created'] = date("l, d F Y", strtotime($value->tid_created));
+		}
+
+		return $data;
+	}
+
+	function obat_sering_jual(){
+		$this->db->select("mo_nama, tid_mo_id, count(*) as 'occurences'");
+		$this->db->from("t_invoice_detail");
+		$this->db->join("m_obat", "m_obat.mo_id = t_invoice_detail.tid_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id !=", $this->id_alkes);
+		$this->db->group_by("tid_mo_id");
+		$this->db->order_by("count(*)", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['occ'] = $value->occurences;
+			$data['tid_mo_id'] = $value->tid_mo_id;
+			$data['mo_nama'] = $value->mo_nama;
+		}
+		return $data;
+	}
+
+	function alkes_sering_jual(){
+		$this->db->select("mo_nama, tid_mo_id, count(*) as 'occurences'");
+		$this->db->from("t_invoice_detail");
+		$this->db->join("m_obat", "m_obat.mo_id = t_invoice_detail.tid_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id", $this->id_alkes);
+		$this->db->group_by("tid_mo_id");
+		$this->db->order_by("count(*)", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['occ'] = $value->occurences;
+			$data['tid_mo_id'] = $value->tid_mo_id;
+			$data['mo_nama'] = $value->mo_nama;
+		}
+		return $data;
+	}
+
+	function obat_banyak_jual(){
+		$this->db->select("mo_nama, tid_mo_id, SUM(tid_qty) as 'jumlah'");
+		$this->db->from("t_invoice_detail");
+		$this->db->join("m_obat", "m_obat.mo_id = t_invoice_detail.tid_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id !=", $this->id_alkes);
+		$this->db->group_by("tid_mo_id");
+		$this->db->order_by("jumlah", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['tid_mo_id'] = $value->tid_mo_id;
+			$data['mo_nama'] = $value->mo_nama;
+			$data['jumlah'] = $value->jumlah;
+		}
+		return $data;
+	}
+
+	function alkes_banyak_jual(){
+		$this->db->select("mo_nama, tid_mo_id, SUM(tid_qty) as 'jumlah'");
+		$this->db->from("t_invoice_detail");
+		$this->db->join("m_obat", "m_obat.mo_id = t_invoice_detail.tid_mo_id", "inner");
+		$this->db->where("m_obat.mo_mk_id", $this->id_alkes);
+		$this->db->group_by("tid_mo_id");
+		$this->db->order_by("jumlah", "DESC");
+		$this->db->limit(1);
+		$query = $this->db->get();
+		$re = $query->result();
+		foreach ($re as $value) {
+			$data['tid_mo_id'] = $value->tid_mo_id;
+			$data['mo_nama'] = $value->mo_nama;
+			$data['jumlah'] = $value->jumlah;
+		}
 		return $data;
 	}
 	/* Server Side Data */
