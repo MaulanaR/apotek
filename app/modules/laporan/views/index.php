@@ -25,10 +25,8 @@
                     <option value="StokAlkes">Persediaan Alkes</option>
                     <option value="StokObatKd">Obat Kadaluarsa</option>
                     <option value="Transaksi">Transaksi</option>
-                    <option>Retur Penjualan</option>
-                    <option>Retur Pembelian</option>
+                    <option value="Retur">Retur</option>
                     <option>Saldo Kasir</option>
-                    <option>Neraca</option>
                   </select>
                 </div>
               </div>
@@ -156,6 +154,24 @@
           popup('Perhatian', 'Gagal mengambil data', 'error');
         }
       });
+    }if(par == 'Retur'){
+      $("#isitable").empty();
+      $.ajax({
+        type: "POST",
+        url: "<?php echo base_url(); ?>laporan/generate",
+        data: {
+          'jenis': $("#jenisLaporan").val(),
+          'tgl_awal': $("#tglAwal").val(),
+          'tgl_akhir': $("#tglAkhir").val()
+        },
+        dataType: "html",
+        success: function(response) {
+          $("#isitable").html(response);
+        },
+        error: function(xhr, err, x) {
+          popup('Perhatian', 'Gagal mengambil data', 'error');
+        }
+      });
     }
   }
 
@@ -179,6 +195,9 @@
       $("#filter_tambahan").empty();
     }else if (va == 'StokObatKd') {
       dateinput(true);
+      $("#filter_tambahan").empty();
+    }else if (va == 'Retur') {
+      dateinput(false);
       $("#filter_tambahan").empty();
     }
   }

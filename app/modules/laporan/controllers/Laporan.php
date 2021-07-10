@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * @author 		Maulana Rahman <maulana.code@gmail.com>
  */
+
 class Laporan extends CI_Controller
 {
 
@@ -138,7 +139,32 @@ class Laporan extends CI_Controller
 				$data['jumlah_alkes_banyak_jual'] = $joj['jumlah'];
 				$this->load->view('ajax/stok_alkes', $data, FALSE);
 				break;
-			
+			case 'Retur' :
+				$this->db->select("*, DATE_FORMAT(tr_tgl, '%d-%m-%Y') as tgl_retur, COUNT(*) as total_order, SUM(tr_nilai_pengembalian) as total_uang");
+				$this->db->from('t_retur');
+				$this->db->where('tr_created >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
+				$this->db->where('tr_created <=', date('Y-m-d 23:59:59', strtotime($this->input->post('tgl_akhir'))));
+				$dtinv = $this->db->get();
+
+				$data['data'] = $dtinv->result();
+				$data['tgl_awal'] = $this->input->post('tgl_awal');
+				$data['tgl_akhir'] = $this->input->post('tgl_akhir');
+
+				$arrdate = array();
+				$count_order = array();
+				$sum_order = array();
+				foreach ($dtinv->result() as $key => $value) {
+					array_push($arrdate, $value->tgl_retur);
+					array_push($count_order, (int)$value->total_order);
+					array_push($sum_order, (float)$value->total_uang);
+				}
+
+				$data['datex'] = $arrdate;
+				$data['count_order'] = $count_order;
+				$data['sum_order'] = $sum_order;
+
+				$this->load->view('ajax/view_retur.php', $data, FALSE);
+				break;
 			default:
 				# code...
 				break;
@@ -279,7 +305,7 @@ class Laporan extends CI_Controller
 			table.table-bordered.dataTable th, table.table-bordered.dataTable td {
     			border-left-width: 0;
 			}
-			bordered thead th {
+			.bordered thead th {
     			border-bottom-width: 2px;
 			}
 			.table thead th {
@@ -324,13 +350,6 @@ class Laporan extends CI_Controller
 			    max-height: 33px;
 			    width: auto;
 			    font-size:3em;
-			}
-			.img-circle {
-			    border-radius: 50%;
-			}
-			img {
-			    vertical-align: middle;
-			    border-style: none;
 			}
 			</style>
 			</head>
@@ -385,6 +404,131 @@ class Laporan extends CI_Controller
 		}
 	}
 
+	function export_retur(){
+		$jenis = $this->input->get('jenis') ? $this->input->get('jenis') : 'excel';
+		$this->db->select("*, DATE_FORMAT(tr_tgl, '%d-%m-%Y') as tgl_retur, COUNT(*) as total_order, SUM(tr_nilai_pengembalian) as total_uang");
+		$this->db->from('t_retur');
+		$this->db->where('tr_created >=', date('Y-m-d H:i:s', strtotime($this->input->get('awal'))));
+		$this->db->where('tr_created <=', date('Y-m-d 23:59:59', strtotime($this->input->get('akhir'))));
+		$dtinv = $this->db->get();
+
+		$data['data'] = $dtinv->result();
+		$data['awal'] = $this->input->get('awal');
+		$data['akhir'] = $this->input->get('akhir');
+
+		if ($jenis == 'excel') {
+			$this->load->view('ajax/export_retur', $data, FALSE);
+		}else{
+			$judul = 'Laporan Retur dari '.$data['awal'].' s/d '.$data['akhir'];
+			$page = '
+			<html>
+			<head>
+			<style>
+			body{
+				font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+					font-size: 1rem;
+					font-weight: 400;
+					line-height: 1.5;
+					color: #212529;
+					text-align: left;
+			}
+			table.table-bordered.dataTable th, table.table-bordered.dataTable td {
+    			border-left-width: 0;
+			}
+			.bordered thead th {
+    			border-bottom-width: 2px;
+			}
+			.table thead th {
+   				vertical-align: bottom;
+    			border-bottom: 2px solid #dee2e6;
+        		border-bottom-width: 2px;
+			}
+			table.dataTable th {
+    			-webkit-box-sizing: content-box;
+    			box-sizing: content-box;
+			}
+			th {
+    			border: 1px solid #dee2e6;
+        		border-bottom-color: rgb(222, 226, 230);
+        		border-bottom-style: solid;
+        		border-bottom-width: 1px;
+        		border-left-width: 1px;
+			}
+			.table td, .table th {
+    			padding: .75rem;
+    			vertical-align: top;
+    			border-top: 1px solid #dee2e6;
+			}
+			th {
+    			text-align: center;
+			}
+			td.text-center{
+				text-align:center;
+			}
+			p{
+				line-height:5px;
+			}
+			.font-weight-light {
+    			font-weight: 300 !important;
+			}
+			.brand-text{
+			    float: left;
+			    line-height: .8;
+			    margin-left: .8rem;
+			    margin-right: .5rem;
+			    margin-top: -3px;
+			    max-height: 33px;
+			    width: auto;
+			    font-size:3em;
+			}
+			</style>
+			</head>
+			<body>
+			<div>
+			<span class="brand-text font-weight-light">
+			<img src="'.base_url("assets/logo/askrindo-mini.png").'" alt="Askrindo Logo" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
+      		Apotek App</span>
+      		</div>
+      		<br/>
+      		<br/>
+      		<div>
+			<table class="table table-bordered table-strip">
+        <thead>
+        	<tr>
+        		<th colspan="5"><p><h3>'.$judul.'</h3></p></th>
+        	</tr>
+            <tr>
+                <th>No.</th>
+                <th>Tanggal Retur</th>
+                <th>Kode Invoice</th>
+                <th>Pengembalian PPN</th>
+                <th>Total Nilai Pengembalian</th>
+            </tr>
+        </thead>
+        <tbody>';
+        $no = 1;
+            foreach ($data['data'] as $key => $value) {
+            	if($value->tr_ppn_kembali == '1'){
+                        $ppn = 'Ya';
+                    }else{
+                        $ppn = 'Tidak';
+                    }
+                $page .= "<tr>
+                    <td>".$no."</td>
+                    <td>".$value->tr_tgl."</td>
+                    <td class='text-center'>".$value->tr_ti_nomor_inv."</td>
+                    <td class='text-center'>".$ppn."</td>                    
+                    <td>".$this->alus_auth->rupiahrp($value->tr_nilai_pengembalian)."</td>
+                </tr>";
+           		$no++;
+            }
+        $page .= '</tbody></div></table></body></html>';
+	        $orientation = 'portrait';
+	        $paper = 'A4';
+	        $this->pdf2->generate($page, $judul, $paper, $orientation);
+		}
+
+	}
 	function obat_terbaru(){
 		$this->db->select("tb_mo_id, tb_created");
 		$this->db->from("t_batch");
