@@ -603,7 +603,7 @@ class Alus_auth
         $data2 = array();
         $status= FALSE;
         $kadaluarsa = FALSE;
-        if($list2 != NULL | $list2 != ""){
+        if($list2){
             $status = TRUE;
         }
         $datenow = new DateTime();

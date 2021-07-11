@@ -3,7 +3,7 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Input Obat Baru
+                Input Stok Obat 
             </h1>
         </section>
 
