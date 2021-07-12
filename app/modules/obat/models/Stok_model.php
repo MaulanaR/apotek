@@ -91,12 +91,14 @@ class Stok_model extends CI_Model {
         return $this->db->count_all_results();
     }
  
-    public function get_by_id($id)
+    public function get_by_id($moid, $tbid)
     {
-        $this->db->from($this->table);
-        $this->db->where('mo_id',$id);
+        $this->db->select("*,SUM(tj_masuk - tj_keluar) AS 'stok'", FALSE);
+        $this->db->from('t_jurnal');
+        $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','inner');
+        $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','inner');
+        $this->db->where("mo_id = '".$moid."' AND tb_id = '".$tbid."'");
         $query = $this->db->get();
- 
         return $query->row();
     }
      public function save($data)
@@ -124,7 +126,7 @@ class Stok_model extends CI_Model {
 
     public function delete_by_id($id)
     {
-        $this->db->where('tj_id', $id);
+        $this->db->where('tb_id', $id);
         $this->db->delete($this->table);
     }
     

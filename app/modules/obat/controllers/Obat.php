@@ -42,6 +42,21 @@ class Obat extends CI_Controller
 		}
 	}
 
+	public function expired()
+	{
+
+		if ($this->alus_auth->logged_in()) {
+			$head['title'] = "Obat Kadaluarsa";
+			//$data['can_add'] = $this->privilege['can_add'];
+
+			$this->load->view('template/temaalus/header', $head);
+			$this->load->view('expired.php', $data);
+			$this->load->view('template/temaalus/footer');
+		} else {
+			redirect('admin/Login', 'refresh');
+		}
+	}
+
 	/* SERVER SIDE */
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
@@ -92,6 +107,53 @@ class Obat extends CI_Controller
 		);
 		//output to json format
 		echo json_encode($output);
+	}
+
+	public function ajax_list_kadaluarsa(){
+		$kd_interval = 10; //interval hari sebelum kadaluarsa
+		$status = FALSE;
+		$kadaluarsa = FALSE;
+        $hampir = FALSE;
+		$con = $this->model->get_all_stok_obat();
+		$data = array();
+		$data2 = array();
+		foreach ($con as $record2) {
+            $cekkd = $this->alus_auth->cek_kadaluarsa($record2->tb_tgl_kadaluarsa, $kd_interval);
+            if($cekkd->status == 'kd'){
+            	$status = TRUE;
+            	$kadaluarsa = TRUE;
+            	$row2 = array();
+	            $row2[] = $record2->mo_nama;//0
+	            $row2[] = $record2->tb_tgl_kadaluarsa;//1
+	            $row2[] = $record2->stok;//2
+	            $row2[] = $record2->tb_id;//3
+	            $sisahari = $cekkd->sisahari;
+	            $status_kd = $cekkd->status;
+	            $row2[] = $kadaluarsa;//4
+	            $row2[] = $sisahari;//5
+	            $row2[] = $status_kd;
+	            $row2[] = $record2->mo_id;//7
+	            $data[] = $row2;
+	            $msg = 'Ada obat kadaluarsa!';
+            }else if($cekkd->status == 'hr'){
+            	$hampir = TRUE;
+            	$row = array();
+	            $row[] = $record2->mo_nama;//0
+	            $row[] = $record2->tb_tgl_kadaluarsa;//1
+	            $row[] = $record2->stok;//2
+	            $row[] = $record2->tb_id;//3
+	            $sisahari = $cekkd->sisahari;
+	            $status_kd = $cekkd->status;
+	            $row[] = $kadaluarsa;//4
+	            $row[] = $sisahari;//5
+	            $row[] = $status_kd;//6
+	            $row[] = $record2->mo_id;//7
+	            $data2[] = $row;
+	        }
+            
+		}
+		echo json_encode(array('status' => $status, 'statuskd' => $kadaluarsa, 'statushr' => $hampir, 'msg' => $msg, 'datakd' => $data, 'datahr' => $data2));
+		//echo json_encode(["status" => true]);
 	}
 
 	public function ajax_edit($id)
@@ -192,6 +254,40 @@ class Obat extends CI_Controller
 
 			$this->load->view('template/temaalus/header', $head);
 			$this->load->view('Obat/detail.php', $data);
+			$this->load->view('template/temaalus/footer');
+		} else {
+			redirect('admin/Login', 'refresh');
+		}
+	}
+
+	public function batch_detail($mo_id)
+	{
+
+		if ($this->alus_auth->logged_in()) {
+			$head['title'] = "Batch Detail";
+			//$data['tree'] = $this->model->all_tree();
+			$tb_id = $this->input->get('tbid');
+			$data = array();
+			$record = $this->stok->get_by_id($mo_id, $tb_id);
+			$data['tb_id'] = $tb_id;
+			$data['tb_tgl_masuk'] = $record->tb_tgl_masuk;
+			$data['tb_tgl_kadaluarsa'] = $record->tb_tgl_kadaluarsa;
+			$data['tb_harga_beli'] = $record->tb_harga_beli;
+			$data['tb_harga_jual'] = $record->tb_harga_jual;
+			$data['tb_status_kadaluarsa'] = $record->tb_status_kadaluarsa;
+
+			$datasup = $this->supplier->get_by_id($record->tb_ms_id);
+			$data['ms_nama'] = $datasup->ms_nama;
+
+			$dataunit = $this->unit->get_by_id($record->mo_mu_id);
+			$data['mu_nama'] = $dataunit->mu_nama;
+
+			$data['mo_deskripsi'] = $record->mo_deskripsi;
+			$data['mo_nama'] = $record->mo_nama;
+			$data['stok'] = $record->stok;
+
+			$this->load->view('template/temaalus/header', $head);
+			$this->load->view('Obat/batch_detail.php', $data);
 			$this->load->view('template/temaalus/footer');
 		} else {
 			redirect('admin/Login', 'refresh');
@@ -394,6 +490,13 @@ class Obat extends CI_Controller
         		"data" => $data
         );
         echo json_encode($data);
+	}
+
+	public function ajax_batch_history(){
+		$this->db->select("*, DATE_FORMAT(tj_created, '%d-%m-%Y') as tgl");
+		$this->db->where('tj_tb_id', $this->input->post('id'));
+		$query = $this->db->get('t_jurnal');
+		echo json_encode($query->result());
 	}
 }
 

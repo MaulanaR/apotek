@@ -25,10 +25,17 @@
           <div class="row">
           <div class="card col-md-6 m-2">
             <div class="card-header">
-                <h3 class="card-title">
-                  <i class="fas fa-pills"></i>
-                  Daftar Obat Hampir Kadaluarsa
-                </h3>
+                <div class="col-12">
+                <div width="50%">
+                  <h3 class="card-title">
+                    <i class="fas fa-pills"></i>
+                    Daftar Obat hampir Kadaluarsa
+                  </h3>
+                </div>
+                <div width="50%" class='text-right'>
+                  <button class="btn btn-sm btn-default" onclick="goExpired()">Lihat Semua</button>
+                </div>
+              </div>
             </div>
             <div class='card-body'>
               <table class="table table-bordered table-hover dataTable dtr-inline">
@@ -49,10 +56,17 @@
           </div>
           <div class="card col-md-5 m-2">
             <div class="card-header">
-                <h3 class="card-title">
-                  <i class="fas fa-pills"></i>
-                  Daftar Obat Kadaluarsa
-                </h3>
+              <div class="col-12">
+                <div width="50%">
+                  <h3 class="card-title">
+                    <i class="fas fa-pills"></i>
+                    Daftar Obat Kadaluarsa
+                  </h3>
+                </div>
+                <div width="50%" class='text-right'>
+                  <button class="btn btn-sm btn-default" onclick="goExpired()">Lihat Semua</button>
+                </div>
+              </div>
             </div>
             <div class='card-body'>
               <table class="table table-bordered table-hover dataTable dtr-inline">
@@ -176,6 +190,10 @@
         default:
           // code block
       }
+    }
+
+    function goExpired(){
+      window.location = '<?php echo base_url("obat/expired"); ?>';
     }
 
   </script>

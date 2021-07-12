@@ -206,6 +206,7 @@ class Dashboard extends CI_Controller {
 		foreach ($con as $record2) {
             $cekkd = $this->alus_auth->cek_kadaluarsa($record2->tb_tgl_kadaluarsa, $kd_interval);
             if($cekkd->status == 'kd'){
+            	if(count($data) <= 5){//limit 5 data
             	$status = TRUE;
             	$kadaluarsa = TRUE;
             	$row2 = array();
@@ -219,9 +220,12 @@ class Dashboard extends CI_Controller {
 	            $row2[] = $sisahari;//5
 	            $row2[] = $status_kd;
 	            $row2[] = $record2->mo_id;//7
+	            
 	            $data[] = $row2;
 	            $msg = 'Ada obat kadaluarsa!';
+	        	}
             }else if($cekkd->status == 'hr'){
+            	if(count($data2) <= 5){//limit 5 data
             	$hampir = TRUE;
             	$row = array();
 	            $row[] = $record2->mo_nama;//0
@@ -235,6 +239,7 @@ class Dashboard extends CI_Controller {
 	            $row[] = $status_kd;//6
 	            $row[] = $record2->mo_id;//7
 	            $data2[] = $row;
+	        	}
             }
 		}
 		echo json_encode(array('status' => $status, 'statuskd' => $kadaluarsa, 'statushr' => $hampir, 'msg' => $msg, 'datakd' => $data, 'datahr' => $data2));
