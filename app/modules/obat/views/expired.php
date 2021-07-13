@@ -29,8 +29,9 @@
                       <tr>
                         <th class="text-center" width="5%">No.</th>
                         <th class="text">Nama Obat</th>
-                        <th class="text">Stok</th>
-                        <th class="text">Expired Date</th>
+                        <th class="text-center">Batch ID</th>
+                        <th class="text-center">Stok</th>
+                        <th class="text-center">Expired Date</th>
                         <th class="text" width="5%"></th>
                       </tr>
                     </thead>
@@ -45,8 +46,9 @@
                       <tr>
                         <th class="text-center" width="5%">No.</th>
                         <th class="text">Nama Obat</th>
-                        <th class="text">Stok</th>
-                        <th class="text">Expired Date</th>
+                        <th class="text-center">Batch ID</th>
+                        <th class="text-center">Stok</th>
+                        <th class="text-center">Expired Date</th>
                         <th class="text" width="5%"></th>
                       </tr>
                     </thead>
@@ -88,7 +90,7 @@
         type: "GET",
         dataType: "JSON",
         success: function(data) {
-          console.log(data.status);
+          //console.log(data.datakd);
           if(data.status){
             var totalitem = 0;
            if(data.statuskd){ 
@@ -131,6 +133,9 @@
         var cel2 = document.createElement('td');
             cel2.innerHTML = '<a href=" <?php echo base_url('obat/detail');?>/'+dat[7]+'">'+dat[0]+'</a>';
             row.appendChild(cel2);
+        var cel6 = document.createElement('td');
+            cel6.innerHTML = dat[3];
+            row.appendChild(cel6);
         var cel5 = document.createElement('td');
             cel5.innerHTML = dat[2];
             row.appendChild(cel5);    
@@ -138,7 +143,7 @@
             cel3.innerHTML = dat[1];
             row.appendChild(cel3);
         var cel4 = document.createElement('td');
-            cel4.innerHTML = '<a><i class="fa fa-search"></i></a>';
+            cel4.innerHTML = '<a href="<?php echo base_url("obat/batch_detail");?>/'+dat[7]+'?tbid='+dat[3]+'"><i class="fa fa-search"></i></a>';
             row.appendChild(cel4);
         t.appendChild(row);
       }

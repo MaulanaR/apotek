@@ -57,6 +57,21 @@ class Obat extends CI_Controller
 		}
 	}
 
+	public function deactivated()
+	{
+
+		if ($this->alus_auth->logged_in()) {
+			$head['title'] = "Obat Nonaktif";
+			//$data['can_add'] = $this->privilege['can_add'];
+
+			$this->load->view('template/temaalus/header', $head);
+			$this->load->view('deactivated.php', $data);
+			$this->load->view('template/temaalus/footer');
+		} else {
+			redirect('admin/Login', 'refresh');
+		}
+	}
+
 	/* SERVER SIDE */
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
@@ -156,6 +171,29 @@ class Obat extends CI_Controller
 		//echo json_encode(["status" => true]);
 	}
 
+	public function ajax_list_nonaktif(){
+		$this->db->select('*');
+		$this->db->from('t_batch');
+		$this->db->join('m_obat', 'm_obat.mo_id = t_batch.tb_mo_id', 'inner');
+		$this->db->where('tb_status_kadaluarsa IS NOT TRUE');
+		$q = $this->db->get();
+		$r = $q->result();
+		$num = $q->num_rows();
+		$data = array();
+		$status = FALSE;
+		if((int)$num > 0){
+			$status = TRUE;
+		foreach ($r as $value) {
+			$row = array();
+			$row[] = $value->mo_id;//0
+			$row[] = $value->tb_id;//1
+			$row[] = $value->mo_nama;//2
+			$row[] = $value->tb_tgl_kadaluarsa;//3
+			$data[] = $row;
+		}}
+		echo json_encode(array("status" => $status, "data" => $data));
+	}
+
 	public function ajax_edit($id)
 	{
 		$data = $this->model->get_by_id($id);
@@ -213,6 +251,30 @@ class Obat extends CI_Controller
 	{
 		$output2 = $this->alus_auth->ajax_stok_obat_by_id($id);
 		echo json_encode($output2);
+	}
+
+	public function ajax_ubah_status_batch($id){
+		$status = FALSE;
+		$this->db->select("sum(tj_masuk - tj_keluar) as stok");
+		$this->db->from("t_jurnal");
+		$this->db->where("tj_tb_id", $id);
+		$q = $this->db->get();
+		$row = $q->row();
+		if($row->stok === '0'){//doublecheck stok
+			$status = TRUE;
+			$this->db->select('tb_status_kadaluarsa');
+			$this->db->from('t_batch');
+	        $this->db->where('tb_id',$id);
+	        $query = $this->db->get();
+	        $data = $query->row();
+	        if($data->tb_status_kadaluarsa == '0'){
+	        	$a = TRUE;
+	        }else{
+	        	$a = FALSE;
+	        }
+			$this->db->update('t_batch', array('tb_status_kadaluarsa' => $a), array('tb_id' => $id));
+		}
+		echo json_encode(array("status" => $status));
 	}
 
 	public function input($idobat = null)
@@ -275,6 +337,8 @@ class Obat extends CI_Controller
 			$data['tb_harga_beli'] = $record->tb_harga_beli;
 			$data['tb_harga_jual'] = $record->tb_harga_jual;
 			$data['tb_status_kadaluarsa'] = $record->tb_status_kadaluarsa;
+			$data['toggle_status'] = ($record->tb_status_kadaluarsa != '0') ? true : false;
+			$data['toggle_stok'] = ((int)$record->stok != 0) ? true : false;
 
 			$datasup = $this->supplier->get_by_id($record->tb_ms_id);
 			$data['ms_nama'] = $datasup->ms_nama;
@@ -493,8 +557,12 @@ class Obat extends CI_Controller
 	}
 
 	public function ajax_batch_history(){
+		$tglAwal = $this->input->post('tglAwal');
+		$tglAkhir = $this->input->post('tglAkhir');
 		$this->db->select("*, DATE_FORMAT(tj_created, '%d-%m-%Y') as tgl");
 		$this->db->where('tj_tb_id', $this->input->post('id'));
+		$this->db->where('tj_created >=', date('Y-m-d 23:59:59', strtotime($tglAwal)));
+		$this->db->where('tj_created <=', date('Y-m-d 23:59:59', strtotime($tglAkhir)));
 		$query = $this->db->get('t_jurnal');
 		echo json_encode($query->result());
 	}

@@ -175,6 +175,7 @@ class Dashboard_model extends CI_Model {
         $this->db->from('t_jurnal');
         $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','inner');
         $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','inner');
+        $this->db->where('tb_status_kadaluarsa IS TRUE');//pilih hanya true
         $this->db->group_by('tj_tb_id');
         $query = $this->db->get();
         return $query->result();

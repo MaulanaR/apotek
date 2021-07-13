@@ -31,6 +31,7 @@ class Stok_depan_model extends CI_Model {
         $this->db->from('t_jurnal');
         $this->db->join('m_obat','m_obat.mo_id = t_jurnal.tj_mo_id','inner');
         $this->db->join('t_batch','t_batch.tb_id = t_jurnal.tj_tb_id AND t_batch.tb_mo_id = t_jurnal.tj_mo_id','inner');
+        $this->db->where('tb_status_kadaluarsa IS TRUE');//hanya tampilkan yang true
         if(isset($id)){
         $this->db->where('mo_id', $id);
         }

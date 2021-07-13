@@ -1,3 +1,8 @@
+  <?php
+    $d = 'Nonaktif';
+    if($toggle_status){$a = 'checked';$d = 'Aktif';}
+    if($toggle_stok){$b = 'disabled'; $c = "<div class='callout callout-warning'>Stok Belum Kosong!</div>";}
+  ?>
   <div class="content-wrapper" style="min-height: 901px;">
     <div class="container-fluid">
       <!-- Content Header (Page header) -->
@@ -44,15 +49,49 @@
                 </div>
                 <div class="col-12">
                   <div class="card-header">
+                    <div style="width:50%" class="text-left">
+                      <h4>Nonaktifkan Batch</h4>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                        <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                          <input type="checkbox" class="custom-control-input" id="switchPPN" onclick="ubah_status()" <?php echo $a." ".$b;?>>
+                          <label class="custom-control-label" for="switchPPN"><?php echo $d;?></label> <small><i class="fa fa-question-circle" aria-hidden="true" onclick="toogleInfo()"></i></small>
+                        </div><?php echo $c;?>
+                        <div class="callout callout-info" id="nonaktifInfo" style="height:1px;opacity: 0;">
+                          <p>Harap Diperhatikan!</p>
+                          <p>Apabila anda menonaktifkan batch ini, maka :</p>
+                          <p>1. Batch ini tidak akan digunakan untuk operasi apapun.</p>
+                          <p>2. Batch ini tidak bisa ditambah stoknya sebelum diaktifkan kembali.</p>
+                          <p>3. Batch ini hanya dapat diakses melalui daftar Obat Nonaktif.</p>
+                          <p>Untuk menonaktifkan batch, jumlah stok pada batch ini harus 0 (kosong).</p>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="card-header">
                       <div style="width:50%" class="text-left">
                       <h4>Batch History</h4>
                       </div>
-                      <div style="width:50%" class="text-right">
-                        <button class="btn btn-sm btn-default" onclick="fetchData()"> Lihat Data </button>
+                      <div class="row">
+                      <div class="col-md-4">
+                      <div class="form-group">
+                        <label for="tglAwal">Dari</label><input type="date" id="tglAwal" name="tglAwal" class="form-control" required="">
                       </div>
-                  </div>
-                  <div class="card-body">
-                    
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="tglAkhir">Sampai</label><input type="date" id="tglAkhir" name="tglAkhir" class="form-control" required="">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="btnTampil" style="display:block;height:24px;"></label><button id="btnTampil" name="btnTampil" class="btn btn-md btn-default" onclick="fetchData()"> Lihat Data </button>
+                        </div>
+                      </div>
+                      </div>
                   </div>
                   <div class="card-body">
                   <table id="tablehistory" class="table table-bordered table-hover" style="width:100%;display: none">
@@ -93,12 +132,21 @@
     var tablehistory = document.getElementById('tablehistory');
     var listdata = document.getElementById('listdata');
 
+    $(document).ready(function() {
+      $("#nonaktifInfo").click(function(){
+        $(this).animate({'height': '1px', 'opacity': '0'}, 100);
+      });
+    });
+
     function fetchData(){
+      if(checkForm()){
       $.ajax({
         url: "<?php echo base_url('Obat/ajax_batch_history') ?>",
         type: "POST",
         data: {
-          id: tb_id
+          id: tb_id,
+          tglAwal: $("#tglAwal").val(),
+          tglAkhir: $("#tglAkhir").val()
         },
         dataType: "JSON",
         success: function(data) {
@@ -128,5 +176,48 @@
           tablehistory.style.display = 'block';
         }
       });
+      }
+    }
+
+    function checkForm(){
+      var a = $("#tglAwal").val();
+      var b = $("#tglAkhir").val();
+      if(a){
+        if(b){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
+    }
+
+    function toogleInfo(){
+        $("#nonaktifInfo").animate({'height': '100%', 'opacity': '1'}, 100);
+    }
+
+    function ubah_status(){
+      if(confirm('Anda Yakin untuk mengubah status Batch Ini ?')){
+      $.ajax({
+        url: "<?php echo site_url('Obat/ajax_ubah_status_batch/') . $tb_id . ""; ?>",
+        type: "GET",
+        dataType: "JSON",
+        success: function(data) {
+
+          if (data.status) //if success close modal and reload ajax table
+          {
+            popup('Informasi', 'Berhasil!');
+            setTimeout(function (){
+              window.location.reload();
+              }, 2000);
+
+          } else {
+            popup('Perhatian', 'Gagal mengubah status Batch!', 'info');
+            
+          }
+        }
+      });
+      }
     }
   </script>
