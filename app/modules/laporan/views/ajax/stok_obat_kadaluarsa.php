@@ -28,7 +28,7 @@
 	      $arr = $this->alus_auth->filter_array_2d_match($ar2, 4, TRUE);//filter kadaluarsa
 	      $arrayItem = array();
 	       for($i = 0; $i < count($arr); $i++){
-	       	if((int)$arr[$i][2] > 0){//jika stok lebih dari 0
+	       	//if((int)$arr[$i][2] > 0){//jika stok lebih dari 0
 				        echo "
 				         <tr>
 				          <td>".($i + 1)."</td>
@@ -40,10 +40,10 @@
 				        $temp = $totalitem + (int)$arr[$i][2];
 						$totalitem = $temp;
 
-				}
+				//}
 	       }
 			for($i = 0; $i < count($arr); $i++){
-				if((int)$arr[$i][2] > 0){ //jika stok lebih dari 0
+				//if((int)$arr[$i][2] > 0){ //jika stok lebih dari 0
 							$y = ((int)$arr[$i][2] / $totalitem) * 100;
 							if($y < 2){//jika persentasi kurang dari 2%
 								$temp = $other + $y;//tambah ke persentasi other
@@ -53,7 +53,7 @@
 								$row['y'] = $y;
 								$arrayItem[] = $row;
 							}
-				}
+				//}
 			}
 			if($other != 0 | $other != null){//jika other tidak kosong
 					$c = count($arrayItem);
