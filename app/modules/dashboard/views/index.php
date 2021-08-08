@@ -10,7 +10,7 @@
 
       <!-- Main content -->
       <section class="content">
-          <div class="col-lg-12 col-xl-2">
+          <div class="col-lg-12 col-xl-12">
                 <div class="card mb-2">
                   <img class="card-img-top" src="<?php echo base_url('assets/logo/front_panel_background.png'); ?>" alt="Selamat Datang">
                   <div class="card-img-overlay">

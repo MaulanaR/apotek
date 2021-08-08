@@ -11,7 +11,7 @@
       <section class="content">
         <div class="card lg-md-2 p-2">
             <div class="row">
-            <input type="text" class="col-6 m-2" name="inputbar" value="" placeholder="Scan barcode atau input nama produk di sini." required/>
+            <input type="text" class="col-6 m-2 form-control" name="inputbar" value="" placeholder="Scan barcode atau input nama produk di sini." required/>
             <span style="width:10px;display: block;"></span>
             <button class="btn btn-block btn-xs btn-success col-2 m-2" onclick="cari()">Cari</button>
           </div>

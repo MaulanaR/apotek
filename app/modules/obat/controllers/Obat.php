@@ -486,17 +486,27 @@ class Obat extends CI_Controller
 					$this->db->insert('t_jurnal', $stock);
 			}else{
 				//input batch baru
-				$data_batch = array(
-					'tb_tgl_masuk' 		=> date('Y-m-d'),
-					'tb_tgl_kadaluarsa' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
-					'tb_mo_id' 			=> $this->input->post('id_obat'),
-					'tb_ms_id' 			=> $this->input->post('supplier'),
-					'tb_harga_beli' 	=> str_replace(',','',$this->input->post('harga_beli')),
-					'tb_harga_jual' 	=> str_replace(',','',$this->input->post('harga_jual')),
-				);
-
-				$this->db->insert('t_batch', $data_batch);
-				$id_batch = $this->db->insert_id();
+				$this->db->where('tb_tgl_kadaluarsa', date('Y-m-d', strtotime($this->input->post('tanggal'))));
+				$this->db->where('tb_ms_id', $this->input->post('supplier'));
+				$cekada = $this->db->get('t_batch');
+				if($cekada->num_rows() > 0)
+				{
+					//maka ada, gunakan id batch yang ada.
+					$id_batch = $cekada->row()->tb_id;
+				}else{
+					//maka input batch baru
+					$data_batch = array(
+						'tb_tgl_masuk' 		=> date('Y-m-d'),
+						'tb_tgl_kadaluarsa' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
+						'tb_mo_id' 			=> $this->input->post('id_obat'),
+						'tb_ms_id' 			=> $this->input->post('supplier'),
+						'tb_harga_beli' 	=> str_replace(',','',$this->input->post('harga_beli')),
+						'tb_harga_jual' 	=> str_replace(',','',$this->input->post('harga_jual')),
+					);
+	
+					$this->db->insert('t_batch', $data_batch);
+					$id_batch = $this->db->insert_id();
+				}
 				
 				$stock = array(
 					'tj_mo_id' 		=> $this->input->post('id_obat'),
