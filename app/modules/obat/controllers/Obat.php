@@ -576,6 +576,33 @@ class Obat extends CI_Controller
 		$query = $this->db->get('t_jurnal');
 		echo json_encode($query->result());
 	}
+
+	public function cek_stok_by_tgl_batch()
+	{
+		$id_batch = $this->input->post('id_batch');
+		$id_obat = $this->input->post('id_obat');
+
+		$data = $this->db->query('SELECT
+		m_obat.mo_nama,
+		t_batch.tb_tgl_masuk AS batch_tgl_masuk,
+		(
+			SELECT
+				(
+					SUM(tj_masuk) - SUM(tj_keluar)
+				)
+			FROM
+				t_jurnal
+			WHERE
+				tj_mo_id = "'.$id_obat.'"
+			AND tj_tb_id = "'.$id_batch.'"
+		) AS stok
+	FROM
+		t_batch
+	LEFT JOIN m_obat ON m_obat.mo_id = t_batch.tb_mo_id')->row();		
+		
+		$array = array('status' => TRUE, 'data' => $data);
+		echo json_encode($array);
+	}
 }
 
 /* End of file  Home.php */

@@ -55,7 +55,7 @@
                                 <label class="control-label ">Tanggal Batch/Kadaluarsa Tersedia</label>
                                 <div class="row">
                                     <div class="col-8">
-                                        <select name="tgl_tersedia" id="tgl_tersedia" class="sel form-control">
+                                        <select name="tgl_tersedia" id="tgl_tersedia" class="sel form-control" onchange="cek_max_stok()">
                                             
                                         </select>
                                     </div>
@@ -112,7 +112,7 @@
                             </div>
                             <div class="form-group" id="perubahan">
                                 <label class="control-label ">Jenis Perubahan</label>
-                                <select class="sel form-control" name="jenis" required>
+                                <select class="sel form-control" name="jenis" id="jenis" onchange="cek_max_stok()" required >
                                     <option value="penambahan">Penambahan Stock</option>
                                     <option value="pengurangan" <?php if(isset($_GET['tipe']) && $_GET['tipe'] == "pengurangan"){ echo 'selected'; } ?> >Pengurangan Stock </option>
                                 </select>
@@ -120,7 +120,7 @@
 
                             <div class="form-group">
                                 <label class="control-label ">Stock</label>
-                                <input type="number" min="0" name="stock" class="form-control" placeholder="Stock (number)" require>
+                                <input type="number" min="0" max="" name="stock" id="stok" class="form-control" placeholder="Stock (number)" require>
                             </div>
 
                             <div class="form-group">
@@ -209,6 +209,7 @@
         $("#info_kategori").text(kateg_obat);
         $("#info_satuan").text(satuan_obat);
 
+        $("#stok").removeAttr('max');
         $("#tgl_tersedia").empty();
         $.ajax({
             type: "get",
@@ -228,5 +229,27 @@
                 $('#tgl_tersedia').selectpicker('render');
             }
         });
+    }
+
+    function cek_max_stok() {
+        if($("#jenis").val() == "pengurangan")
+        {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo base_url();?>obat/cek_stok_by_tgl_batch",
+                data: {
+                    'id_batch' : $("#tgl_tersedia").val(),
+                    'id_obat' : $("#obatid").val()
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    if(response.status)
+                    {
+                        $("#stok").attr('max', response.data.stok);
+                    }
+                }
+            });
+        }
     }
 </script>
