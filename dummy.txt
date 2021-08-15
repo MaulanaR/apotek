@@ -1,2 +1,8 @@
 15/08/2021
 -Ubah default field tb_status_kadaluarsa di tabel t_batch menjadi 1
+
+15/08/21
+add field
+-`auto_logout` int(2) DEFAULT 5,
+-`peringatan_kadaluarsa` int(2) DEFAULT 10,
+-`sidebar` int(1) DEFAULT 0,

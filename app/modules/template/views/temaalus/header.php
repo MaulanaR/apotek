@@ -80,7 +80,7 @@
 </head>
 
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed <?php if($this->db->get('setting_app')->row()->sidebar == 1){echo 'sidebar-collapse';};?>" id="bodyhtml" >
 <div class="wrapper">
 <div id="loading" title="Go to top"><span class="spinner-border text-primary spinner-border-sm"></span> Loading..</div> 
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">

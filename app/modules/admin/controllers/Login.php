@@ -18,6 +18,10 @@ class Login extends CI_Controller {
 			`setting_id` int(11) NOT NULL AUTO_INCREMENT,
 			`app_nama` varchar(255) NOT NULL,
 			`app_logo` varchar(255) NOT NULL,
+			`auto_logout` int(2) DEFAULT 5,
+			`peringatan_kadaluarsa` int(2) DEFAULT 10,
+			`sidebar` int(1) DEFAULT 0,
+
 			PRIMARY KEY (`setting_id`)
 		  )";
 

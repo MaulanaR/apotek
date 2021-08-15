@@ -32,6 +32,24 @@
                                 <input type="file" name="logo" class="form-control">
                                 <span class="help-block"></span>
                             </div>
+                            <div class="form-group">
+                                <label class="control-label ">MAX Sesi Login Kasir (Hitungan Jam)</label>
+                                <input type="number" name="auto_logout" class="form-control" placeholder="MAX Sesi Login Kasir (Hitungan Jam)" value="<?php echo $data->auto_logout;?>" autofocus required>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label ">Peringatan Berapa hari sebelum kadaluarsa (Status Hampir Kadaluarsa) (Hari)</label>
+                                <input type="number" name="peringatan_kadaluarsa" class="form-control" placeholder="1 Hari" value="<?php echo $data->peringatan_kadaluarsa;?>" autofocus required>
+                                <span class="help-block"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label ">Sidebar Otomatis Tertutup ?</label>
+                                    <select name="tab_tutup" id="tab_tutup" class="form-control">
+                                        <option value="1" <?php if($data->sidebar == '1'){echo 'selected'; };?>>Ya</option>
+                                        <option value="0" <?php if($data->sidebar == '0'){echo 'selected'; };?>>Tidak</option>
+                                    </select>
+                                <span class="help-block"></span>
+                            </div>
                             <div class="col-12 pb-3">
                                 <button type="submit" class="btn btn-primary" id="btnSave">Simpan</button>
                             </div>

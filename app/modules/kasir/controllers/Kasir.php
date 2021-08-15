@@ -45,6 +45,21 @@ class Kasir extends CI_Controller {
 			if( empty($this->session->userdata('id_sesi')))
 			{
 				redirect(base_url('kasir/login_kasir'));
+			}else{
+				$this->db->where('tsu_id', $this->session->userdata('id_sesi'));
+				$data = $this->db->get('t_sesi_user')->row();
+
+				$date_skrg = new DateTime(date('Y-m-d H:i:s'));
+				$date_awal = new DateTime($data->tsu_jam_masuk);
+				$interval = $date_skrg->diff($date_awal);
+				$jam = $interval->h;
+				
+				if($jam >= $this->db->get('setting_app')->row()->auto_logout)
+				{
+					//logout automation
+					$this->end_sesi();
+					redirect(base_url('kasir/login_kasir'));
+				}
 			}
 
 			$this->alus_auth->get_sesi_saldo();

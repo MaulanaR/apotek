@@ -622,7 +622,7 @@ class Alus_auth
                 $sisahari = $hari;
                 $status_kd = "Kadaluarsa";
             }else{
-	            if($hari <= 10){
+	            if($hari <= $this->db->get('setting_app')->row()->peringatan_kadaluarsa){
 	                $kadaluarsa = FALSE;
 	                $sisahari = $hari;
 	                $status_kd = "Hampir kadaluarsa";
