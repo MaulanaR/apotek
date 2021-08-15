@@ -381,9 +381,9 @@ class Obat extends CI_Controller
 				);
 
 				//cek barcode ada sama?
-				$this->model->save($data);
+				$id = $this->model->save($data);
 
-				echo json_encode(array("status" => TRUE));
+				echo json_encode(array("status" => TRUE, "id" => $id));
 			} else {
 				echo json_encode(array("status" => FALSE, "msg" => validation_errors()));
 			}
