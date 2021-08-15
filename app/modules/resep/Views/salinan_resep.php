@@ -192,7 +192,7 @@
         print_area.document.write(`
           <style>
           @page {
-            size: a4;
+            size: 21.00cm auto;
             margin:0;
                 }
           @media print{
