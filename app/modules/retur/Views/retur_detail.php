@@ -219,12 +219,44 @@
 
       var scripts = document.getElementsByTagName("link");
       if(size){
+        print_area.document.write(`
+          <style>
+          @page {
+            size: 21.00cm auto;
+            margin:0;
+                }
+          @media print{
+            body{
+              padding: 10px;
+            }
+          }
+          </style>`
+          );
         for (var i = 0; i < scripts.length; i++) {
           if (scripts[i].href) print_area.document.write('<link rel="stylesheet" type="text/css" href="'+scripts[i].href+'">')
           else console.log(i, scripts[i].innerHTML)
         }
+      }else{
+        print_area.document.write(`
+          <style>
+          @page {
+            size: 80mm auto;
+            margin:0;
+                }
+          @media print{
+            body{
+              margin: 5px;
+            }
+            *{
+              font-family: sans-serif;
+              font-weight:normal;
+              font-size: 7px;
+              line-height: 1;
+            }
+          }
+          </style>`
+          );
       }
-      print_area.document.write('<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/temaalus/dist/css/print.css">');
       print_area.document.write('</head><body>');
       print_area.document.write(content.innerHTML);
       print_area.document.write('</body></html>');

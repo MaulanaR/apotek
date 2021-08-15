@@ -206,6 +206,7 @@
         success: function(data) {
           if(data.status == true){
           i = 0;
+          console.log(data);
           $.each(data.data, function(index, val) {
 
             i++;
