@@ -1,0 +1,2 @@
+15/08/2021
+-Ubah default field tb_status_kadaluarsa di tabel t_batch menjadi 1
