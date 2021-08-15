@@ -165,9 +165,176 @@ class Laporan extends CI_Controller
 
 				$this->load->view('ajax/view_retur.php', $data, FALSE);
 				break;
+				case 'kasir' :
+					
+					$this->db->where('tsu_jam_masuk >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
+					$this->db->where('tsu_jam_masuk <=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_akhir'))));
+					$this->db->where('tsu_jam_keluar IS NOT NULL',null,false);
+					
+					$this->db->join('alus_u', 'alus_u.id = t_sesi_user.tsu_user_id', 'left');
+					
+					$sesi = $this->db->get('t_sesi_user');
+	
+					$data['data'] = $sesi->result();
+					$data['tgl_awal'] = $this->input->post('tgl_awal');
+					$data['tgl_akhir'] = $this->input->post('tgl_akhir');
+	
+					$this->load->view('ajax/view_kasir.php', $data, FALSE);
+					break;
 			default:
 				# code...
 				break;
+		}
+	}
+
+	function detail_kasir($id=null)
+	{
+		if($id)
+		{
+			$this->db->where('tsud_tsu_id', $id);
+			$this->db->join('t_invoice', 't_invoice.ti_id = t_sesi_user_detail.tsud_ti_id', 'left');
+			$data['data'] = $this->db->get('t_sesi_user_detail')->result();
+			
+			$this->load->view('ajax/detail_kasir', $data);
+			
+		}
+	}
+
+	function export_kasir()
+	{
+		$jenis = $this->input->get('jenis') ? $this->input->get('jenis') : 'excel';
+
+		if ($jenis == 'excel') {
+			$this->db->where('tsu_jam_masuk >=', date('Y-m-d', strtotime($this->input->get('awal'))));
+			$this->db->where('tsu_jam_masuk <=', date('Y-m-d', strtotime($this->input->get('akhir'))));
+			$this->db->where('tsu_jam_keluar IS NOT NULL',null,false);
+			
+			$this->db->join('alus_u', 'alus_u.id = t_sesi_user.tsu_user_id', 'left');
+			
+			$dtinv = $this->db->get('t_sesi_user');
+
+			$data['data'] = $dtinv->result();
+			$data['awal'] = date('d-m-Y', strtotime($this->input->get('awal')));
+			$data['akhir'] = date('d-m-Y', strtotime($this->input->get('akhir')));
+			$this->load->view('ajax/export_kasir', $data);
+		} else {
+			$this->db->where('tsu_jam_masuk >=', date('Y-m-d H:i:s', strtotime($this->input->get('awal'))));
+			$this->db->where('tsu_jam_masuk <=', date('Y-m-d H:i:s', strtotime($this->input->get('akhir'))));
+			$this->db->where('tsu_jam_keluar IS NOT NULL',null,false);
+			
+			$this->db->join('alus_u', 'alus_u.id = t_sesi_user.tsu_user_id', 'left');
+			
+			$data = $this->db->get('t_sesi_user')->result();
+
+			$judul = 'Laporan Kasir dari '.date('Y-m-d H:i:s', strtotime($this->input->get('awal'))).' s/d '.date('Y-m-d H:i:s', strtotime($this->input->get('akhir')));
+			$page = '
+			<html>
+			<head>
+			<style>
+			body{
+				font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+					font-size: 1rem;
+					font-weight: 400;
+					line-height: 1.5;
+					color: #212529;
+					text-align: left;
+			}
+			table.table-bordered.dataTable th, table.table-bordered.dataTable td {
+    			border-left-width: 0;
+			}
+			.bordered thead th {
+    			border-bottom-width: 2px;
+			}
+			.table thead th {
+   				vertical-align: bottom;
+    			border-bottom: 2px solid #dee2e6;
+        		border-bottom-width: 2px;
+			}
+			table.dataTable th {
+    			-webkit-box-sizing: content-box;
+    			box-sizing: content-box;
+			}
+			th {
+    			border: 1px solid #dee2e6;
+        		border-bottom-color: rgb(222, 226, 230);
+        		border-bottom-style: solid;
+        		border-bottom-width: 1px;
+        		border-left-width: 1px;
+			}
+			.table td, .table th {
+    			padding: .75rem;
+    			vertical-align: top;
+    			border-top: 1px solid #dee2e6;
+			}
+			th {
+    			text-align: center;
+			}
+			td.text-center{
+				text-align:center;
+			}
+			p{
+				line-height:5px;
+			}
+			.font-weight-light {
+    			font-weight: 300 !important;
+			}
+			.brand-text{
+			    float: left;
+			    line-height: .8;
+			    margin-left: .8rem;
+			    margin-right: .5rem;
+			    margin-top: -3px;
+			    max-height: 33px;
+			    width: auto;
+			    font-size:3em;
+			}
+			</style>
+			</head>
+			<body>
+			<div>
+			<span class="brand-text font-weight-light">
+			<img src="'.base_url("assets/logo/").$this->db->get('setting_app')->row()->app_logo.'" alt="'.$this->db->get('setting_app')->row()->app_nama.'" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
+      		'.$this->db->get('setting_app')->row()->app_nama.'</span>
+      		</div>
+      		<br/>
+      		<br/>
+      		<div>
+			<table class="table table-bordered table-strip">
+			<thead>
+            <tr>
+                <th rowspan="2" class="text-center">No.</th>
+                <th rowspan="2" class="text-center">Kasir</th>
+                <th colspan="2" class="text-center">Sesi</th>
+                <th rowspan="2" class="text-right">Saldo Awal</th>
+                <th rowspan="2" class="text-right">Saldo Akhir</th>
+                <th rowspan="2" class="text-right">Pemasukan</th>
+            </tr>
+            <tr>
+                <th class="text-center">Masuk</th>
+                <th class="text-center">Keluar</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+			$no = 1;
+			foreach ($data as $key => $value) {
+				$page .= '
+				<tr>
+                    <td class="text-center">'.$no.'</td>
+                    <td class="text-center">'.$value->first_name.'</td>
+                    <td class="text-center">'.date('d-m-Y H:i:s',strtotime($value->tsu_jam_masuk)).'</td>
+                    <td class="text-center">'.date('d-m-Y H:i:s',strtotime($value->tsu_jam_keluar)).'</td>
+                    <td class="text-right">'.$this->alus_auth->rupiahrp($value->tsu_saldo_awal).'</td>
+                    <td class="text-right">'.$this->alus_auth->rupiahrp($value->tsu_saldo_akhir).'</td>
+                    <td class="text-right">'.$this->alus_auth->rupiahrp(($value->tsu_saldo_akhir - $value->tsu_saldo_awal)).'</td>
+                </tr>';
+				$no++;
+			}
+			$page .= '</tbody></div></table></body></html>';
+	        $orientation = 'portrait';
+	        $paper = 'A4';
+			// echo $page;
+	        $this->pdf2->generate($page, $judul, $paper, $orientation);
 		}
 	}
 
@@ -211,19 +378,81 @@ class Laporan extends CI_Controller
 
 			$data = $this->db->get('t_invoice')->result();
 
-
-			$this->load->library('pdf');
-			$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-			$pdf->setPrintFooter(false);
-			$pdf->setPrintHeader(false);
-			$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-			$pdf->AddPage('');
-			$pdf->SetFont('');
-
-
-			$tabel = '
-			<table class="table table-bordered table-strip" border="1px">
-        <thead>
+			$judul = 'Laporan Transaksi dari '.date('Y-m-d H:i:s', strtotime($this->input->get('awal'))).' s/d '.date('Y-m-d H:i:s', strtotime($this->input->get('akhir')));
+			$page = '
+			<html>
+			<head>
+			<style>
+			body{
+				font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+					font-size: 1rem;
+					font-weight: 400;
+					line-height: 1.5;
+					color: #212529;
+					text-align: left;
+			}
+			table.table-bordered.dataTable th, table.table-bordered.dataTable td {
+    			border-left-width: 0;
+			}
+			.bordered thead th {
+    			border-bottom-width: 2px;
+			}
+			.table thead th {
+   				vertical-align: bottom;
+    			border-bottom: 2px solid #dee2e6;
+        		border-bottom-width: 2px;
+			}
+			table.dataTable th {
+    			-webkit-box-sizing: content-box;
+    			box-sizing: content-box;
+			}
+			th {
+    			border: 1px solid #dee2e6;
+        		border-bottom-color: rgb(222, 226, 230);
+        		border-bottom-style: solid;
+        		border-bottom-width: 1px;
+        		border-left-width: 1px;
+			}
+			.table td, .table th {
+    			padding: .75rem;
+    			vertical-align: top;
+    			border-top: 1px solid #dee2e6;
+			}
+			th {
+    			text-align: center;
+			}
+			td.text-center{
+				text-align:center;
+			}
+			p{
+				line-height:5px;
+			}
+			.font-weight-light {
+    			font-weight: 300 !important;
+			}
+			.brand-text{
+			    float: left;
+			    line-height: .8;
+			    margin-left: .8rem;
+			    margin-right: .5rem;
+			    margin-top: -3px;
+			    max-height: 33px;
+			    width: auto;
+			    font-size:3em;
+			}
+			</style>
+			</head>
+			<body>
+			<div>
+			<span class="brand-text font-weight-light">
+			<img src="'.base_url("assets/logo/").$this->db->get('setting_app')->row()->app_logo.'" alt="'.$this->db->get('setting_app')->row()->app_nama.'" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
+      		'.$this->db->get('setting_app')->row()->app_nama.'</span>
+      		</div>
+      		<br/>
+      		<br/>
+      		<div>
+			<table class="table table-bordered table-strip">
+			<thead>
             <tr>
                 <th>No.</th>
                 <th>Bulan/Tanggal</th>
@@ -235,7 +464,7 @@ class Laporan extends CI_Controller
 
 			$no = 1;
 			foreach ($data as $key => $value) {
-				$tabel .= '
+				$page .= '
                 <tr>
                     <td>' . $no . '</td>
                     <td>' . $value->tgl_inv . '</td>
@@ -244,15 +473,11 @@ class Laporan extends CI_Controller
                 </tr>';
 				$no++;
 			}
-			$table .= '</tbody></table>';
-
-			/*echo $tabel;
-	        die();*/
-			$pdf->writeHTML($tabel);
-
-			ob_end_clean();
-
-			$pdf->Output('Laporan Transaksi (' . date('d-m-Y', strtotime($this->input->get('awal'))) . ' - ' . date('d-m-Y', strtotime($this->input->get('akhir'))) . ').pdf', 'D');
+			$page .= '</tbody></div></table></body></html>';
+	        $orientation = 'portrait';
+	        $paper = 'A4';
+	        $this->pdf2->generate($page, $judul, $paper, $orientation);
+			
 		}
 	}
 
@@ -356,8 +581,8 @@ class Laporan extends CI_Controller
 			<body>
 			<div>
 			<span class="brand-text font-weight-light">
-			<img src="'.base_url("assets/logo/askrindo-mini.png").'" alt="Askrindo Logo" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
-      		Apotek App</span>
+			<img src="'.base_url("assets/logo/").$this->db->get('setting_app')->row()->app_logo.'" alt="'.$this->db->get('setting_app')->row()->app_nama.'" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
+      		'.$this->db->get('setting_app')->row()->app_nama.'</span>
       		</div>
       		<br/>
       		<br/>
@@ -486,8 +711,8 @@ class Laporan extends CI_Controller
 			<body>
 			<div>
 			<span class="brand-text font-weight-light">
-			<img src="'.base_url("assets/logo/askrindo-mini.png").'" alt="Askrindo Logo" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
-      		Apotek App</span>
+			<img src="'.base_url("assets/logo/").$this->db->get('setting_app')->row()->app_logo.'" alt="'.$this->db->get('setting_app')->row()->app_nama.'" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
+      		'.$this->db->get('setting_app')->row()->app_nama.'</span>
       		</div>
       		<br/>
       		<br/>

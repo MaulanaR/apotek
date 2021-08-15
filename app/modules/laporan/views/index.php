@@ -26,7 +26,7 @@
                     <option value="StokObatKd">Obat Kadaluarsa</option>
                     <option value="Transaksi">Transaksi</option>
                     <option value="Retur">Retur</option>
-                    <option>Saldo Kasir</option>
+                    <option value="kasir">Saldo Kasir</option>
                   </select>
                 </div>
               </div>
@@ -173,6 +173,25 @@
         }
       });
     }
+    if(par == 'kasir'){
+      $("#isitable").empty();
+      $.ajax({
+        type: "POST",
+        url: "<?php echo base_url(); ?>laporan/generate",
+        data: {
+          'jenis': $("#jenisLaporan").val(),
+          'tgl_awal': $("#tglAwal").val(),
+          'tgl_akhir': $("#tglAkhir").val()
+        },
+        dataType: "html",
+        success: function(response) {
+          $("#isitable").html(response);
+        },
+        error: function(xhr, err, x) {
+          popup('Perhatian', 'Gagal mengambil data', 'error');
+        }
+      });
+    }
   }
 
   function pilihLaporan(va) {
@@ -197,6 +216,9 @@
       dateinput(true);
       $("#filter_tambahan").empty();
     }else if (va == 'Retur') {
+      dateinput(false);
+      $("#filter_tambahan").empty();
+    }else if (va == 'kasir') {
       dateinput(false);
       $("#filter_tambahan").empty();
     }
