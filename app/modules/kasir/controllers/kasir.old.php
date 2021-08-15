@@ -258,7 +258,7 @@ class Kasir extends CI_Controller {
          	$data['ppn_nilai'] = $this->alus_auth->rupiahrp($record->ti_ppn_nilai);
          	$data['nominal_bayar'] = $this->alus_auth->rupiahrp($record->ti_nominal_bayar);
          	$data['nominal_kembalian'] = $this->alus_auth->rupiahrp($record->ti_nominal_kembalian);
-         	$data['user_id'] = $record->ti_user_id;
+         	$data['user_id'] = $record->tr_user_id;
          	$data['grandtotal'] = $this->alus_auth->rupiahrp($record->ti_grandtotal);
          	$x = $this->alus_auth->tipePembayaran('translate', $record->ti_tipe_pembayaran);
          	$data['tipe_pembayaran'] = $x;
