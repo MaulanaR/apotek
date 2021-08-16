@@ -51,8 +51,10 @@ class Kasir extends CI_Controller {
 
 				$date_skrg = new DateTime(date('Y-m-d H:i:s'));
 				$date_awal = new DateTime($data->tsu_jam_masuk);
-				$interval = $date_skrg->diff($date_awal);
-				$jam = $interval->h;
+				$interval = $date_awal->diff($date_skrg);
+				// echo $interval->d;
+				$tambahan_jam = ((int)$interval->d * 24);
+				$jam = ( (int)$interval->h + (int)$tambahan_jam);
 				
 				if($jam >= $this->db->get('setting_app')->row()->auto_logout)
 				{
