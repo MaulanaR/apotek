@@ -6,3 +6,33 @@ add field
 -`auto_logout` int(2) DEFAULT 5,
 -`peringatan_kadaluarsa` int(2) DEFAULT 10,
 -`sidebar` int(1) DEFAULT 0,
+
+18/08/2021
+tabel baru
+
+-- ----------------------------
+-- Table structure for t_retur_pembelian
+-- ----------------------------
+DROP TABLE IF EXISTS `t_retur_pembelian`;
+CREATE TABLE `t_retur_pembelian`  (
+  `trp_id` int(11) NOT NULL AUTO_INCREMENT,
+  `trp_user_id` int(11) NULL DEFAULT NULL,
+  `trp_tgl` datetime NULL DEFAULT NULL,
+  `trp_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `trp_updated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`trp_id`) USING BTREE,
+  INDEX `bacth`(`trp_tb_id`) USING BTREE,
+  CONSTRAINT `supplier` FOREIGN KEY (`trp_tb_id`) REFERENCES `t_batch` (`tb_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+
+
+DROP TABLE IF EXISTS `t_retur_pembelian_detail`;
+CREATE TABLE `t_retur_pembelian_detail`  (
+  `trpd_id` int(11) NOT NULL,
+  `trpd_trp_id` int(11) NULL DEFAULT NULL,
+  `trpd_tb_id` int(11) NULL DEFAULT NULL,
+  `trpd_qty` int(25) NULL DEFAULT NULL,
+  `trpd_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `trpd_updated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`trpd_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
