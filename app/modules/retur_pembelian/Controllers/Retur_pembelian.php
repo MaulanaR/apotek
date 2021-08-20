@@ -92,16 +92,10 @@ class Retur_pembelian extends CI_Controller {
         //output to json format
         echo json_encode($output);
     }
-
-    function get_obat_by_supplier(){
+    
+    function get_batch_by_supplier_id(){
         $id = $this->input->post('ms_id');
-        $data = $this->model->get_obat_list_by_supplier_id($id);
-        echo json_encode(array('data' => $data));
-    }
-
-    function get_batch_by_obat_id(){
-        $id = $this->input->post('mo_id');
-        $data = $this->model->get_batch_list_by_obat($id);
+        $data = $this->model->get_batch_list_by_supplier($id);
         echo json_encode(array('data' => $data));
     }
 

@@ -81,24 +81,14 @@ class retur_pembelian_model extends CI_Model {
         return $query->row();
     }
 
-    function get_obat_list_by_supplier_id($ms_id){
-        $this->db->select('*');
-        $this->db->from('t_batch');
-        $this->db->join('m_obat', 'm_obat.mo_id = t_batch.tb_mo_id', 'inner');
-        $this->db->where('t_batch.tb_ms_id', $ms_id);
-        $this->db->group_by('mo_id');
-        $query = $this->db->get();
-        return $query->result();
-    }
-
-    function get_batch_list_by_obat($mo_id){
+    function get_batch_list_by_supplier($ms_id){
         $this->db->select('*, sum(tj_masuk - tj_keluar) as stok');
-        $this->db->from('t_jurnal');
-        $this->db->join('t_batch', 't_batch.tb_id = t_jurnal.tj_tb_id', 'inner');
+        $this->db->from('t_batch');
         $this->db->join('m_supplier', 'm_supplier.ms_id = t_batch.tb_ms_id', 'inner');
         $this->db->join('m_obat', 'm_obat.mo_id = t_batch.tb_mo_id', 'inner');
         $this->db->join('m_unit', 'm_unit.mu_id = m_obat.mo_mu_id');
-        $this->db->where('tj_mo_id', $mo_id);
+        $this->db->join('t_jurnal', 't_jurnal.tj_tb_id = t_batch.tb_id');
+        $this->db->where('t_batch.tb_ms_id', $ms_id);
         $this->db->group_by('tj_tb_id');
         $query = $this->db->get();
         return $query->result();
