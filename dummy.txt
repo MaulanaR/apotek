@@ -9,30 +9,37 @@ add field
 
 18/08/2021
 tabel baru
+-canceled
 
--- ----------------------------
--- Table structure for t_retur_pembelian
--- ----------------------------
+21/08/2021
+Tabel t_retur_pembelian dan t_retur_pembelian_detail sebelumnya memiliki
+banyak kesalahan struktur.
+
+Struktur baru :
+
 DROP TABLE IF EXISTS `t_retur_pembelian`;
 CREATE TABLE `t_retur_pembelian`  (
   `trp_id` int(11) NOT NULL AUTO_INCREMENT,
+  `trp_kode` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   `trp_user_id` int(11) NULL DEFAULT NULL,
+  `trp_ms_id` int(11) NOT NULL,
+  `trp_qty` int(25) NULL DEFAULT 0,
   `trp_tgl` datetime NULL DEFAULT NULL,
   `trp_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `trp_updated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`trp_id`) USING BTREE,
-  INDEX `bacth`(`trp_tb_id`) USING BTREE,
-  CONSTRAINT `supplier` FOREIGN KEY (`trp_tb_id`) REFERENCES `t_batch` (`tb_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
-
+  PRIMARY KEY (`trp_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
 
 DROP TABLE IF EXISTS `t_retur_pembelian_detail`;
 CREATE TABLE `t_retur_pembelian_detail`  (
-  `trpd_id` int(11) NOT NULL,
+  `trpd_id` int(11) NOT NULL AUTO_INCREMENT,
   `trpd_trp_id` int(11) NULL DEFAULT NULL,
   `trpd_tb_id` int(11) NULL DEFAULT NULL,
+  `trpd_tgl_input` date NULL DEFAULT NULL,
   `trpd_qty` int(25) NULL DEFAULT NULL,
   `trpd_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `trpd_updated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`trpd_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+  PRIMARY KEY (`trpd_id`) USING BTREE,
+  INDEX `detail`(`trpd_trp_id`) USING BTREE,
+  CONSTRAINT `detail` FOREIGN KEY (`trpd_trp_id`) REFERENCES `t_retur_pembelian` (`trp_id`) ON DELETE RESTRICT ON UPDATE NO ACTION
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = COMPACT;
