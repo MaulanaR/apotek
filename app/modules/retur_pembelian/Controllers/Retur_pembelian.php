@@ -51,11 +51,83 @@ class Retur_pembelian extends CI_Controller {
             $head['title'] = "Daftar Retur";
             $data['can_add'] = $this->privilege['can_add'];
             $data['list_supplier'] = $this->db->get('m_supplier');
+            $length = 4;
+            do{
+                $b = $this->alus_auth->generateUniqueId($length);
+                $cek = $this->model->cek_nomor_inv($b);
+                if($cek > 0){
+                    $a = TRUE;
+                    $length += 1;
+                 }else{
+                    $a = FALSE;
+                 }
+            }while($a);
+            $data['kode'] = 'RTP'.$b;
             
             $this->load->view('template/temaalus/header',$head);
             $this->load->view('retur_pembelian/input_retur_pembelian.php',$data);
             $this->load->view('template/temaalus/footer');
-        }else
+        }
+        else
+        {
+            redirect('admin/Login','refresh');
+        }
+    }
+
+    public function retur_pembelian_detail()
+    {
+        if($this->alus_auth->logged_in())
+        {
+            $head['title'] = "Daftar Retur";
+            $kode = basename($_SERVER['REQUEST_URI']);
+            if($kode != "" | $kode != NULL){
+                $cek = $this->model->cek_nomor_inv($kode);
+                if($cek > 0){
+                    $data['kode'] = $kode;
+                    $trp = $this->model->get_by_kode($kode);
+                    $data['tgl'] = $trp->trp_tgl;
+                    $data['total_item'] = $trp->trp_qty;
+
+                    $this->db->select('*');
+                    $this->db->from('m_supplier');
+                    $this->db->where('ms_id', $trp->trp_ms_id);
+                    $query = $this->db->get();
+                    $supplier = $query->row();
+                    $data['ms_nama'] = $supplier->ms_nama;
+                    $data['ms_alamat'] = $supplier->ms_alamat;
+                    $data['ms_telp'] = $supplier->ms_telp;
+                    $data['ms_kodepos'] = $supplier->ms_kodepos;
+
+
+                    $this->db->select('first_name, last_name, job_title');
+                    $this->db->from('alus_u');
+                    $this->db->where('id', $trp->trp_user_id);
+                    $query = $this->db->get();
+                    $userdata = $query->row();
+                    $last_name = strtoupper((substr($userdata->last_name,0,1)));
+                    $data['username'] = $userdata->first_name." ".$last_name;
+                    $data['job'] = $userdata->job_title;
+
+                    $trpd = $this->model->get_data_detail_by_id($trp->trp_id);
+                    $data['trp_id'] = $trp_id;
+                    $data['data'] = $trpd;
+
+                    $data['title'] = "Detail Retur ".$kode;
+                    $this->load->view('template/temaalus/header',$head);
+                    $this->load->view('retur_pembelian/retur_pembelian_detail.php',$data);
+                    $this->load->view('template/temaalus/footer');
+                }
+                else
+                {
+                    redirect('dashboard','refresh');
+                }
+            }
+            else
+            {
+                redirect('dashboard','refresh');
+            }
+        }
+        else
         {
             redirect('admin/Login','refresh');
         }
@@ -71,14 +143,12 @@ class Retur_pembelian extends CI_Controller {
         foreach ($list as $record) {
                 $row = array();
                 $row[] = $no + 1;
-                $row[] = $record->trp_id;
-                $row[] = $record->trp_tb_id;
+                $row[] = $record->trp_kode;
+                $row[] = $record->first_name." ".$record->last_name;
+                $row[] = $record->ms_nama;
                 $t = explode(" ", $record->trp_tgl);
                 $row[] = $t[0];
-                $row[] = $record->mo_nama;
-                $row[] = $record->ms_nama;
-                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" data-toggle="tooltip" title="Detail" onclick="detail('."'".$record->trp_id."'".')"><i class="fa fa-pencil-alt"></i> Lihat Detail</a>';
-                //add html for action
+                $row[] = '<a class="btn btn-sm btn-outline-primary" href="javascript:void(0)" data-toggle="tooltip" title="Detail" onclick="detail('."'".$record->trp_kode."'".')"><i class="fa fa-pencil-alt"></i> Lihat Detail</a>';
                 $data[] = $row;
                 $no++;
         }
@@ -99,36 +169,42 @@ class Retur_pembelian extends CI_Controller {
         echo json_encode(array('data' => $data));
     }
 
-    function ajax_detail_items(){
-        $id = $_POST['id'];
+    function save_retur_pembelian(){
+        if ($this->privilege['can_add'] == 0) {
+            echo json_encode(array("status" => FALSE, "msg" => "You Dont Have Permission"));
+        } else {
+        $data = json_decode(html_entity_decode(stripslashes($this->input->post('data'))));
+        $uniqid = $this->input->post('kode');
+        $ms_id = $this->input->post('ms_id');
         $status = false;
-        if(isset($id)){
-        $status = true;
-        $this->db->select('trd_qty, trd_harga_satuan, trd_ppn_status, trd_mo_id, trd_tb_id, mo_nama, mo_barcode, mo_deskripsi',  FALSE);
-        $this->db->from('t_retur_detail');
-        $this->db->join('m_obat', 'm_obat.mo_id = t_retur_detail.trd_mo_id', 'inner');
-        $this->db->where('trd_tr_id', $id);
-        $query2 = $this->db->get();
-        $data = $query2->result();
-        $temp = array();
-            foreach ($data as $itemdata) {
-                $totalharga = $itemdata->trd_qty * $itemdata->trd_harga_satuan;
-                    $temp[] = array(
-                        'qty' => $itemdata->trd_qty,
-                        'nama' => $itemdata->mo_nama, 
-                        'barcode' => $itemdata->mo_barcode, 
-                        'deskripsi' => $itemdata->mo_deskripsi, 
-                        'harga' => $itemdata->trd_harga_satuan, 
-                        'total' => $totalharga,
-                        'ppn_status' => $itemdata->trd_ppn_status,
-                        'mo_id' => $itemdata->trd_mo_id,
-                        'tb_id' => $itemdata->trd_tb_id,
-                    );
-                
+        if(isset($data)){
+            $status = true;
+            $data_utama = array(
+                    'trp_kode' => $uniqid,
+                    'trp_user_id' => $this->session->userdata('user_id'),
+                    'trp_ms_id' => $ms_id,
+                    'trp_qty' => '0',
+                    'trp_tgl' => date('Y-m-d'),
+                );
+            $trp_id = $this->model->save($data_utama);
+            $total_qty = 0;
+            foreach ($data as $value) {
+                $detail = array(
+                    'trpd_trp_id' => $trp_id,
+                    'trpd_tb_id' => $value->batchId,
+                    'trpd_qty' => $value->quantity,
+                    'trpd_tgl_input' => $value->tgl
+                );
+
+                $this->model->save_detail($detail);
+                $total_qty += (int)$value->quantity;
             }
-        $arr = $temp;
+            $this->model->update(array('trp_id' => $trp_id), array('trp_qty' => $total_qty));
+            echo json_encode(array("status" => $status, "data" => $data, "msg" => "Sukses!"));
+        }else{
+            echo json_encode(array("status" => $status, "msg" => "Ajax error!"));
         }
-        echo json_encode(array('status' => $status, 'data' => $arr));
+        }
     }
 
     public function ajax_delete()

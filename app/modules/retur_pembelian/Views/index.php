@@ -11,11 +11,14 @@
       <!-- Main content -->
       <section class="content">
         <div class="callout callout-info">
-          <p>Berikut adalah daftar produk/item yang telah diretur.</p>
+          <p>Berikut adalah daftar form retur pembelian.</p>
         </div>
           <div class="card">
             <div class="card-header text-right">
               <div class="btn-group">
+                <?php if ($can_add == 1) { ?>
+                <a href="<?php echo base_url('retur_pembelian/input_retur_pembelian'); ?>" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Buat Baru</a>
+                <?php } ?>
                   <button class="btn btn-sm btn-default" onclick="reload_table()"><i class="fas fa-retweet"></i> Reload</button>
               </div>
             </div>
@@ -28,11 +31,10 @@
                       <thead>
                       <tr>
                         <th width='5%'>No</th>
-                        <th width='5%'>ID</th>
-                        <th width='5%'>Batch ID</th>
+                        <th>Kode</th>
+                        <th>User</th>
+                        <th>Tujuan</th>
                         <th>Tanggal</th>
-                        <th>Item</th>
-                        <th>Supplier</th>
                         <th width='5%'></th>
                       </tr>
                       </thead>
@@ -89,7 +91,7 @@ $(document).ready(function() {
 });
  
 function detail(a){
-  window.location = '<?php echo base_url('retur/retur_detail/'); ?>' + a;
+  window.location = '<?php echo base_url('retur_pembelian/retur_pembelian_detail/'); ?>' + a;
 }
  
 function reload_table()

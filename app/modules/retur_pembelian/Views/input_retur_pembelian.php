@@ -10,6 +10,9 @@
         <!-- Main content -->
         <section class="content">
             <div class="card">
+                <div class='card-header'>
+                    <span>Form Retur Pembelian <?php echo $kode; ?></span>
+                </div>
                 <div class="card-body">
                     <form action="#" id="formnih" class="form-horizontal" name="formnih">
                         <div class="form-body">
@@ -65,7 +68,7 @@
                                 </table>
                             </div>
                             <div class="col-12 pb-3">
-                                <button type="submit" class="btn btn-primary" id="btnSave">Update</button>
+                                <button type="button" class="btn btn-primary" id="btnSave" onclick="saveReturPembelian()">Update</button>
                                 <button type="button" class="btn btn-danger" id="btnCancel" onclick="window.history.go(-1)">Batal</button>
                             </div>
                         </div>
@@ -80,6 +83,7 @@
     const iElem = $("#obatid");
     const input = $("#returQty");
     const btnAdd = $("#btnAdd");
+    const uniqid = '<?php echo $kode; ?>';
     let id_supplier = null;
     let mo_nama_pilihan = null;
     let id_item_pilihan = null;
@@ -89,6 +93,7 @@
     let list_pilihan = [];
     $("#btnAdd").on("click", function(){finishStage2()});
     input.on("keyup", function(){userInput(this.value)});
+    $("btnSave").on("click", function(){saveReturPembelian()});
 
     $(document).ready(function() {
         $("#formnih").submit(function(e) {
@@ -241,6 +246,30 @@
         });
     }
 
+    function saveReturPembelian(){
+        $.ajax({
+            type: "post",
+            url: "<?php echo base_url();?>retur_pembelian/save_retur_pembelian/",
+            data: {
+                kode : uniqid,
+                ms_id : id_supplier,
+                data : JSON.stringify(list_pilihan)
+            },
+            dataType: "json",
+            success: function (response) {
+                popup('info', response.msg);
+                if(response.status){
+                    setTimeout(function(){
+                        exit();
+                    }, 2000);
+                }
+            },
+            error: function (){
+                popup('error', response.msg);
+            }
+        });
+    }
+
     function renderTable(){
         const tableBody =  document.getElementById('tableBody');
         tableBody.innerHTML = '';
@@ -271,6 +300,10 @@
             tableBody.appendChild(baris);
         });
         contentChecker();
+    }
+
+    function exit(){
+        window.location = '<?php echo base_url('retur_pembelian/retur_pembelian_detail/'); ?>' + uniqid;
     }
 
 </script>

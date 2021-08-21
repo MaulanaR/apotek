@@ -5,6 +5,7 @@
 class retur_pembelian_model extends CI_Model {
 
 	var $table1 = 't_retur_pembelian';
+    var $table2 = 't_retur_pembelian_detail';
     var $column_order = array('trp_id','trp_tgl', null);
     var $column_search = array('trp_id');
     var $order = array('trp_id' => 'desc'); 
@@ -21,11 +22,17 @@ class retur_pembelian_model extends CI_Model {
     private function _get_datatables_query()
     {
          
-        $this->db->select("*");
+        $this->db->select("
+            t_retur_pembelian.trp_id,
+            t_retur_pembelian.trp_kode,
+            t_retur_pembelian.trp_tgl,
+            alus_u.first_name,
+            alus_u.last_name,
+            m_supplier.ms_nama
+            ");
         $this->db->from($this->table1);
-        $this->db->join("t_batch", "t_batch.tb_id = t_retur_pembelian.trp_tb_id", "inner");
-        $this->db->join("m_supplier", "m_supplier.ms_id = t_batch.tb_ms_id", "inner");
-        $this->db->join('m_obat', 'm_obat.mo_id = t_batch.tb_mo_id', 'inner');
+        $this->db->join("alus_u", "alus_u.id = t_retur_pembelian.trp_user_id", "inner");
+        $this->db->join("m_supplier", "m_supplier.ms_id = t_retur_pembelian.trp_ms_id");
 
         $i = 0;
      
@@ -70,15 +77,23 @@ class retur_pembelian_model extends CI_Model {
         return $query->result();
     }
 
+    function get_by_kode($kode){
+        $this->db->select('*');
+        $this->db->from($this->table1);
+        $this->db->where('trp_kode', $kode);
+        $query = $this->db->get();
+        return $query->row();
+    }
+
     function get_data_detail_by_id($id){
         $this->db->select('*');
         $this->db->from('t_retur_pembelian_detail');
         $this->db->join('t_batch', 't_batch.tb_id = t_retur_pembelian_detail.trpd_tb_id', 'inner');
         $this->db->join('m_supplier', 'm_supplier.ms_id = t_batch.tb_ms_id', 'inner');
-        $this->db->join('m_obat', 'm_obat.mo_id = t_batch.tb_mo_id', 'inner');
-        $this->db->where("trpd_id", $id);
+        $this->db->join('m_obat', 'm_obat.mo_id = t_batch.tb_mo_id', 'left');
+        $this->db->where("trpd_trp_id", $id);
         $query = $this->db->get();
-        return $query->row();
+        return $query->result();
     }
 
     function get_batch_list_by_supplier($ms_id){
@@ -97,7 +112,7 @@ class retur_pembelian_model extends CI_Model {
     public function cek_nomor_inv($nomor_inv)
     {
         $this->db->from($this->table1);
-        $this->db->where('tr_ti_nomor_inv',$nomor_inv);
+        $this->db->where('trp_kode',$nomor_inv);
         $query = $this->db->get();
         return $query->num_rows();
     }
