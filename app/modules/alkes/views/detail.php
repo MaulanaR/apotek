@@ -23,7 +23,7 @@
                 <div class="card-header">
                 <h3 class="card-title">
                   <i class="fas fa-text-width"></i>
-                  Detail Alat Kesehatan
+                  Detail Non Obat
                 </h3>
               </div>
                 <div class="card-body">

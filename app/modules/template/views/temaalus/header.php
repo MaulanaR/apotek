@@ -105,11 +105,15 @@
           Profile
         </a>
       </li>&nbsp;
-      <li class="nav-item dropdown">
-        <a class="btn btn-sm btn-block btn-outline-danger" href="<?php echo base_url('admin/login/logout');?>">
-          Logout
-        </a>
-      </li>
+      <?php 
+		  if( empty($this->session->userdata('id_sesi')))
+      { ?>
+        <li class="nav-item dropdown">
+          <a class="btn btn-sm btn-block btn-outline-danger" href="<?php echo base_url('admin/login/logout');?>">
+            Logout
+          </a>
+        </li>
+      <?php }?>
     </ul>
   </nav>
 

@@ -3,7 +3,7 @@
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          Master Alat Kesehatan
+          Master Non Obat
         </h1>
       </section>
 

@@ -234,7 +234,7 @@ class Alkes extends CI_Controller
     
         if($this->alus_auth->logged_in())
          {
-            $head['title'] = "Master Alat Kesehatan";
+            $head['title'] = "Master Non Obat";
             $data = array();
             $record = $this->model->get_by_id($mo_id);
             $data['can_add'] = $this->privilege['can_add'];
@@ -268,7 +268,7 @@ class Alkes extends CI_Controller
     
         if($this->alus_auth->logged_in())
          {
-            $head['title'] = "Edit Alat Kesehatan";
+            $head['title'] = "Edit Non Obat";
             $data = array();
             $record = $this->model->get_by_id($mo_id);
             $data['can_edit'] = $this->privilege['can_add'];

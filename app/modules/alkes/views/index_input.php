@@ -3,7 +3,7 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Input Alat Kesehatan Baru
+                Input Non Obat Baru
             </h1>
         </section>
 
@@ -26,7 +26,7 @@
                             <div class="form-group">
                                 <label class="control-label ">Kategori Item</label>
                                 <select class="sel form-control" name="kategori_obat">
-                                    <option value="3" selected>Alat Kesehatan</option>
+                                    <option value="3" selected>Non Obat</option>
                                 </select>
                             </div>
                             <div class="form-group">

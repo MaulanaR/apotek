@@ -3,7 +3,7 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Edit Alat Kesehatan
+                Edit Non Obat
             </h1>
         </section>
 
@@ -27,7 +27,7 @@
                             <div class="form-group">
                                 <label class="control-label ">Kategori Item</label>
                                 <input type="hidden" name="f_kat" class="form-control" value="<?php echo $mo_id; ?>" disabled>
-                                <input type="text" class="form-control" value="Alat Kesehatan" disabled>
+                                <input type="text" class="form-control" value="Non Obat" disabled>
                             </div>
                             <div class="form-group">
                                 <label class="control-label ">Barcode</label>
