@@ -135,6 +135,7 @@ class Stok_depan_model extends CI_Model {
         $this->db->select("SUM(tj_masuk - tj_keluar) AS stok");
         $this->db->from('t_jurnal');
         $this->db->where("tj_mo_id = '".$moid."' AND tj_tb_id = '".$tbid."'");
+        $this->db->group_by("tj_tb_id");
         $query = $this->db->get();
         if($query->num_rows() > 0){
             $r = $query->row();

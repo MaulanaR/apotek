@@ -183,8 +183,9 @@
     }
 
     function finishStage2(){
-        if(input.val() | input.val() != 0){
-            if(input.val() <= stok_pilihan){
+        console.log('add'+input.val());
+        if(input.val() | parseInt(input.val()) != 0){
+            if(parseInt(input.val()) <= parseInt(stok_pilihan)){
                 stok_pilihan = input.val();
                 addToList();
                 emptyTemp();
@@ -246,28 +247,55 @@
         });
     }
 
-    function saveReturPembelian(){
-        $.ajax({
-            type: "post",
-            url: "<?php echo base_url();?>retur_pembelian/save_retur_pembelian/",
+    const checkStok = new Promise((resolve, reject) =>{
+          $.ajax({
+            url: "<?php echo base_url('retur_pembelian/ajax_cek_stok') ?>",
+            type: "POST",
             data: {
-                kode : uniqid,
-                ms_id : id_supplier,
-                data : JSON.stringify(list_pilihan)
+              data : JSON.stringify(list_pilihan)
             },
-            dataType: "json",
-            success: function (response) {
-                popup('info', response.msg);
-                if(response.status){
-                    setTimeout(function(){
-                        exit();
-                    }, 2000);
-                }
+            dataType: "JSON",
+            success: function(data) {
+              if (data.status)
+              {
+                resolve('Sukses');
+              } else {
+                reject('Ada item yang melebihi stok!');
+              }
             },
-            error: function (){
-                popup('error', response.msg);
+            error: function(error){
+                reject('Tidak Bisa cek stok!');
             }
-        });
+          });
+    });
+
+    function saveReturPembelian(){
+            checkStok.then((msg) => {
+                $.ajax({
+                    type: "post",
+                    url: "<?php echo base_url();?>retur_pembelian/save_retur_pembelian/",
+                    data: {
+                        kode : uniqid,
+                        ms_id : id_supplier,
+                        data : JSON.stringify(list_pilihan)
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        popup('info', response.msg);
+                        if(response.status){
+                            setTimeout(function(){
+                                exit();
+                            }, 2000);
+                        }
+                    },
+                    error: function (){
+                        popup('error', response.msg);
+                    }
+                });
+            }).catch((e)=>{
+                popup('error', e);
+            });
+
     }
 
     function renderTable(){

@@ -117,6 +117,12 @@ class retur_pembelian_model extends CI_Model {
         return $query->num_rows();
     }
  
+    public function kurangi_stok_batch($tb_id, $mo_id, $jumlah, $keterangan){
+        $data = array('tj_tb_id' => $tb_id, 'tj_mo_id' => $mo_id, 'tj_keluar' => $jumlah, 'tj_keterangan' => $keterangan);
+        $this->db->insert('t_jurnal', $data);
+        return $this->db->insert_id();
+    }
+
     function count_filtered()
     {
         $this->_get_datatables_query();

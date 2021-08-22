@@ -197,6 +197,9 @@ class Retur_pembelian extends CI_Controller {
                 );
 
                 $this->model->save_detail($detail);
+
+                $this->model->kurangi_stok_batch($value->batchId, $value->itemId, $value->quantity, 'Retur Pembelian '.$uniqid);
+
                 $total_qty += (int)$value->quantity;
             }
             $this->model->update(array('trp_id' => $trp_id), array('trp_qty' => $total_qty));
@@ -205,6 +208,26 @@ class Retur_pembelian extends CI_Controller {
             echo json_encode(array("status" => $status, "msg" => "Ajax error!"));
         }
         }
+    }
+
+    function ajax_cek_stok(){
+        $success = FALSE;
+        $data = json_decode(html_entity_decode(stripslashes($this->input->post('data'))));
+        $arr = array();
+        if(isset($_POST['data'])){
+            $success = TRUE;
+            $i = 0;
+            foreach ($data as $value) {
+                if($success){
+                    $cek = $this->alus_auth->cek_stok($value->itemId, $value->batchId, $value->quantity);
+                    $success = $cek['status'];
+                }else{
+                    $arr[] = array('nama' => $value->nama, 'stok' => $cek->stok);
+                }
+            }   
+        }
+        $response = array("status" => $success, "data" => $arr);
+        echo json_encode($response);
     }
 
     public function ajax_delete()
