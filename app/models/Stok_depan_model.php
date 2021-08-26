@@ -24,6 +24,7 @@ class Stok_depan_model extends CI_Model {
                                     `m_obat`.mo_mk_id,
                                     `t_batch`.tb_id,
                                     `t_batch`.tb_tgl_kadaluarsa,
+                                    `t_batch`.tb_tgl_masuk,
                                     `t_batch`.tb_harga_beli,
                                     `t_batch`.tb_harga_jual,
                                     `t_batch`.tb_ms_id,

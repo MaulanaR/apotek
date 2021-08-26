@@ -23,6 +23,7 @@
                     <option>--Option--</option>
                     <option value="StokObat">Persediaan Obat</option>
                     <option value="StokAlkes">Persediaan Alkes</option>
+                    <option value="StokIndividual">Persediaan Individual</option>
                     <option value="StokObatKd">Obat Kadaluarsa</option>
                     <option value="Transaksi">Transaksi</option>
                     <option value="Retur">Retur</option>
@@ -192,6 +193,25 @@
         }
       });
     }
+    if(par == 'StokIndividual'){
+      $("#isitable").empty();
+      const selected = $("#itemList option").filter(':selected').val();
+      $.ajax({
+        type: "POST",
+        url: "<?php echo base_url(); ?>laporan/generate",
+        data: {
+          'jenis': $("#jenisLaporan").val(),
+          'mo_id': selected
+        },
+        dataType: "html",
+        success: function(response) {
+          $("#isitable").html(response);
+        },
+        error: function(xhr, err, x) {
+          popup('Perhatian', 'Gagal mengambil data', 'error');
+        }
+      });
+    }
   }
 
   function pilihLaporan(va) {
@@ -221,6 +241,26 @@
     }else if (va == 'kasir') {
       dateinput(false);
       $("#filter_tambahan").empty();
+    }else if (va == 'StokIndividual'){
+      dateinput(true);
+      $("#filter_tambahan").empty();
+      <?php
+        $this->db->select('mo_id, mo_nama');
+        $query = $this->db->get('m_obat');
+        $data = $query->result();
+      ?>
+      $("#filter_tambahan").append(
+        '<div class="col-md-12">' +
+        '<div class="form-group">' +
+        '<label for="tglAwal" class="control-label">Item : </label>' +
+        '<select class="sel form-control" id="itemList" data-live-search="true" required><option disabled>Pilih Item</option><?php foreach ($data as $v){
+           echo '<option value="'.$v->mo_id.'">'.$v->mo_nama.'</option>'; 
+        }?></select>' +
+        '</div>' +
+        '</div>'
+      );
+      $("#itemList").selectpicker('refresh');
+      $("#itemList").selectpicker('render');
     }
   }
 </script>

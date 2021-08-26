@@ -8,8 +8,11 @@ class Laporan_model extends CI_Model {
     var $t_batch = 't_batch';
     var $t_obat = 'm_obat';
     var $column_order = array('mk_nama',null);
+    var $column_order_stok = array('tb_tgl_masuk', null);
     var $column_search = array('mk_nama');
-    var $order = array('mk_id' => 'desc'); 
+    var $column_search_stok = array('tj_tb_id', 'tb_tgl_masuk', 'tb_tgl_kadaluarsa');
+    var $order = array('mk_id' => 'desc');
+    var $order_stok = array('tj_tb_id' => 'desc'); 
 
 	public function __construct()
 	{
@@ -114,6 +117,56 @@ class Laporan_model extends CI_Model {
     {
         $this->db->where('mk_id', $id);
         $this->db->delete($this->table);
+    }
+
+    public function _get_stok_batch_query($mo_id){
+        $this->db->select("*, sum(tj_masuk - tj_keluar) AS stok");
+        $this->db->from('t_jurnal');
+        $this->db->join('t_batch', 't_batch.tb_id = t_jurnal.tj_tb_id', 'inner');
+        $this->db->where('tj_mo_id', $mo_id);
+        $this->db->group_by('tj_tb_id');
+ 
+        $i = 0;
+     
+        foreach ($this->column_search_stok as $item) // loop column 
+        {
+            if($_POST['search']['value']) // if datatable send POST for search
+            {
+                 
+                if($i===0) // first loop
+                {
+                    $this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+                    $this->db->like($item, $_POST['search']['value']);
+                }
+                else
+                {
+                    $this->db->or_like($item, $_POST['search']['value']);
+                }
+ 
+                if(count($this->column_search_stok) - 1 == $i) //last loop
+                    $this->db->group_end(); //close bracket
+            }
+            $i++;
+        }
+         
+        if(isset($_POST['order'])) // here order processing
+        {
+            $this->db->order_by($this->column_order_stok[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+        } 
+        else if(isset($this->order_stok))
+        {
+            $order = $this->order_stok;
+            $this->db->order_by(key($order), $order[key($order)]);
+        }
+    }
+
+    function get_stok_batch($mo_id)
+    {
+        $this->_get_stok_batch_query($mo_id);
+        if($_POST['length'] != -1)
+        $this->db->limit($_POST['length'], $_POST['start']);
+        $query = $this->db->get();
+        return $query->result();
     }
 
 }

@@ -165,7 +165,7 @@ class Laporan extends CI_Controller
 
 				$this->load->view('ajax/view_retur.php', $data, FALSE);
 				break;
-				case 'kasir' :
+			case 'kasir' :
 					
 					$this->db->where('tsu_jam_masuk >=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_awal'))));
 					$this->db->where('tsu_jam_masuk <=', date('Y-m-d H:i:s', strtotime($this->input->post('tgl_akhir'))));
@@ -180,7 +180,15 @@ class Laporan extends CI_Controller
 					$data['tgl_akhir'] = $this->input->post('tgl_akhir');
 	
 					$this->load->view('ajax/view_kasir.php', $data, FALSE);
-					break;
+			break;
+			case 'StokIndividual' :
+				$mo_id = $this->input->post('mo_id');
+				if(isset($mo_id)){
+					$data['mo_id'] = $mo_id;
+					$data['title'] = 'Laporan Stok Individual';
+					$this->load->view('ajax/stok_individual.php', $data, FALSE);
+				}
+				break;
 			default:
 				# code...
 				break;
@@ -483,6 +491,7 @@ class Laporan extends CI_Controller
 
 	function export_stok(){
 		$jenis = $this->input->get('jenis') ? $this->input->get('jenis') : 'excel';
+		$temp_id = $this->input->get('id');
 		$ret = $this->alus_auth->ajax_stok_obat_by_id();
 		$data_mentah = $ret['data'];
 		$thobat= "";
@@ -627,6 +636,142 @@ class Laporan extends CI_Controller
 	        $paper = 'A4';
 	        $this->pdf2->generate($tabel, $judul, $paper, $orientation);
 		}
+	}
+
+	function export_stok_individual(){
+		$jenis = $this->input->get('jenis') ? $this->input->get('jenis') : 'excel';
+		$temp_id = $this->input->get('id');
+		if(isset($temp_id)){
+		$ret = $this->alus_auth->ajax_stok_obat_by_id($temp_id);
+		$arr =  $ret['data'];
+		$thobat= "";
+		$thcolspan= 6;
+		$judul = "Laporan Stok Individual";
+		$judul_pdf = "Laporan Stok ". $arr[0][0] ." - ". date("d-m-Y");
+		$data['item'] = $arr[0][0];
+		$data['x'] = $arr;
+		$data['judul'] = $judul; 
+		if($jenis == 'excel'){
+			$this->load->view('ajax/export_stok_individual', $data, FALSE);
+		}else{
+			$tabel = '
+			<html>
+			<head>
+			<style>
+			body{
+				font-family: "Source Sans Pro",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+					font-size: 1rem;
+					font-weight: 400;
+					line-height: 1.5;
+					color: #212529;
+					text-align: left;
+			}
+			table{
+				width: 100%;
+				min-width: 19cm;
+			}
+			table.table-bordered.dataTable th, table.table-bordered.dataTable td {
+    			border-left-width: 0;
+    			
+			}
+			.bordered thead th {
+    			border-bottom-width: 2px;
+			}
+			.table thead th {
+   				vertical-align: bottom;
+    			border-bottom: 2px solid #dee2e6;
+        		border-bottom-width: 2px;
+			}
+			table.dataTable th {
+    			-webkit-box-sizing: content-box;
+    			box-sizing: content-box;
+			}
+			th {
+    			border: 1px solid #dee2e6;
+        		border-bottom-color: rgb(222, 226, 230);
+        		border-bottom-style: solid;
+        		border-bottom-width: 1px;
+        		border-left-width: 1px;
+			}
+			.table td, .table th {
+    			padding: .75rem;
+    			vertical-align: top;
+    			border: 1px solid #dee2e6;
+			}
+			th {
+    			text-align: center;
+			}
+
+			.text-center{
+				text-align: center;
+			}
+			
+			p{
+				line-height:5px;
+			}
+			.font-weight-light {
+    			font-weight: 300 !important;
+			}
+			.brand-text{
+			    float: left;
+			    line-height: .8;
+			    margin-left: .8rem;
+			    margin-right: .5rem;
+			    margin-top: -3px;
+			    max-height: 33px;
+			    width: auto;
+			    font-size:3em;
+			}
+			</style>
+			</head>
+			<body>
+			<div>
+			<span class="brand-text font-weight-light">
+			<img src="'.base_url("assets/logo/").$this->db->get('setting_app')->row()->app_logo.'" alt="'.$this->db->get('setting_app')->row()->app_nama.'" class="brand-image img-circle elevation-3" width="50px" height="50px" style="opacity: .8">
+      		'.$this->db->get('setting_app')->row()->app_nama.'</span>
+      		</div>
+      		<br/>
+      		<br/>
+      		<div>
+			<table class="table table-bordered table-strip">
+        <thead>
+        	<tr>
+        		<th colspan="7"><p><h3>'.$judul.'</h3></p><p>"'.$arr[0][0].'"</p><p>Per Tanggal '.date('d-m-Y').'</p></th>
+        	</tr>
+            <tr>
+                <th rowspan="2">No</th>
+                <th rowspan="2">Batch ID</th>
+                <th colspan="2">Tanggal</th>
+                <th rowspan="2">Stok</th>
+                <th rowspan="2">Unit</th>
+                <th rowspan="2">Supplier</th>
+            </tr>
+            <tr>
+            	<th>Masuk</th>
+            	<th>Kadaluarsa</th>
+            </tr>
+        </thead>
+        <tbody>';
+        	$dat = $data['x'];
+			for($i = 0; $i < count($dat); $i++){
+                $tabel .= "
+                 <tr>
+                  <td class='text-center'>".($i + 1).".</td>
+                  <td>".$dat[$i][3]."</td>
+                  <td>".$dat[$i][12]."</td>
+                  <td>".$dat[$i][1]."</td>
+                  <td>".$dat[$i][2]."</td>
+                  <td>".$dat[$i][7]."</td>
+                  <td class='text-center'>".$dat[$i][10]."</td>
+                 </tr>
+                ";
+            }
+			$tabel .= '</tbody></div></table></body></html>';
+	        $orientation = 'portrait';
+	        $paper = 'A4';
+	        $this->pdf2->generate($tabel, $judul_pdf, $paper, $orientation);
+		}
+	}
 	}
 
 	function export_retur(){
@@ -894,6 +1039,12 @@ class Laporan extends CI_Controller
 			$data['jumlah'] = $value->jumlah;
 		}
 		return $data;
+	}
+
+	public function ajax_stok_obat_by_id($id)
+	{
+		$output2 = $this->alus_auth->ajax_stok_obat_by_id($id);
+		echo json_encode($output2);
 	}
 	/* Server Side Data */
 	/* Modified by : Maulana.code@gmail.com */
