@@ -2,6 +2,11 @@
     $d = 'Nonaktif';
     if($toggle_status){$a = 'checked';$d = 'Aktif';}
     if($toggle_stok){$b = 'disabled'; $c = "<div class='callout callout-warning'>Stok Belum Kosong!</div>";}
+
+    $now = date('Y-m-d');
+    $x = date_create($now);
+    $t = date_add($x, date_interval_create_from_date_string('1 DAY'));
+    $besok = date_format($t, "Y-m-d");
   ?>
   <div class="content-wrapper" style="min-height: 901px;">
     <div class="container-fluid">
@@ -78,12 +83,12 @@
                       <div class="row">
                       <div class="col-md-4">
                       <div class="form-group">
-                        <label for="tglAwal">Dari</label><input type="date" id="tglAwal" name="tglAwal" class="form-control" required="">
+                        <label for="tglAwal">Dari</label><input type="date" id="tglAwal" name="tglAwal" class="form-control" min="<?php echo $earliest_batch; ?>" required>
                       </div>
                       </div>
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label for="tglAkhir">Sampai</label><input type="date" id="tglAkhir" name="tglAkhir" class="form-control" required="">
+                          <label for="tglAkhir">Sampai</label><input type="date" id="tglAkhir" name="tglAkhir" class="form-control" max="<?php echo $besok; ?>" required>
                         </div>
                       </div>
                       <div class="col-md-4">

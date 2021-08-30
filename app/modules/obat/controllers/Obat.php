@@ -331,6 +331,7 @@ class Obat extends CI_Controller
 			$tb_id = $this->input->get('tbid');
 			$data = array();
 			$record = $this->stok->get_by_id($mo_id, $tb_id);
+			$earliest_batch = $this->get_earliest_batch($tb_id);
 			$data['tb_id'] = $tb_id;
 			$data['tb_tgl_masuk'] = $record->tb_tgl_masuk;
 			$data['tb_tgl_kadaluarsa'] = $record->tb_tgl_kadaluarsa;
@@ -339,6 +340,7 @@ class Obat extends CI_Controller
 			$data['tb_status_kadaluarsa'] = $record->tb_status_kadaluarsa;
 			$data['toggle_status'] = ($record->tb_status_kadaluarsa != '0') ? true : false;
 			$data['toggle_stok'] = ((int)$record->stok != 0) ? true : false;
+			$data['earliest_batch'] = $earliest_batch;
 
 			$datasup = $this->supplier->get_by_id($record->tb_ms_id);
 			$data['ms_nama'] = $datasup->ms_nama;
@@ -441,6 +443,18 @@ class Obat extends CI_Controller
 		$batch = $this->db->get('t_batch')->result();
 
 		echo json_encode(array('data' => $batch));
+	}
+
+	public function get_earliest_batch($tb_id = null){
+		$this->db->select("DATE_FORMAT(tj_created, '%Y-%m-%d') as tgl");
+		$this->db->where('tj_tb_id', $tb_id);
+		$this->db->limit('1');
+		$batch = $this->db->get('t_jurnal')->row();
+
+		$tgl = date_create($batch->tgl);
+		$y = date_sub($tgl, date_interval_create_from_date_string("1 DAY"));
+
+		return date_format($y, 'Y-m-d');
 	}
 
 	public function save_stock()

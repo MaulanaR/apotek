@@ -83,6 +83,7 @@
                   <div class="card-body">
                     <ul class="list-group list-group-flush">
                     <li class="list-group-item">Disuplai oleh <b id="supplier"></b></li>
+                    <li class="list-group-item" id="btnLihatBatch"></div></div></div></li>
                     </ul>
                   </div>
                 </div>
@@ -257,6 +258,7 @@ function load_data(){
             $("#hargabeli").append("<b>"+a+"</b>");
             $("#hargajual").append("<b>"+b+"</b>");
             $("#supplier").append(val[10]);
+            $("#btnLihatBatch").append('<a href="<?php echo base_url();?>obat/batch_detail/<?php echo $mo_id;?>?tbid='+val[3]+'" class="btn btn-block bg-lightblue btn-sm">Lihat Batch</a>');
           });
         },
         error: function (jqXHR, textStatus, errorThrown)
