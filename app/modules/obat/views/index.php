@@ -20,13 +20,21 @@
           <p>Gunakan Panel Admin sebagaimana anda bertanggung jawab dalam memutuskan tindakan yang anda lakukan .</p>
         </div> -->
         <div class="card">
-          <div class="card-header text-right">
-            <div class="btn-group">
-              <?php if ($can_add == 1) { ?>
-                <a href="<?php echo base_url('obat/input'); ?>" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Tambah</a>
-              <?php } ?>
-              <button class="btn btn-sm btn-default" onclick="reload_table()"><i class="fas fa-retweet"></i> Reload</button>
+          <div class="card-header ">
+            <div class="row">
+              <div class="col-md-6 text-left">
+                <a href="<?php echo base_url('obat/import');?>" class="btn btn-sm btn-warning"><i class="fas fa-file-import"></i> Import Excel</a>
+              </div>
+              <div class="col-md-6 text-right">
+                <div class="btn-group">
+                  <?php if ($can_add == 1) { ?>
+                    <a href="<?php echo base_url('obat/input'); ?>" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Tambah</a>
+                  <?php } ?>
+                  <button class="btn btn-sm btn-default" onclick="reload_table()"><i class="fas fa-retweet"></i> Reload</button>
+                </div>
+              </div>
             </div>
+
           </div>
           <!-- /.card-header -->
           <div class="card-body">
@@ -71,12 +79,12 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <form action="#" id="formnih" class="form-horizontal" name="formnih">
-        <div class="modal-header">
-          <h3 class="modal-title">Edit Master Obat</h3>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body form">
-            <input type="hidden" value="" name="id" required/>
+          <div class="modal-header">
+            <h3 class="modal-title">Edit Master Obat</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body form">
+            <input type="hidden" value="" name="id" required />
             <div class="form-body">
               <div class="form-group">
                 <label class="control-label ">Nama Obat</label>
@@ -85,7 +93,7 @@
               </div>
               <div class="form-group">
                 <label class="control-label ">Deskripsi Obat</label>
-                <input type="text" name="des_obat" class="form-control" placeholder="Deskripsi Obat" >
+                <input type="text" name="des_obat" class="form-control" placeholder="Deskripsi Obat">
                 <span class="help-block"></span>
               </div>
               <div class="form-group">
@@ -93,9 +101,9 @@
                 <select class="sel form-control" name="kategori_obat" required>
                   <?php
                   foreach ($this->db->get('m_kategori')->result() as $key => $value_kategori) {
-                    if($value_kategori->mk_id != $this->alus_auth->getAlkesOrItemID('Alkes')->mk_id){
-                       echo '<option value="' . $value_kategori->mk_id . '">' . $value_kategori->mk_nama . '</option>';
-                     }
+                    if ($value_kategori->mk_id != $this->alus_auth->getAlkesOrItemID('Alkes')->mk_id) {
+                      echo '<option value="' . $value_kategori->mk_id . '">' . $value_kategori->mk_nama . '</option>';
+                    }
                   }
                   ?>
                 </select>
@@ -129,11 +137,11 @@
                 </select>
               </div>
             </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" id="btnSave" class="btn btn-primary">Update</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" id="btnSave" class="btn btn-primary">Update</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          </div>
       </div><!-- /.modal-content -->
       </form>
     </div><!-- /.modal-dialog -->
@@ -144,20 +152,20 @@
     var save_method; //for save method string
     var table;
 
-    $(document).on("preInit.dt", function () {
-    var $sb = $(".dataTables_filter input[type='search']");
-    // remove current handler
-    $sb.off();
-    // Add key hander
-    $sb.on("keypress", function (evtObj) {
+    $(document).on("preInit.dt", function() {
+      var $sb = $(".dataTables_filter input[type='search']");
+      // remove current handler
+      $sb.off();
+      // Add key hander
+      $sb.on("keypress", function(evtObj) {
         if (evtObj.keyCode == 13) {
-            table.search($sb.val()).draw();
+          table.search($sb.val()).draw();
         }
+      });
     });
-});
 
     $(document).ready(function() {
-      $("#formnih").submit(function(e){
+      $("#formnih").submit(function(e) {
         e.preventDefault();
         save();
       });
@@ -227,7 +235,7 @@
       table.ajax.reload(null, false); //reload datatable ajax 
     }
 
-    
+
 
     function save() {
       $('#btnSave').text('saving...'); //change button text
